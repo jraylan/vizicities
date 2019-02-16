@@ -2,7 +2,8 @@ import TileLayer from './TileLayer';
 import extend from 'lodash.assign';
 import GeoJSONTile from './GeoJSONTile';
 import throttle from 'lodash.throttle';
-import THREE from 'three';
+import * as THREE from 'three';
+import Geo from '../../geo/Geo';
 
 // TODO: Offer on-the-fly slicing of static, non-tile-based GeoJSON files into a
 // tile grid using geojson-vt
@@ -38,7 +39,7 @@ class GeoJSONTileLayer extends TileLayer {
   constructor(path, options) {
     var defaults = {
       maxLOD: 14,
-      distance: 30000,
+      distance: 100000 * Geo.multiplier,
       workers: false
     };
 

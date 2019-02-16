@@ -14,8 +14,8 @@ VIZI.imageTileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
 }).addTo(world);
 
-// Mapzen GeoJSON tile including points, linestrings and polygons
-VIZI.geoJSONLayer('https://tile.mapzen.com/mapzen/vector/v1/roads,pois,buildings/14/4824/6159.json', {
+// Tilezen GeoJSON tile including points, linestrings and polygons
+VIZI.geoJSONLayer('https://tile.nextzen.org/tilezen/vector/v1/all/14/4824/6159.json?api_key=-P8vfoBlQHWiTrDduihXhA', {
   output: true,
   style: {
     color: '#ff0000',

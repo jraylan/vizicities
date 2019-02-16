@@ -16,8 +16,8 @@ VIZI.imageTileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}
   console.log('Added image tile layer to world');
 });
 
-// Buildings from Mapzen
-VIZI.topoJSONTileLayer('https://tile.mapzen.com/mapzen/vector/v1/buildings/{z}/{x}/{y}.topojson?api_key=vector-tiles-NT5Emiw', {
+// Buildings from Tilezen
+VIZI.geoJSONTileLayer('https://tile.nextzen.org/tilezen/vector/v1/all/{z}/{x}/{y}.json?api_key=-P8vfoBlQHWiTrDduihXhA', {
   interactive: false,
   style: function(feature) {
     var height;
@@ -32,6 +32,7 @@ VIZI.topoJSONTileLayer('https://tile.mapzen.com/mapzen/vector/v1/buildings/{z}/{
       height: height
     };
   },
+  layers: ['buildings'],
   filter: function(feature) {
     // Don't show points
     return feature.geometry.type !== 'Point';

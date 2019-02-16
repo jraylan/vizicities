@@ -2,7 +2,7 @@
  * GeoJSON helpers for handling data and generating objects
  */
 
-import THREE from 'three';
+import * as THREE from 'three';
 import * as topojson from 'topojson';
 import geojsonMerge from 'geojson-merge';
 import earcut from 'earcut';
@@ -38,14 +38,18 @@ var GeoJSON = (function() {
 
   // Attempts to merge together multiple GeoJSON Features or FeatureCollections
   // into a single FeatureCollection
-  var collectFeatures = function(data, _topojson) {
+  var collectFeatures = function(data, layers, _topojson) {
     var collections = [];
 
     if (_topojson) {
-      // TODO: Allow TopoJSON objects to be overridden as an option
-
       // If not overridden, merge all features from all objects
       for (var tk in data.objects) {
+        if (layers.length > 0) {
+          if (!layers.includes(tk)) {
+            continue;
+          }
+        }
+
         collections.push(topojson.feature(data, data.objects[tk]));
       }
 
@@ -58,6 +62,12 @@ var GeoJSON = (function() {
 
         // If not overridden, merge all features from all objects
         for (var gk in data) {
+          if (layers.length > 0) {
+            if (!layers.includes(gk)) {
+              continue;
+            }
+          }
+
           if (!data[gk].type) {
             continue;
           }

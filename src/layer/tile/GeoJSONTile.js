@@ -2,7 +2,7 @@ import Tile from './Tile';
 import {geoJSONLayer as GeoJSONLayer} from '../GeoJSONLayer';
 import {geoJSONWorkerLayer as GeoJSONWorkerLayer} from '../GeoJSONWorkerLayer';
 import BoxHelper from '../../vendor/BoxHelper';
-import THREE from 'three';
+import * as THREE from 'three';
 import reqwest from 'reqwest';
 import {point as Point} from '../../geo/Point';
 import {latLon as LatLon} from '../../geo/LatLon';
@@ -85,13 +85,13 @@ class GeoJSONTile extends Tile {
 
   // Request data for the tile
   requestTileAsync() {
+    if (!this._mesh) {
+      this._mesh = this._createMesh();
+      // this._shadowCanvas = this._createShadowCanvas();
+    }
+
     // Making this asynchronous really speeds up the LOD framerate
     setTimeout(() => {
-      if (!this._mesh) {
-        this._mesh = this._createMesh();
-        // this._shadowCanvas = this._createShadowCanvas();
-      }
-
       this._requestTile();
     }, 0);
   }
@@ -355,6 +355,16 @@ class GeoJSONTile extends Tile {
   }
 
   _abortRequest() {
+    if (this._ready) {
+      return;
+    }
+
+    if (this._options.fetch && this._controller) {
+      this._controller.abort();
+      this._aborted = true;
+      return;
+    }
+
     if ((!this._request && !this._options.workers) || this._ready) {
       return;
     }

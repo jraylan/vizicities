@@ -1,7 +1,7 @@
 import Layer from '../Layer';
 import extend from 'lodash.assign';
 import TileCache from './TileCache';
-import THREE from 'three';
+import * as THREE from 'three';
 
 // TODO: Consider removing picking from TileLayer instances as there aren't
 // (m)any situations where it would be practical
@@ -73,7 +73,7 @@ class TileLayer extends Layer {
     this._tileList = [];
 
     // TODO: Work out why changing the minLOD causes loads of issues
-    this._minLOD = 3;
+    this._minLOD = this._options.minLOD || 3;
     this._maxLOD = this._options.maxLOD;
 
     this._frustum = new THREE.Frustum();

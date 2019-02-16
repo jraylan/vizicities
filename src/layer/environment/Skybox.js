@@ -1,6 +1,7 @@
-import THREE from 'three';
+import * as THREE from 'three';
 import Sky from './Sky';
 import throttle from 'lodash.throttle';
+import Geo from '../../geo/Geo';
 
 // TODO: Make sure nothing is left behind in the heap after calling destroy()
 
@@ -29,7 +30,7 @@ class Skybox {
     this._light = light;
 
     this._settings = {
-      distance: 38000,
+      distance: 38000 * Geo.multiplier,
       turbidity: 10,
       reileigh: 2,
       mieCoefficient: 0.005,
@@ -77,7 +78,7 @@ class Skybox {
     // this._sunSphere.visible = true;
 
     var skyboxUniforms = {
-      cubemap: { type: 't', value: cubeTarget }
+      cubemap: { type: 't', value: cubeTarget.texture }
     };
 
     var skyboxMat = new THREE.ShaderMaterial({
@@ -138,11 +139,11 @@ class Skybox {
     this._updateUniforms();
 
     // TODO: Only do this when the cubemap has actually changed
-    this._cubeCamera.updateCubeMap(this._world._engine._renderer, this._skyScene);
+    this._cubeCamera.update(this._world._engine._renderer, this._skyScene);
   }
 
   getRenderTarget() {
-    return this._cubeCamera.renderTarget;
+    return this._cubeCamera.renderTarget.texture;
   }
 
   setInclination(inclination) {

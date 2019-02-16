@@ -18,10 +18,10 @@ world.createWorkers(7).then(function() {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
   }).addTo(world).then(function() {
     console.log('Added image tile layer to world');
-  });;
+  });
 
   // Buildings from Mapzen
-  VIZI.topoJSONTileLayer('https://tile.mapzen.com/mapzen/vector/v1/buildings/{z}/{x}/{y}.topojson?api_key=vector-tiles-NT5Emiw', {
+  VIZI.mvtTileLayer('https://tile.nextzen.org/tilezen/vector/v1/all/{z}/{x}/{y}.mvt?api_key=-P8vfoBlQHWiTrDduihXhA', {
     workers: true,
     interactive: false,
     style: function(feature) {
@@ -37,12 +37,14 @@ world.createWorkers(7).then(function() {
         height: height
       };
     },
+    layers: ['buildings'],
+    // TODO: Work out why this isn't filtering out points
     filter: function(feature) {
       // Don't show points
       return feature.geometry.type !== 'Point';
     },
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://whosonfirst.mapzen.com#License">Who\'s On First</a>.'
   }).addTo(world).then(function() {
-    console.log('Added TopoJSON layer to world');
+    console.log('Added MVT layer to world');
   });
 });

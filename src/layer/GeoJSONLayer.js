@@ -23,6 +23,7 @@ class GeoJSONLayer extends LayerGroup {
       interactive: false,
       topojson: false,
       filter: null,
+      layers: null,
       onEachFeature: null,
       polygonMaterial: null,
       onPolygonMesh: null,
@@ -99,10 +100,16 @@ class GeoJSONLayer extends LayerGroup {
   // worker script at a later stage
   _processData(data) {
     return new Promise((resolve) => {
+      var layers = [];
+
+      if (this._options.layers) {
+        layers = this._options.layers;
+      }
+
       // Collects features into a single FeatureCollection
       //
       // Also converts TopoJSON to GeoJSON if instructed
-      this._geojson = GeoJSON.collectFeatures(data, this._options.topojson);
+      this._geojson = GeoJSON.collectFeatures(data, layers, this._options.topojson);
 
       // TODO: Check that GeoJSON is valid / usable
 
