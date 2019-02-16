@@ -24873,6 +24873,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	
 	        _this._processTileData(fc);
+	
+	        // Clean up
+	        buffer = null;
+	        vt = null;
+	        layers = null;
+	        fc = null;
 	      })['catch'](function (err) {
 	        if (err.name === 'AbortError') {
 	          return;

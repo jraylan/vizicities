@@ -76,6 +76,12 @@ class MVTTile extends GeoJSONTile {
       }
 
       this._processTileData(fc);
+
+      // Clean up
+      buffer = null;
+      vt = null;
+      layers = null;
+      fc = null;
     }).catch((err) => {
       if (err.name === 'AbortError') {
         return;
