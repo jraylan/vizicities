@@ -142,7 +142,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//
 	// A multiplier of 0.1 would mean a 1:0.1 mapping between WebGL and EPSG:3857
 	// coordinates (1 EPSG:3857 metre === 0.1 WebGL units)
-	Geo.multiplier = 0.1;
+	Geo.multiplier = 1;
 	
 	Geo.project = function (latlon) {
 	  var d = Math.PI / 180;
@@ -494,6 +494,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -514,7 +516,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _engineScene = __webpack_require__(22);
 	
@@ -554,7 +556,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._options = (0, _lodashAssign2['default'])({}, defaults, options);
 	
 	    if (this.isOutput()) {
-	      this._object3D = new _three2['default'].Object3D();
+	      this._object3D = new THREE.Object3D();
 	
 	      this._dom3D = document.createElement('div');
 	      this._domObject3D = new _vendorCSS3DRenderer.CSS3DObject(this._dom3D);
@@ -2825,17 +2827,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// This can be imported from anywhere and will still reference the same scene,
 	// though there is a helper reference in Engine.scene
 	
 	exports['default'] = (function () {
-	  var scene = new _three2['default'].Scene();
+	  var scene = new THREE.Scene();
 	
 	  // TODO: Re-enable when this works with the skybox
 	  // scene.fog = new THREE.Fog(0xffffff, 1, 15000);
@@ -2852,7 +2854,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
@@ -2864,11 +2866,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var CSS3DObject = function CSS3DObject(element) {
 	
-		_three2['default'].Object3D.call(this);
+		THREE.Object3D.call(this);
 	
 		this.element = element;
 		this.element.style.position = 'absolute';
@@ -2882,7 +2884,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		});
 	};
 	
-	CSS3DObject.prototype = Object.create(_three2['default'].Object3D.prototype);
+	CSS3DObject.prototype = Object.create(THREE.Object3D.prototype);
 	CSS3DObject.prototype.constructor = CSS3DObject;
 	
 	var CSS3DSprite = function CSS3DSprite(element) {
@@ -2897,12 +2899,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var CSS3DRenderer = function CSS3DRenderer() {
 	
-		console.log('THREE.CSS3DRenderer', _three2['default'].REVISION);
+		console.log('THREE.CSS3DRenderer', THREE.REVISION);
 	
 		var _width, _height;
 		var _widthHalf, _heightHalf;
 	
-		var matrix = new _three2['default'].Matrix4();
+		var matrix = new THREE.Matrix4();
 	
 		var cache = {
 			camera: { fov: 0, style: '' },
@@ -3025,7 +3027,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		this.render = function (scene, camera) {
 	
-			var fov = 0.5 / Math.tan(_three2['default'].Math.degToRad(camera.fov * 0.5)) * _height;
+			var fov = 0.5 / Math.tan(THREE.Math.degToRad(camera.fov * 0.5)) * _height;
 	
 			if (cache.camera.fov !== fov) {
 	
@@ -3063,9 +3065,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.CSS3DSprite = CSS3DSprite;
 	exports.CSS3DRenderer = CSS3DRenderer;
 	
-	_three2['default'].CSS3DObject = CSS3DObject;
-	_three2['default'].CSS3DSprite = CSS3DSprite;
-	_three2['default'].CSS3DRenderer = CSS3DRenderer;
+	THREE.CSS3DObject = CSS3DObject;
+	THREE.CSS3DSprite = CSS3DSprite;
+	THREE.CSS3DRenderer = CSS3DRenderer;
 
 /***/ }),
 /* 24 */
@@ -3075,7 +3077,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
@@ -3086,11 +3088,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var CSS2DObject = function CSS2DObject(element) {
 	
-		_three2['default'].Object3D.call(this);
+		THREE.Object3D.call(this);
 	
 		this.element = element;
 		this.element.style.position = 'absolute';
@@ -3104,23 +3106,23 @@ return /******/ (function(modules) { // webpackBootstrap
 		});
 	};
 	
-	CSS2DObject.prototype = Object.create(_three2['default'].Object3D.prototype);
+	CSS2DObject.prototype = Object.create(THREE.Object3D.prototype);
 	CSS2DObject.prototype.constructor = CSS2DObject;
 	
 	//
 	
 	var CSS2DRenderer = function CSS2DRenderer() {
 	
-		console.log('THREE.CSS2DRenderer', _three2['default'].REVISION);
+		console.log('THREE.CSS2DRenderer', THREE.REVISION);
 	
 		var _width, _height;
 		var _widthHalf, _heightHalf;
 	
-		var vector = new _three2['default'].Vector3();
-		var viewMatrix = new _three2['default'].Matrix4();
-		var viewProjectionMatrix = new _three2['default'].Matrix4();
+		var vector = new THREE.Vector3();
+		var viewMatrix = new THREE.Matrix4();
+		var viewProjectionMatrix = new THREE.Matrix4();
 	
-		var frustum = new _three2['default'].Frustum();
+		var frustum = new THREE.Frustum();
 	
 		var domElement = document.createElement('div');
 		domElement.style.overflow = 'hidden';
@@ -3144,7 +3146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (object instanceof CSS2DObject) {
 	
 				vector.setFromMatrixPosition(object.matrixWorld);
-				vector.applyProjection(viewProjectionMatrix);
+				vector.applyMatrix4(viewProjectionMatrix);
 	
 				var element = object.element;
 				var style = 'translate(-50%,-50%) translate(' + (vector.x * _widthHalf + _widthHalf) + 'px,' + (-vector.y * _heightHalf + _heightHalf) + 'px)';
@@ -3184,7 +3186,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			viewMatrix.copy(camera.matrixWorldInverse.getInverse(camera.matrixWorld));
 			viewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, viewMatrix);
 	
-			frustum.setFromMatrix(new _three2['default'].Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+			frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
 	
 			renderObject(scene, camera);
 		};
@@ -3193,8 +3195,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.CSS2DObject = CSS2DObject;
 	exports.CSS2DRenderer = CSS2DRenderer;
 	
-	_three2['default'].CSS2DObject = CSS2DObject;
-	_three2['default'].CSS2DRenderer = CSS2DRenderer;
+	THREE.CSS2DObject = CSS2DObject;
+	THREE.CSS2DRenderer = CSS2DRenderer;
 
 /***/ }),
 /* 25 */
@@ -3340,10 +3342,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var geojson = _geojson;
 	        var transferrables = [];
 	
+	        var layers = [];
+	
+	        if (_this._options.layers) {
+	          layers = _this._options.layers;
+	        }
+	
+	        // TODO: Allow filter method to be run here
 	        if (typeof geojson !== 'string') {
-	          _this._geojson = geojson = _utilBuffer2['default'].stringToUint8Array(JSON.stringify(geojson));
+	          // TODO: De-dupe with non-object processing in next section
+	          var fc = _utilGeoJSON2['default'].collectFeatures(geojson, layers, _this._options.topojson);
+	          var features = fc.features;
+	
+	          // Run filter, if provided
+	          if (_this._options.filter) {
+	            fc.features = features.filter(_this._options.filter);
+	          }
+	
+	          if (_this._options.onEachFeature) {
+	            var feature;
+	            for (var i = 0; i < features.length; i++) {
+	              feature = features[i];
+	              _this._options.onEachFeature(feature);
+	            };
+	          }
+	
+	          _this._geojson = geojson = _utilBuffer2['default'].stringToUint8Array(JSON.stringify(fc));
 	          transferrables.push(geojson.buffer);
-	          _this._execWorker(geojson, _this._options.topojson, _this._world._originPoint, style, _this._options.interactive, pointGeometry, transferrables).then(function () {
+	          _this._execWorker(geojson, _this._options.topojson, _this._options.headers, _this._world._originPoint, style, _this._options.interactive, pointGeometry, transferrables).then(function () {
 	            resolve();
 	          })['catch'](reject);
 	        } else if (typeof _this._options.filter === 'function' || typeof _this._options.onEachFeature === 'function') {
@@ -3353,7 +3379,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            //   return;
 	            // }
 	
-	            var fc = _utilGeoJSON2['default'].collectFeatures(res, _this._options.topojson);
+	            var fc = _utilGeoJSON2['default'].collectFeatures(res, layers, _this._options.topojson);
 	            var features = fc.features;
 	
 	            // Run filter, if provided
@@ -3909,10 +3935,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function Process(geojson, topojson, headers, originPoint, _style, _properties, _pointGeometry) {
 	      return new Promise(function (resolve, reject) {
 	        GeoJSONWorkerLayer.ProcessGeoJSON(geojson, headers).then(function (res) {
-	          // Collects features into a single FeatureCollection
-	          //
-	          // Also converts TopoJSON to GeoJSON if instructed
-	          var geojson = _utilGeoJSON2['default'].collectFeatures(res, topojson);
+	          var geojson = res;
+	
+	          if (!geojson.features) {
+	            // Collects features into a single FeatureCollection
+	            //
+	            // Also converts TopoJSON to GeoJSON if instructed
+	            geojson = _utilGeoJSON2['default'].collectFeatures(geojson, topojson);
+	          }
 	
 	          // TODO: Check that GeoJSON is valid / usable
 	
@@ -4035,6 +4065,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            if (geometry.type === 'Point' || geometry.type === 'MultiPoint') {
+	              if (!pointGeometry) {
+	                console.warn('Skipping point geometry as no function provided');
+	                continue;
+	              }
+	
 	              coordinates = _geometryPointLayer2['default'].isSingle(coordinates) ? [coordinates] : coordinates;
 	
 	              var converted = coordinates.map(function (coordinate) {
@@ -5084,9 +5119,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	/*
 	 * GeoJSON helpers for handling data and generating objects
@@ -5094,7 +5129,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _topojson2 = __webpack_require__(29);
 	
@@ -5121,8 +5156,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	// See: http://lists.geojson.org/pipermail/geojson-geojson.org/2009-June/000489.html
 	
 	// Light and dark colours used for poor-mans AO gradient on object sides
-	var light = new _three2['default'].Color(0xffffff);
-	var shadow = new _three2['default'].Color(0x666666);
+	var light = new THREE.Color(0xffffff);
+	var shadow = new THREE.Color(0x666666);
 	
 	var GeoJSON = (function () {
 	  var defaultStyle = {
@@ -5131,25 +5166,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    outlineColor: '#000000',
 	    transparent: false,
 	    opacity: 1,
-	    blending: _three2['default'].NormalBlending,
+	    blending: THREE.NormalBlending,
 	    height: 0,
 	    lineOpacity: 1,
 	    lineTransparent: false,
 	    lineColor: '#ffffff',
 	    lineWidth: 1,
-	    lineBlending: _three2['default'].NormalBlending
+	    lineBlending: THREE.NormalBlending
 	  };
 	
 	  // Attempts to merge together multiple GeoJSON Features or FeatureCollections
 	  // into a single FeatureCollection
-	  var collectFeatures = function collectFeatures(data, _topojson) {
+	  var collectFeatures = function collectFeatures(data, layers, _topojson) {
 	    var collections = [];
 	
 	    if (_topojson) {
-	      // TODO: Allow TopoJSON objects to be overridden as an option
-	
 	      // If not overridden, merge all features from all objects
 	      for (var tk in data.objects) {
+	        if (layers.length > 0) {
+	          if (!layers.includes(tk)) {
+	            continue;
+	          }
+	        }
+	
 	        collections.push(topojson.feature(data, data.objects[tk]));
 	      }
 	
@@ -5162,6 +5201,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        // If not overridden, merge all features from all objects
 	        for (var gk in data) {
+	          if (layers.length > 0) {
+	            if (!layers.includes(gk)) {
+	              continue;
+	            }
+	          }
+	
 	          if (!data[gk].type) {
 	            continue;
 	          }
@@ -7085,7 +7130,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	/*
 	 * BufferGeometry helpers
@@ -7093,7 +7138,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _textEncoding = __webpack_require__(38);
 	
@@ -7228,7 +7273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	
 	  var createLineGeometry = function createLineGeometry(lines, offset) {
-	    var geometry = new _three2['default'].BufferGeometry();
+	    var geometry = new THREE.BufferGeometry();
 	
 	    var vertices = new Float32Array(lines.verticesCount * 3);
 	    var colours = new Float32Array(lines.verticesCount * 3);
@@ -7277,11 +7322,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    // itemSize = 3 because there are 3 values (components) per vertex
-	    geometry.addAttribute('position', new _three2['default'].BufferAttribute(vertices, 3));
-	    geometry.addAttribute('color', new _three2['default'].BufferAttribute(colours, 3));
+	    geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+	    geometry.addAttribute('color', new THREE.BufferAttribute(colours, 3));
 	
 	    if (pickingIds) {
-	      geometry.addAttribute('pickingId', new _three2['default'].BufferAttribute(pickingIds, 1));
+	      geometry.addAttribute('pickingId', new THREE.BufferAttribute(pickingIds, 1));
 	    }
 	
 	    geometry.computeBoundingBox();
@@ -7291,7 +7336,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  // TODO: Make picking IDs optional
 	  var createGeometry = function createGeometry(attributes, offset) {
-	    var geometry = new _three2['default'].BufferGeometry();
+	    var geometry = new THREE.BufferGeometry();
 	
 	    // Three components per vertex per face (3 x 3 = 9)
 	    var vertices = new Float32Array(attributes.facesCount * 9);
@@ -7304,12 +7349,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      pickingIds = new Float32Array(attributes.facesCount * 3);
 	    }
 	
-	    var pA = new _three2['default'].Vector3();
-	    var pB = new _three2['default'].Vector3();
-	    var pC = new _three2['default'].Vector3();
+	    var pA = new THREE.Vector3();
+	    var pB = new THREE.Vector3();
+	    var pC = new THREE.Vector3();
 	
-	    var cb = new _three2['default'].Vector3();
-	    var ab = new _three2['default'].Vector3();
+	    var cb = new THREE.Vector3();
+	    var ab = new THREE.Vector3();
 	
 	    var index;
 	    var _faces;
@@ -7415,12 +7460,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    // itemSize = 3 because there are 3 values (components) per vertex
-	    geometry.addAttribute('position', new _three2['default'].BufferAttribute(vertices, 3));
-	    geometry.addAttribute('normal', new _three2['default'].BufferAttribute(normals, 3));
-	    geometry.addAttribute('color', new _three2['default'].BufferAttribute(colours, 3));
+	    geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+	    geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
+	    geometry.addAttribute('color', new THREE.BufferAttribute(colours, 3));
 	
 	    if (pickingIds) {
-	      geometry.addAttribute('pickingId', new _three2['default'].BufferAttribute(pickingIds, 1));
+	      geometry.addAttribute('pickingId', new THREE.BufferAttribute(pickingIds, 1));
 	    }
 	
 	    geometry.computeBoundingBox();
@@ -10894,6 +10939,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -10926,7 +10973,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _geoGeo = __webpack_require__(1);
 	
@@ -10972,7 +11019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        color: '#ffffff',
 	        transparent: false,
 	        opacity: 1,
-	        blending: _three2['default'].NormalBlending,
+	        blending: THREE.NormalBlending,
 	        height: 0
 	      }
 	    };
@@ -11001,7 +11048,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // Otherwise, assume another component will eventually add a mesh to
 	          // the picking scene
 	          if (_this.isOutput()) {
-	            _this._pickingMesh = new _three2['default'].Object3D();
+	            _this._pickingMesh = new THREE.Object3D();
 	            _this.addToPicking(_this._pickingMesh);
 	          }
 	
@@ -11236,12 +11283,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          height = _geoGeo2['default'].metresToWorld(options.style.height, options.pointScale);
 	        }
 	
-	        var colour = new _three2['default'].Color();
+	        var colour = new THREE.Color();
 	        colour.set(options.style.color);
 	
 	        // Light and dark colours used for poor-mans AO gradient on object sides
-	        var light = new _three2['default'].Color(0xffffff);
-	        var shadow = new _three2['default'].Color(0x666666);
+	        var light = new THREE.Color(0xffffff);
+	        var shadow = new THREE.Color(0x666666);
 	
 	        var flat = true;
 	
@@ -11328,7 +11375,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          };
 	
 	          if (options.style.outline) {
-	            var outlineColour = new _three2['default'].Color();
+	            var outlineColour = new THREE.Color();
 	            outlineColour.set(options.style.outlineColor || 0x000000);
 	
 	            outlineAttributes.push(PolygonLayer.Set2DOutline(_coordinates, outlineColour));
@@ -11410,29 +11457,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'SetMesh',
 	    value: function SetMesh(attributes, attributeLengths, flat, style, options, skybox) {
-	      var geometry = new _three2['default'].BufferGeometry();
+	      var geometry = new THREE.BufferGeometry();
 	
 	      for (var key in attributes) {
-	        geometry.addAttribute(key.slice(0, -1), new _three2['default'].BufferAttribute(attributes[key], attributeLengths[key]));
+	        geometry.addAttribute(key.slice(0, -1), new THREE.BufferAttribute(attributes[key], attributeLengths[key]));
 	      }
 	
 	      geometry.computeBoundingBox();
 	
 	      var material;
-	      if (options.polygonMaterial && options.polygonMaterial instanceof _three2['default'].Material) {
+	      if (options.polygonMaterial && options.polygonMaterial instanceof THREE.Material) {
 	        material = options.polygonMaterial;
 	      } else if (!skybox) {
-	        material = new _three2['default'].MeshPhongMaterial({
-	          vertexColors: _three2['default'].VertexColors,
-	          side: _three2['default'].BackSide,
+	        material = new THREE.MeshPhongMaterial({
+	          vertexColors: THREE.VertexColors,
+	          side: THREE.BackSide,
 	          transparent: style.transparent,
 	          opacity: style.opacity,
 	          blending: style.blending
 	        });
 	      } else {
-	        material = new _three2['default'].MeshStandardMaterial({
-	          vertexColors: _three2['default'].VertexColors,
-	          side: _three2['default'].BackSide,
+	        material = new THREE.MeshStandardMaterial({
+	          vertexColors: THREE.VertexColors,
+	          side: THREE.BackSide,
 	          transparent: style.transparent,
 	          opacity: style.opacity,
 	          blending: style.blending
@@ -11449,7 +11496,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (typeof options.onPolygonMesh === 'function') {
 	        mesh = options.onPolygonMesh(geometry, material);
 	      } else {
-	        mesh = new _three2['default'].Mesh(geometry, material);
+	        mesh = new THREE.Mesh(geometry, material);
 	
 	        mesh.castShadow = true;
 	        mesh.receiveShadow = true;
@@ -11466,9 +11513,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      if (options.interactive) {
 	        material = new _enginePickingMaterial2['default']();
-	        material.side = _three2['default'].BackSide;
+	        material.side = THREE.BackSide;
 	
-	        var pickingMesh = new _three2['default'].Mesh(geometry, material);
+	        var pickingMesh = new THREE.Mesh(geometry, material);
 	      }
 	
 	      return Promise.resolve({
@@ -11538,12 +11585,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        pickingIds = new Float32Array(polygon.facesCount * 3);
 	      }
 	
-	      var pA = new _three2['default'].Vector3();
-	      var pB = new _three2['default'].Vector3();
-	      var pC = new _three2['default'].Vector3();
+	      var pA = new THREE.Vector3();
+	      var pB = new THREE.Vector3();
+	      var pC = new THREE.Vector3();
 	
-	      var cb = new _three2['default'].Vector3();
-	      var ab = new _three2['default'].Vector3();
+	      var cb = new THREE.Vector3();
+	      var ab = new THREE.Vector3();
 	
 	      var index;
 	
@@ -11695,9 +11742,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _PickingShader = __webpack_require__(44);
 	
@@ -11706,7 +11755,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// FROM: https://github.com/brianxu/GPUPicker/blob/master/GPUPicker.js
 	
 	var PickingMaterial = function PickingMaterial() {
-	  _three2['default'].ShaderMaterial.call(this, {
+	  THREE.ShaderMaterial.call(this, {
 	    uniforms: {
 	      size: {
 	        type: 'f',
@@ -11725,7 +11774,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  this.linePadding = 2;
 	};
 	
-	PickingMaterial.prototype = Object.create(_three2['default'].ShaderMaterial.prototype);
+	PickingMaterial.prototype = Object.create(THREE.ShaderMaterial.prototype);
 	
 	PickingMaterial.prototype.constructor = PickingMaterial;
 	
@@ -11776,6 +11825,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -11810,7 +11861,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _geoGeo = __webpack_require__(1);
 	
@@ -11849,7 +11900,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        lineTransparent: false,
 	        lineColor: '#ffffff',
 	        lineWidth: 1,
-	        lineBlending: _three2['default'].NormalBlending
+	        lineBlending: THREE.NormalBlending
 	      }
 	    };
 	
@@ -11880,7 +11931,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // Otherwise, assume another component will eventually add a mesh to
 	          // the picking scene
 	          if (_this.isOutput()) {
-	            _this._pickingMesh = new _three2['default'].Object3D();
+	            _this._pickingMesh = new THREE.Object3D();
 	            _this.addToPicking(_this._pickingMesh);
 	          }
 	
@@ -12090,7 +12141,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          height = _geoGeo2['default'].metresToWorld(options.style.lineHeight, options.pointScale);
 	        }
 	
-	        var colour = new _three2['default'].Color();
+	        var colour = new THREE.Color();
 	        colour.set(options.style.lineColor);
 	
 	        var flat = true;
@@ -12139,20 +12190,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'SetMesh',
 	    value: function SetMesh(attributes, attributeLengths, flat, style, options) {
-	      var geometry = new _three2['default'].BufferGeometry();
+	      var geometry = new THREE.BufferGeometry();
 	
 	      for (var key in attributes) {
-	        geometry.addAttribute(key.slice(0, -1), new _three2['default'].BufferAttribute(attributes[key], attributeLengths[key]));
+	        geometry.addAttribute(key.slice(0, -1), new THREE.BufferAttribute(attributes[key], attributeLengths[key]));
 	      }
 	
 	      geometry.computeBoundingBox();
 	
 	      var material;
-	      if (options.polylineMaterial && options.polylineMaterial instanceof _three2['default'].Material) {
+	      if (options.polylineMaterial && options.polylineMaterial instanceof THREE.Material) {
 	        material = options.polylineMaterial;
 	      } else {
-	        material = new _three2['default'].LineBasicMaterial({
-	          vertexColors: _three2['default'].VertexColors,
+	        material = new THREE.LineBasicMaterial({
+	          vertexColors: THREE.VertexColors,
 	          linewidth: style.lineWidth,
 	          transparent: style.lineTransparent,
 	          opacity: style.lineOpacity,
@@ -12166,7 +12217,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (typeof options.onPolylineMesh === 'function') {
 	        mesh = options.onPolylineMesh(geometry, material);
 	      } else {
-	        mesh = new _three2['default'].LineSegments(geometry, material);
+	        mesh = new THREE.LineSegments(geometry, material);
 	
 	        if (style.lineRenderOrder !== undefined) {
 	          material.depthWrite = false;
@@ -12184,7 +12235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Make the line wider / easier to pick
 	        material.linewidth = style.lineWidth + material.linePadding;
 	
-	        var pickingMesh = new _three2['default'].LineSegments(geometry, material);
+	        var pickingMesh = new THREE.LineSegments(geometry, material);
 	      }
 	
 	      return Promise.resolve({
@@ -12279,6 +12330,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -12319,7 +12372,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(21);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _geoGeo = __webpack_require__(1);
 	
@@ -12389,7 +12442,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // Otherwise, assume another component will eventually add a mesh to
 	          // the picking scene
 	          if (_this.isOutput()) {
-	            _this._pickingMesh = new _three2['default'].Object3D();
+	            _this._pickingMesh = new THREE.Object3D();
 	            _this.addToPicking(_this._pickingMesh);
 	          }
 	
@@ -12596,29 +12649,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	          height = _geoGeo2['default'].metresToWorld(options.style.pointHeight, options.pointScale);
 	        }
 	
-	        var colour = new _three2['default'].Color();
+	        var colour = new THREE.Color();
 	        colour.set(options.style.pointColor);
 	
 	        // Use default geometry if none has been provided or the provided geometry
 	        // isn't valid
-	        if (!options.pointGeometry || !options.pointGeometry instanceof _three2['default'].Geometry || !options.pointGeometry instanceof _three2['default'].BufferGeometry) {
+	        if (!options.pointGeometry || !options.pointGeometry instanceof THREE.Geometry || !options.pointGeometry instanceof THREE.BufferGeometry) {
 	          // Debug geometry for points is a thin bar
 	          //
 	          // TODO: Allow point geometry to be customised / overridden
 	          var geometryWidth = _geoGeo2['default'].metresToWorld(25, options.pointScale);
 	          var geometryHeight = _geoGeo2['default'].metresToWorld(200, options.pointScale);
-	          var _geometry = new _three2['default'].BoxGeometry(geometryWidth, geometryHeight, geometryWidth);
+	          var _geometry = new THREE.BoxGeometry(geometryWidth, geometryHeight, geometryWidth);
 	
 	          // Shift geometry up so it sits on the ground
 	          _geometry.translate(0, geometryHeight * 0.5, 0);
 	
 	          // Pull attributes out of debug geometry
-	          geometry = new _three2['default'].BufferGeometry().fromGeometry(_geometry);
+	          geometry = new THREE.BufferGeometry().fromGeometry(_geometry);
 	        } else {
-	          if (options.geometry instanceof _three2['default'].BufferGeometry) {
+	          if (options.geometry instanceof THREE.BufferGeometry) {
 	            geometry = options.pointGeometry;
 	          } else {
-	            geometry = new _three2['default'].BufferGeometry().fromGeometry(options.pointGeometry);
+	            geometry = new THREE.BufferGeometry().fromGeometry(options.pointGeometry);
 	          }
 	        }
 	
@@ -12663,28 +12716,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'SetMesh',
 	    value: function SetMesh(attributes, attributeLengths, flat, style, options, skybox) {
-	      var geometry = new _three2['default'].BufferGeometry();
+	      var geometry = new THREE.BufferGeometry();
 	
 	      for (var key in attributes) {
-	        geometry.addAttribute(key.slice(0, -1), new _three2['default'].BufferAttribute(attributes[key], attributeLengths[key]));
+	        geometry.addAttribute(key.slice(0, -1), new THREE.BufferAttribute(attributes[key], attributeLengths[key]));
 	      }
 	
 	      geometry.computeBoundingBox();
 	
 	      var material;
-	      if (options.pointMaterial && options.pointMaterial instanceof _three2['default'].Material) {
+	      if (options.pointMaterial && options.pointMaterial instanceof THREE.Material) {
 	        material = options.pointMaterial;
 	      } else if (!skybox) {
-	        material = new _three2['default'].MeshPhongMaterial({
-	          vertexColors: _three2['default'].VertexColors,
+	        material = new THREE.MeshPhongMaterial({
+	          vertexColors: THREE.VertexColors,
 	          // side: THREE.BackSide,
 	          transparent: style.transparent,
 	          opacity: style.opacity,
 	          blending: style.blending
 	        });
 	      } else {
-	        material = new _three2['default'].MeshStandardMaterial({
-	          vertexColors: _three2['default'].VertexColors,
+	        material = new THREE.MeshStandardMaterial({
+	          vertexColors: THREE.VertexColors,
 	          // side: THREE.BackSide,
 	          transparent: style.transparent,
 	          opacity: style.opacity,
@@ -12702,7 +12755,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (typeof options.onPolygonMesh === 'function') {
 	        mesh = options.onPolygonMesh(geometry, material);
 	      } else {
-	        mesh = new _three2['default'].Mesh(geometry, material);
+	        mesh = new THREE.Mesh(geometry, material);
 	
 	        mesh.castShadow = true;
 	        mesh.receiveShadow = true;
@@ -12715,9 +12768,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      if (options.interactive) {
 	        material = new _enginePickingMaterial2['default']();
-	        material.side = _three2['default'].BackSide;
+	        material.side = THREE.BackSide;
 	
-	        var pickingMesh = new _three2['default'].Mesh(geometry, material);
+	        var pickingMesh = new THREE.Mesh(geometry, material);
 	      }
 	
 	      return Promise.resolve({

@@ -6,7 +6,7 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
-import THREE from 'three';
+import * as THREE from 'three';
 
 var CSS3DObject = function ( element ) {
 

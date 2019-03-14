@@ -2,8 +2,9 @@ import TileLayer from './TileLayer';
 import ImageTile from './ImageTile';
 import ImageTileLayerBaseMaterial from './ImageTileLayerBaseMaterial';
 import throttle from 'lodash.throttle';
-import THREE from 'three';
+import * as THREE from 'three';
 import extend from 'lodash.assign';
+import Geo from '../../geo/Geo';
 
 // TODO: Make sure nothing is left behind in the heap after calling destroy()
 
@@ -59,7 +60,7 @@ import extend from 'lodash.assign';
 class ImageTileLayer extends TileLayer {
   constructor(path, options) {
     var defaults = {
-      distance: 300000
+      distance: 300000 * Geo.multiplier
     };
 
     options = extend({}, defaults, options);

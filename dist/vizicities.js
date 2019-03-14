@@ -96,15 +96,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _layerTileTopoJSONTileLayer2 = _interopRequireDefault(_layerTileTopoJSONTileLayer);
 	
+	var _layerTileMVTTileLayer = __webpack_require__(94);
+	
+	var _layerTileMVTTileLayer2 = _interopRequireDefault(_layerTileMVTTileLayer);
+	
 	var _layerTileGeoJSONTile = __webpack_require__(72);
 	
 	var _layerTileGeoJSONTile2 = _interopRequireDefault(_layerTileGeoJSONTile);
+	
+	var _layerTileMVTTile = __webpack_require__(95);
+	
+	var _layerTileMVTTile2 = _interopRequireDefault(_layerTileMVTTile);
 	
 	var _layerGeoJSONLayer = __webpack_require__(73);
 	
 	var _layerGeoJSONLayer2 = _interopRequireDefault(_layerGeoJSONLayer);
 	
-	var _layerTopoJSONLayer = __webpack_require__(94);
+	var _layerTopoJSONLayer = __webpack_require__(103);
 	
 	var _layerTopoJSONLayer2 = _interopRequireDefault(_layerTopoJSONLayer);
 	
@@ -112,7 +120,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _layerGeoJSONWorkerLayer2 = _interopRequireDefault(_layerGeoJSONWorkerLayer);
 	
-	var _layerTopoJSONWorkerLayer = __webpack_require__(95);
+	var _layerTopoJSONWorkerLayer = __webpack_require__(104);
 	
 	var _layerTopoJSONWorkerLayer2 = _interopRequireDefault(_layerTopoJSONWorkerLayer);
 	
@@ -140,7 +148,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _enginePickingMaterial2 = _interopRequireDefault(_enginePickingMaterial);
 	
-	var _utilIndex = __webpack_require__(96);
+	var _utilIndex = __webpack_require__(105);
 	
 	var _utilIndex2 = _interopRequireDefault(_utilIndex);
 	
@@ -162,8 +170,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  geoJSONTileLayer: _layerTileGeoJSONTileLayer.geoJSONTileLayer,
 	  GeoJSONTile: _layerTileGeoJSONTile2['default'],
 	  geoJSONTile: _layerTileGeoJSONTile.geoJSONTile,
+	  MVTTile: _layerTileMVTTile2['default'],
+	  mvtTile: _layerTileMVTTile.mvtTile,
 	  TopoJSONTileLayer: _layerTileTopoJSONTileLayer2['default'],
 	  topoJSONTileLayer: _layerTileTopoJSONTileLayer.topoJSONTileLayer,
+	  MVTTileLayer: _layerTileMVTTileLayer2['default'],
+	  mvtTileLayer: _layerTileMVTTileLayer.mvtTileLayer,
 	  GeoJSONLayer: _layerGeoJSONLayer2['default'],
 	  geoJSONLayer: _layerGeoJSONLayer.geoJSONLayer,
 	  TopoJSONLayer: _layerTopoJSONLayer2['default'],
@@ -2329,7 +2341,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	//
 	// A multiplier of 0.1 would mean a 1:0.1 mapping between WebGL and EPSG:3857
 	// coordinates (1 EPSG:3857 metre === 0.1 WebGL units)
-	Geo.multiplier = 0.1;
+	Geo.multiplier = 1;
 	
 	Geo.project = function (latlon) {
 	  var d = Math.PI / 180;
@@ -2681,6 +2693,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -2693,7 +2707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _Scene = __webpack_require__(13);
 	
@@ -2783,9 +2797,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // TODO: Make this optional
 	    this._picking = (0, _Picking2['default'])(this._world, this._renderer, this._camera);
 	
-	    this.clock = new _three2['default'].Clock();
+	    this.clock = new THREE.Clock();
 	
-	    this._frustum = new _three2['default'].Frustum();
+	    this._frustum = new THREE.Frustum();
 	
 	    if (this._world.options.postProcessing) {
 	      this._initPostProcessing();
@@ -2957,17 +2971,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// This can be imported from anywhere and will still reference the same scene,
 	// though there is a helper reference in Engine.scene
 	
 	exports['default'] = (function () {
-	  var scene = new _three2['default'].Scene();
+	  var scene = new THREE.Scene();
 	
 	  // TODO: Re-enable when this works with the skybox
 	  // scene.fog = new THREE.Fog(0xffffff, 1, 15000);
@@ -2984,17 +2998,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// This can be imported from anywhere and will still reference the same scene,
 	// though there is a helper reference in Engine.scene
 	
 	exports['default'] = (function () {
-	  var scene = new _three2['default'].Scene();
+	  var scene = new THREE.Scene();
 	  return scene;
 	})();
 	
@@ -3008,17 +3022,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// This can be imported from anywhere and will still reference the same scene,
 	// though there is a helper reference in Engine.scene
 	
 	exports['default'] = (function () {
-	  var scene = new _three2['default'].Scene();
+	  var scene = new THREE.Scene();
 	  return scene;
 	})();
 	
@@ -3034,9 +3048,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _Scene = __webpack_require__(13);
 	
@@ -3046,7 +3062,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// same scene in multiple places
 	
 	exports['default'] = function (container, antialias) {
-	  var renderer = new _three2['default'].WebGLRenderer({
+	  var renderer = new THREE.WebGLRenderer({
 	    antialias: antialias
 	
 	    // Enabling this removes a lot of z-index intersecting but it also removes
@@ -3107,9 +3123,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _vendorCSS3DRenderer = __webpack_require__(18);
 	
@@ -3149,7 +3167,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
@@ -3161,11 +3179,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var CSS3DObject = function CSS3DObject(element) {
 	
-		_three2['default'].Object3D.call(this);
+		THREE.Object3D.call(this);
 	
 		this.element = element;
 		this.element.style.position = 'absolute';
@@ -3179,7 +3197,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		});
 	};
 	
-	CSS3DObject.prototype = Object.create(_three2['default'].Object3D.prototype);
+	CSS3DObject.prototype = Object.create(THREE.Object3D.prototype);
 	CSS3DObject.prototype.constructor = CSS3DObject;
 	
 	var CSS3DSprite = function CSS3DSprite(element) {
@@ -3194,12 +3212,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var CSS3DRenderer = function CSS3DRenderer() {
 	
-		console.log('THREE.CSS3DRenderer', _three2['default'].REVISION);
+		console.log('THREE.CSS3DRenderer', THREE.REVISION);
 	
 		var _width, _height;
 		var _widthHalf, _heightHalf;
 	
-		var matrix = new _three2['default'].Matrix4();
+		var matrix = new THREE.Matrix4();
 	
 		var cache = {
 			camera: { fov: 0, style: '' },
@@ -3322,7 +3340,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		this.render = function (scene, camera) {
 	
-			var fov = 0.5 / Math.tan(_three2['default'].Math.degToRad(camera.fov * 0.5)) * _height;
+			var fov = 0.5 / Math.tan(THREE.Math.degToRad(camera.fov * 0.5)) * _height;
 	
 			if (cache.camera.fov !== fov) {
 	
@@ -3360,9 +3378,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.CSS3DSprite = CSS3DSprite;
 	exports.CSS3DRenderer = CSS3DRenderer;
 	
-	_three2['default'].CSS3DObject = CSS3DObject;
-	_three2['default'].CSS3DSprite = CSS3DSprite;
-	_three2['default'].CSS3DRenderer = CSS3DRenderer;
+	THREE.CSS3DObject = CSS3DObject;
+	THREE.CSS3DSprite = CSS3DSprite;
+	THREE.CSS3DRenderer = CSS3DRenderer;
 
 /***/ }),
 /* 19 */
@@ -3374,9 +3392,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _vendorCSS2DRenderer = __webpack_require__(20);
 	
@@ -3416,7 +3436,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
@@ -3427,11 +3447,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var CSS2DObject = function CSS2DObject(element) {
 	
-		_three2['default'].Object3D.call(this);
+		THREE.Object3D.call(this);
 	
 		this.element = element;
 		this.element.style.position = 'absolute';
@@ -3445,23 +3465,23 @@ return /******/ (function(modules) { // webpackBootstrap
 		});
 	};
 	
-	CSS2DObject.prototype = Object.create(_three2['default'].Object3D.prototype);
+	CSS2DObject.prototype = Object.create(THREE.Object3D.prototype);
 	CSS2DObject.prototype.constructor = CSS2DObject;
 	
 	//
 	
 	var CSS2DRenderer = function CSS2DRenderer() {
 	
-		console.log('THREE.CSS2DRenderer', _three2['default'].REVISION);
+		console.log('THREE.CSS2DRenderer', THREE.REVISION);
 	
 		var _width, _height;
 		var _widthHalf, _heightHalf;
 	
-		var vector = new _three2['default'].Vector3();
-		var viewMatrix = new _three2['default'].Matrix4();
-		var viewProjectionMatrix = new _three2['default'].Matrix4();
+		var vector = new THREE.Vector3();
+		var viewMatrix = new THREE.Matrix4();
+		var viewProjectionMatrix = new THREE.Matrix4();
 	
-		var frustum = new _three2['default'].Frustum();
+		var frustum = new THREE.Frustum();
 	
 		var domElement = document.createElement('div');
 		domElement.style.overflow = 'hidden';
@@ -3485,7 +3505,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (object instanceof CSS2DObject) {
 	
 				vector.setFromMatrixPosition(object.matrixWorld);
-				vector.applyProjection(viewProjectionMatrix);
+				vector.applyMatrix4(viewProjectionMatrix);
 	
 				var element = object.element;
 				var style = 'translate(-50%,-50%) translate(' + (vector.x * _widthHalf + _widthHalf) + 'px,' + (-vector.y * _heightHalf + _heightHalf) + 'px)';
@@ -3525,7 +3545,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			viewMatrix.copy(camera.matrixWorldInverse.getInverse(camera.matrixWorld));
 			viewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, viewMatrix);
 	
-			frustum.setFromMatrix(new _three2['default'].Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+			frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
 	
 			renderObject(scene, camera);
 		};
@@ -3534,8 +3554,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.CSS2DObject = CSS2DObject;
 	exports.CSS2DRenderer = CSS2DRenderer;
 	
-	_three2['default'].CSS2DObject = CSS2DObject;
-	_three2['default'].CSS2DRenderer = CSS2DRenderer;
+	THREE.CSS2DObject = CSS2DObject;
+	THREE.CSS2DRenderer = CSS2DRenderer;
 
 /***/ }),
 /* 21 */
@@ -3545,11 +3565,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// This can only be accessed from Engine.camera if you want to reference the
 	// same scene in multiple places
@@ -3558,7 +3578,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// http://stackoverflow.com/q/26655930/997339
 	
 	exports['default'] = function (container) {
-	  var camera = new _three2['default'].PerspectiveCamera(45, 1, 1, 2000000);
+	  var camera = new THREE.PerspectiveCamera(45, 1, 1, 2000000);
 	  camera.position.y = 4000;
 	  camera.position.z = 4000;
 	
@@ -3588,11 +3608,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _geoPoint = __webpack_require__(10);
 	
@@ -3629,14 +3651,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._renderer = renderer;
 	    this._camera = camera;
 	
-	    this._raycaster = new _three2['default'].Raycaster();
+	    this._raycaster = new THREE.Raycaster();
 	
 	    // TODO: Match this with the line width used in the picking layers
 	    this._raycaster.linePrecision = 3;
 	
 	    this._pickingScene = _PickingScene2['default'];
-	    this._pickingTexture = new _three2['default'].WebGLRenderTarget();
-	    this._pickingTexture.texture.minFilter = _three2['default'].LinearFilter;
+	    this._pickingTexture = new THREE.WebGLRenderTarget();
+	    this._pickingTexture.texture.minFilter = THREE.LinearFilter;
 	    this._pickingTexture.texture.generateMipmaps = false;
 	
 	    this._nextId = 1;
@@ -3876,17 +3898,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// This can be imported from anywhere and will still reference the same scene,
 	// though there is a helper reference in Engine.pickingScene
 	
 	exports['default'] = (function () {
-	  var scene = new _three2['default'].Scene();
+	  var scene = new THREE.Scene();
 	  return scene;
 	})();
 	
@@ -4348,9 +4370,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _vendorEffectComposer = __webpack_require__(26);
 	
@@ -4388,12 +4412,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _CopyShader = __webpack_require__(27);
 	
@@ -4421,9 +4447,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 			var width = Math.floor(renderer.context.canvas.width / pixelRatio) || 1;
 			var height = Math.floor(renderer.context.canvas.height / pixelRatio) || 1;
-			var parameters = { minFilter: _three2['default'].LinearFilter, magFilter: _three2['default'].LinearFilter, format: _three2['default'].RGBAFormat, stencilBuffer: false };
+			var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat, stencilBuffer: false };
 	
-			renderTarget = new _three2['default'].WebGLRenderTarget(width, height, parameters);
+			renderTarget = new THREE.WebGLRenderTarget(width, height, parameters);
 		}
 	
 		this.renderTarget1 = renderTarget;
@@ -4533,7 +4559,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports['default'] = EffectComposer;
 	
-	_three2['default'].EffectComposer = EffectComposer;
+	THREE.EffectComposer = EffectComposer;
 	module.exports = exports['default'];
 
 /***/ }),
@@ -4544,14 +4570,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	/**
 	 * @author alteredq / http://alteredqualia.com/
@@ -4576,7 +4602,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports["default"] = CopyShader;
 	
-	_three2["default"].CopyShader = CopyShader;
+	THREE.CopyShader = CopyShader;
 	module.exports = exports["default"];
 
 /***/ }),
@@ -4587,14 +4613,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	/**
 	 * @author alteredq / http://alteredqualia.com/
@@ -4604,16 +4630,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		this.textureID = textureID !== undefined ? textureID : "tDiffuse";
 	
-		if (shader instanceof _three2["default"].ShaderMaterial) {
+		if (shader instanceof THREE.ShaderMaterial) {
 	
 			this.uniforms = shader.uniforms;
 	
 			this.material = shader;
 		} else if (shader) {
 	
-			this.uniforms = _three2["default"].UniformsUtils.clone(shader.uniforms);
+			this.uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 	
-			this.material = new _three2["default"].ShaderMaterial({
+			this.material = new THREE.ShaderMaterial({
 	
 				defines: shader.defines || {},
 				uniforms: this.uniforms,
@@ -4629,10 +4655,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		this.needsSwap = true;
 		this.clear = false;
 	
-		this.camera = new _three2["default"].OrthographicCamera(-1, 1, 1, -1, 0, 1);
-		this.scene = new _three2["default"].Scene();
+		this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+		this.scene = new THREE.Scene();
 	
-		this.quad = new _three2["default"].Mesh(new _three2["default"].PlaneBufferGeometry(2, 2), null);
+		this.quad = new THREE.Mesh(new THREE.PlaneBufferGeometry(2, 2), null);
 		this.scene.add(this.quad);
 	};
 	
@@ -4642,7 +4668,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 			if (this.uniforms[this.textureID]) {
 	
-				this.uniforms[this.textureID].value = readBuffer;
+				this.uniforms[this.textureID].value = readBuffer.texture;
 			}
 	
 			this.quad.material = this.material;
@@ -4660,7 +4686,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports["default"] = ShaderPass;
 	
-	_three2["default"].ShaderPass = ShaderPass;
+	THREE.ShaderPass = ShaderPass;
 	module.exports = exports["default"];
 
 /***/ }),
@@ -4671,14 +4697,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	/**
 	 * @author alteredq / http://alteredqualia.com/
@@ -4763,8 +4789,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports['default'] = MaskPass;
 	exports.ClearMaskPass = ClearMaskPass;
 	
-	_three2['default'].MaskPass = MaskPass;
-	_three2['default'].ClearMaskPass = ClearMaskPass;
+	THREE.MaskPass = MaskPass;
+	THREE.ClearMaskPass = ClearMaskPass;
 
 /***/ }),
 /* 30 */
@@ -4774,14 +4800,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	/**
 	 * @author alteredq / http://alteredqualia.com/
@@ -4797,7 +4823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		this.clearColor = clearColor;
 		this.clearAlpha = clearAlpha !== undefined ? clearAlpha : 1;
 	
-		this.oldClearColor = new _three2['default'].Color();
+		this.oldClearColor = new THREE.Color();
 		this.oldClearAlpha = 1;
 	
 		this.enabled = true;
@@ -4833,7 +4859,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports['default'] = RenderPass;
 	
-	_three2['default'].RenderPass = RenderPass;
+	THREE.RenderPass = RenderPass;
 	module.exports = exports['default'];
 
 /***/ }),
@@ -4844,14 +4870,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	/**
 	 * @author alteredq / http://alteredqualia.com/
@@ -4882,7 +4908,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports["default"] = HorizontalTiltShiftShader;
 	
-	_three2["default"].HorizontalTiltShiftShader = HorizontalTiltShiftShader;
+	THREE.HorizontalTiltShiftShader = HorizontalTiltShiftShader;
 	module.exports = exports["default"];
 
 /***/ }),
@@ -4893,14 +4919,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	/**
 	 * @author alteredq / http://alteredqualia.com/
@@ -4931,7 +4957,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports["default"] = VerticalTiltShiftShader;
 	
-	_three2["default"].VerticalTiltShiftShader = VerticalTiltShiftShader;
+	THREE.VerticalTiltShiftShader = VerticalTiltShiftShader;
 	module.exports = exports["default"];
 
 /***/ }),
@@ -4942,14 +4968,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj["default"] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	/**
 	 * @author alteredq / http://alteredqualia.com/
@@ -4966,7 +4992,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		uniforms: {
 	
 			"tDiffuse": { type: "t", value: null },
-			"resolution": { type: "v2", value: new _three2["default"].Vector2(1 / 1024, 1 / 512) }
+			"resolution": { type: "v2", value: new THREE.Vector2(1 / 1024, 1 / 512) }
 	
 		},
 	
@@ -4978,7 +5004,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports["default"] = FXAAShader;
 	
-	_three2["default"].FXAAShader = FXAAShader;
+	THREE.FXAAShader = FXAAShader;
 	module.exports = exports["default"];
 
 /***/ }),
@@ -4992,6 +5018,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -5009,7 +5037,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _Skybox = __webpack_require__(46);
 	
@@ -5057,7 +5085,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // used here so the helpers look more natural.
 	
 	      if (!this._options.skybox) {
-	        var directionalLight = new _three2['default'].DirectionalLight(0xffffff, 1);
+	        var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 	        directionalLight.position.x = 10000;
 	        directionalLight.position.y = 10000;
 	        directionalLight.position.z = 10000;
@@ -5082,12 +5110,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // // directionalLight.shadowBias = -0.0010;
 	        // // directionalLight.shadow.darkness = 0.15;
 	
-	        var directionalLight2 = new _three2['default'].DirectionalLight(0xffffff, 0.5);
+	        var directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.5);
 	        directionalLight2.position.x = -10000;
 	        directionalLight2.position.y = 10000;
 	        directionalLight2.position.z = 0;
 	
-	        var directionalLight3 = new _three2['default'].DirectionalLight(0xffffff, 0.5);
+	        var directionalLight3 = new THREE.DirectionalLight(0xffffff, 0.5);
 	        directionalLight3.position.x = 10000;
 	        directionalLight3.position.y = 10000;
 	        directionalLight3.position.z = -10000;
@@ -5105,7 +5133,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // this.add(helper3);
 	      } else {
 	          // Directional light that will be projected from the sun
-	          this._skyboxLight = new _three2['default'].DirectionalLight(0xffffff, 1);
+	          this._skyboxLight = new THREE.DirectionalLight(0xffffff, 1);
 	
 	          this._skyboxLight.castShadow = true;
 	
@@ -5144,7 +5172,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var size = 4000;
 	      var step = 100;
 	
-	      var gridHelper = new _three2['default'].GridHelper(size, step);
+	      var gridHelper = new THREE.GridHelper(size, step);
 	      this.add(gridHelper);
 	    }
 	
@@ -5189,6 +5217,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -5209,7 +5239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _engineScene = __webpack_require__(13);
 	
@@ -5249,7 +5279,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._options = (0, _lodashAssign2['default'])({}, defaults, options);
 	
 	    if (this.isOutput()) {
-	      this._object3D = new _three2['default'].Object3D();
+	      this._object3D = new THREE.Object3D();
 	
 	      this._dom3D = document.createElement('div');
 	      this._domObject3D = new _vendorCSS3DRenderer.CSS3DObject(this._dom3D);
@@ -5887,11 +5917,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _Sky = __webpack_require__(47);
 	
@@ -5900,6 +5932,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _lodashThrottle = __webpack_require__(24);
 	
 	var _lodashThrottle2 = _interopRequireDefault(_lodashThrottle);
+	
+	var _geoGeo = __webpack_require__(8);
+	
+	var _geoGeo2 = _interopRequireDefault(_geoGeo);
 	
 	// TODO: Make sure nothing is left behind in the heap after calling destroy()
 	
@@ -5917,7 +5953,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._light = light;
 	
 	    this._settings = {
-	      distance: 38000,
+	      distance: 38000 * _geoGeo2['default'].multiplier,
 	      turbidity: 10,
 	      reileigh: 2,
 	      mieCoefficient: 0.005,
@@ -5946,18 +5982,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: '_initSkybox',
 	    value: function _initSkybox() {
 	      // Cube camera for skybox
-	      this._cubeCamera = new _three2['default'].CubeCamera(1, 20000000, 128);
+	      this._cubeCamera = new THREE.CubeCamera(1, 20000000, 128);
 	
 	      // Cube material
 	      var cubeTarget = this._cubeCamera.renderTarget;
 	
 	      // Add Sky Mesh
 	      this._sky = new _Sky2['default']();
-	      this._skyScene = new _three2['default'].Scene();
+	      this._skyScene = new THREE.Scene();
 	      this._skyScene.add(this._sky.mesh);
 	
 	      // Add Sun Helper
-	      this._sunSphere = new _three2['default'].Mesh(new _three2['default'].SphereBufferGeometry(2000, 16, 8), new _three2['default'].MeshBasicMaterial({
+	      this._sunSphere = new THREE.Mesh(new THREE.SphereBufferGeometry(2000, 16, 8), new THREE.MeshBasicMaterial({
 	        color: 0xffffff
 	      }));
 	
@@ -5965,17 +6001,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // this._sunSphere.visible = true;
 	
 	      var skyboxUniforms = {
-	        cubemap: { type: 't', value: cubeTarget }
+	        cubemap: { type: 't', value: cubeTarget.texture }
 	      };
 	
-	      var skyboxMat = new _three2['default'].ShaderMaterial({
+	      var skyboxMat = new THREE.ShaderMaterial({
 	        uniforms: skyboxUniforms,
 	        vertexShader: cubemap.vertexShader,
 	        fragmentShader: cubemap.fragmentShader,
-	        side: _three2['default'].BackSide
+	        side: THREE.BackSide
 	      });
 	
-	      this._mesh = new _three2['default'].Mesh(new _three2['default'].BoxGeometry(1900000, 1900000, 1900000), skyboxMat);
+	      this._mesh = new THREE.Mesh(new THREE.BoxGeometry(1900000, 1900000, 1900000), skyboxMat);
 	
 	      this._updateSkybox = true;
 	    }
@@ -6028,12 +6064,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this._updateUniforms();
 	
 	      // TODO: Only do this when the cubemap has actually changed
-	      this._cubeCamera.updateCubeMap(this._world._engine._renderer, this._skyScene);
+	      this._cubeCamera.update(this._world._engine._renderer, this._skyScene);
 	    }
 	  }, {
 	    key: 'getRenderTarget',
 	    value: function getRenderTarget() {
-	      return this._cubeCamera.renderTarget;
+	      return this._cubeCamera.renderTarget.texture;
 	    }
 	  }, {
 	    key: 'setInclination',
@@ -6116,7 +6152,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	// jscs:disable
 	/*eslint eqeqeq:0*/
@@ -6139,9 +6175,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
-	_three2['default'].ShaderLib['sky'] = {
+	THREE.ShaderLib['sky'] = {
 	
 		uniforms: {
 	
@@ -6150,7 +6186,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			reileigh: { type: 'f', value: 1 },
 			mieCoefficient: { type: 'f', value: 0.005 },
 			mieDirectionalG: { type: 'f', value: 0.8 },
-			sunPosition: { type: 'v3', value: new _three2['default'].Vector3() }
+			sunPosition: { type: 'v3', value: new THREE.Vector3() }
 	
 		},
 	
@@ -6170,18 +6206,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var Sky = function Sky() {
 	
-		var skyShader = _three2['default'].ShaderLib['sky'];
-		var skyUniforms = _three2['default'].UniformsUtils.clone(skyShader.uniforms);
+		var skyShader = THREE.ShaderLib['sky'];
+		var skyUniforms = THREE.UniformsUtils.clone(skyShader.uniforms);
 	
-		var skyMat = new _three2['default'].ShaderMaterial({
+		var skyMat = new THREE.ShaderMaterial({
 			fragmentShader: skyShader.fragmentShader,
 			vertexShader: skyShader.vertexShader,
 			uniforms: skyUniforms,
-			side: _three2['default'].BackSide
+			side: THREE.BackSide
 		});
 	
-		var skyGeo = new _three2['default'].SphereBufferGeometry(450000, 32, 15);
-		var skyMesh = new _three2['default'].Mesh(skyGeo, skyMat);
+		var skyGeo = new THREE.SphereBufferGeometry(450000, 32, 15);
+		var skyMesh = new THREE.Mesh(skyGeo, skyMat);
 	
 		// Expose variables
 		this.mesh = skyMesh;
@@ -6572,6 +6608,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -6584,7 +6622,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _vendorOrbitControls = __webpack_require__(53);
 	
@@ -6778,10 +6816,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      // Animation time in seconds
 	      var animationTime = duration || 2;
 	
-	      this._flyTarget = new _three2['default'].Vector3(point.x, 0, point.y);
+	      this._flyTarget = new THREE.Vector3(point.x, 0, point.y);
 	
 	      // Calculate delta from current position to fly target
-	      var diff = new _three2['default'].Vector3().subVectors(this._controls.target, this._flyTarget);
+	      var diff = new THREE.Vector3().subVectors(this._controls.target, this._flyTarget);
 	
 	      this._flyTween = new _TweenLite2['default']({
 	        x: 0,
@@ -6975,12 +7013,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _hammerjs = __webpack_require__(54);
 	
@@ -7011,7 +7051,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		this.enabled = true;
 	
 		// "target" sets the location of focus, where the object orbits around
-		this.target = new _three2['default'].Vector3();
+		this.target = new THREE.Vector3();
 	
 		// How far you can dolly in and out ( PerspectiveCamera only )
 		this.minDistance = 0;
@@ -7061,7 +7101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40, CTRL: 17 };
 	
 		// Mouse buttons
-		this.mouseButtons = { ORBIT: _three2['default'].MOUSE.LEFT, ZOOM: _three2['default'].MOUSE.MIDDLE, PAN: _three2['default'].MOUSE.RIGHT };
+		this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
 	
 		// for reset
 		this.target0 = this.target.clone();
@@ -7099,14 +7139,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		// this method is exposed, but perhaps it would be better if we can make it private...
 		this.update = (function () {
 	
-			var offset = new _three2['default'].Vector3();
+			var offset = new THREE.Vector3();
 	
 			// so camera.up is the orbit axis
-			var quat = new _three2['default'].Quaternion().setFromUnitVectors(object.up, new _three2['default'].Vector3(0, 1, 0));
+			var quat = new THREE.Quaternion().setFromUnitVectors(object.up, new THREE.Vector3(0, 1, 0));
 			var quatInverse = quat.clone().inverse();
 	
-			var lastPosition = new _three2['default'].Vector3();
-			var lastQuaternion = new _three2['default'].Quaternion();
+			var lastPosition = new THREE.Vector3();
+			var lastQuaternion = new THREE.Quaternion();
 	
 			return function () {
 	
@@ -7239,20 +7279,20 @@ return /******/ (function(modules) { // webpackBootstrap
 		var phiDelta = 0;
 		var thetaDelta = 0;
 		var scale = 1;
-		var panOffset = new _three2['default'].Vector3();
+		var panOffset = new THREE.Vector3();
 		var zoomChanged = false;
 	
-		var rotateStart = new _three2['default'].Vector2();
-		var rotateEnd = new _three2['default'].Vector2();
-		var rotateDelta = new _three2['default'].Vector2();
+		var rotateStart = new THREE.Vector2();
+		var rotateEnd = new THREE.Vector2();
+		var rotateDelta = new THREE.Vector2();
 	
-		var panStart = new _three2['default'].Vector2();
-		var panEnd = new _three2['default'].Vector2();
-		var panDelta = new _three2['default'].Vector2();
+		var panStart = new THREE.Vector2();
+		var panEnd = new THREE.Vector2();
+		var panDelta = new THREE.Vector2();
 	
-		var dollyStart = new _three2['default'].Vector2();
-		var dollyEnd = new _three2['default'].Vector2();
-		var dollyDelta = new _three2['default'].Vector2();
+		var dollyStart = new THREE.Vector2();
+		var dollyEnd = new THREE.Vector2();
+		var dollyDelta = new THREE.Vector2();
 	
 		function getAutoRotationAngle() {
 	
@@ -7276,7 +7316,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		var panLeft = (function () {
 	
-			var v = new _three2['default'].Vector3();
+			var v = new THREE.Vector3();
 	
 			// return function panLeft( distance, objectMatrix ) {
 			//
@@ -7306,7 +7346,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		// Fixed panning to x/y plane
 		var panUp = (function () {
 	
-			var v = new _three2['default'].Vector3();
+			var v = new THREE.Vector3();
 	
 			// return function panUp( distance, objectMatrix ) {
 			//
@@ -7335,13 +7375,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		// deltaX and deltaY are in pixels; right and down are positive
 		var pan = (function () {
 	
-			var offset = new _three2['default'].Vector3();
+			var offset = new THREE.Vector3();
 	
 			return function (deltaX, deltaY) {
 	
 				var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 	
-				if (scope.object instanceof _three2['default'].PerspectiveCamera) {
+				if (scope.object instanceof THREE.PerspectiveCamera) {
 	
 					// perspective
 					var position = scope.object.position;
@@ -7354,7 +7394,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					// we actually don't use screenWidth, since perspective camera is fixed to screen height
 					panLeft(2 * deltaX * targetDistance / element.clientHeight, scope.object.matrix);
 					panUp(2 * deltaY * targetDistance / element.clientHeight, scope.object.matrix);
-				} else if (scope.object instanceof _three2['default'].OrthographicCamera) {
+				} else if (scope.object instanceof THREE.OrthographicCamera) {
 	
 					// orthographic
 					panLeft(deltaX * (scope.object.right - scope.object.left) / element.clientWidth, scope.object.matrix);
@@ -7370,10 +7410,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		function dollyIn(dollyScale) {
 	
-			if (scope.object instanceof _three2['default'].PerspectiveCamera) {
+			if (scope.object instanceof THREE.PerspectiveCamera) {
 	
 				scale /= dollyScale;
-			} else if (scope.object instanceof _three2['default'].OrthographicCamera) {
+			} else if (scope.object instanceof THREE.OrthographicCamera) {
 	
 				scope.object.zoom = Math.max(scope.minZoom, Math.min(scope.maxZoom, scope.object.zoom * dollyScale));
 				scope.object.updateProjectionMatrix();
@@ -7387,10 +7427,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		function dollyOut(dollyScale) {
 	
-			if (scope.object instanceof _three2['default'].PerspectiveCamera) {
+			if (scope.object instanceof THREE.PerspectiveCamera) {
 	
 				scale *= dollyScale;
-			} else if (scope.object instanceof _three2['default'].OrthographicCamera) {
+			} else if (scope.object instanceof THREE.OrthographicCamera) {
 	
 				scope.object.zoom = Math.max(scope.minZoom, Math.min(scope.maxZoom, scope.object.zoom / dollyScale));
 				scope.object.updateProjectionMatrix();
@@ -8071,8 +8111,8 @@ return /******/ (function(modules) { // webpackBootstrap
 		this.update();
 	};
 	
-	OrbitControls.prototype = Object.create(_three2['default'].EventDispatcher.prototype);
-	OrbitControls.prototype.constructor = _three2['default'].OrbitControls;
+	OrbitControls.prototype = Object.create(THREE.EventDispatcher.prototype);
+	OrbitControls.prototype.constructor = THREE.OrbitControls;
 	
 	Object.defineProperties(OrbitControls.prototype, {
 	
@@ -10952,6 +10992,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -10976,11 +11018,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _lodashAssign = __webpack_require__(7);
 	
 	var _lodashAssign2 = _interopRequireDefault(_lodashAssign);
+	
+	var _geoGeo = __webpack_require__(8);
+	
+	var _geoGeo2 = _interopRequireDefault(_geoGeo);
 	
 	// TODO: Make sure nothing is left behind in the heap after calling destroy()
 	
@@ -11040,7 +11086,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _classCallCheck(this, ImageTileLayer);
 	
 	    var defaults = {
-	      distance: 300000
+	      distance: 300000 * _geoGeo2['default'].multiplier
 	    };
 	
 	    options = (0, _lodashAssign2['default'])({}, defaults, options);
@@ -11184,6 +11230,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -11204,7 +11252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// TODO: Consider removing picking from TileLayer instances as there aren't
 	// (m)any situations where it would be practical
@@ -11282,12 +11330,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this._tileList = [];
 	
 	    // TODO: Work out why changing the minLOD causes loads of issues
-	    this._minLOD = 3;
+	    this._minLOD = this._options.minLOD || 3;
 	    this._maxLOD = this._options.maxLOD;
 	
-	    this._frustum = new _three2['default'].Frustum();
-	    this._tiles = new _three2['default'].Object3D();
-	    this._tilesPicking = new _three2['default'].Object3D();
+	    this._frustum = new THREE.Frustum();
+	    this._tiles = new THREE.Object3D();
+	    this._tilesPicking = new THREE.Object3D();
 	  }
 	
 	  _createClass(TileLayer, [{
@@ -11302,17 +11350,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: '_updateFrustum',
 	    value: function _updateFrustum() {
 	      var camera = this._world.getCamera();
-	      var projScreenMatrix = new _three2['default'].Matrix4();
+	      var projScreenMatrix = new THREE.Matrix4();
 	      projScreenMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
 	
 	      this._frustum.setFromMatrix(camera.projectionMatrix);
-	      this._frustum.setFromMatrix(new _three2['default'].Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+	      this._frustum.setFromMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
 	    }
 	  }, {
 	    key: '_tileInFrustum',
 	    value: function _tileInFrustum(tile) {
 	      var bounds = tile.getBounds();
-	      return this._frustum.intersectsBox(new _three2['default'].Box3(new _three2['default'].Vector3(bounds[0], 0, bounds[3]), new _three2['default'].Vector3(bounds[2], 0, bounds[1])));
+	      return this._frustum.intersectsBox(new THREE.Box3(new THREE.Vector3(bounds[0], 0, bounds[3]), new THREE.Vector3(bounds[2], 0, bounds[1])));
 	    }
 	
 	    // Update and output tiles from the previous LOD checklist
@@ -11402,7 +11450,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (_this3._options.distance && _this3._options.distance > 0) {
 	          // TODO: Can probably speed this up
 	          var center = tile.getCenter();
-	          var dist = new _three2['default'].Vector3(center[0], 0, center[1]).sub(camera.position).length();
+	          var dist = new THREE.Vector3(center[0], 0, center[1]).sub(camera.position).length();
 	
 	          // Manual distance limit to cut down on tiles so far away
 	          if (dist > _this3._options.distance) {
@@ -11521,7 +11569,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      // 4. Calculate screen-space error metric
 	      // TODO: Use closest distance to one of the 4 tile corners
-	      var dist = new _three2['default'].Vector3(center[0], 0, center[1]).sub(camera.position).length();
+	      var dist = new THREE.Vector3(center[0], 0, center[1]).sub(camera.position).length();
 	
 	      var error = quality * tile.getSide() / dist;
 	
@@ -13475,6 +13523,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -13491,7 +13541,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// TODO: Make sure nothing is left behind in the heap after calling destroy()
 	
@@ -13541,12 +13591,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	      }
 	
-	      var mesh = new _three2['default'].Object3D();
-	      var geom = new _three2['default'].PlaneBufferGeometry(this._side, this._side, 1);
+	      var mesh = new THREE.Object3D();
+	      var geom = new THREE.PlaneBufferGeometry(this._side, this._side, 1);
 	
 	      var material;
 	      if (!this._world._environment._skybox) {
-	        material = new _three2['default'].MeshBasicMaterial({
+	        material = new THREE.MeshBasicMaterial({
 	          depthWrite: false
 	        });
 	
@@ -13559,7 +13609,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // material.envMapIntensity will change the amount of colour reflected(?)
 	          // from the environment map – can be greater than 1 for more intensity
 	
-	          material = new _three2['default'].MeshStandardMaterial({
+	          material = new THREE.MeshStandardMaterial({
 	            depthWrite: false
 	          });
 	          material.roughness = 1;
@@ -13567,7 +13617,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          material.envMap = this._world._environment._skybox.getRenderTarget();
 	        }
 	
-	      var localMesh = new _three2['default'].Mesh(geom, material);
+	      var localMesh = new THREE.Mesh(geom, material);
 	      localMesh.rotation.x = -90 * Math.PI / 180;
 	
 	      localMesh.receiveShadow = true;
@@ -13605,25 +13655,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	      context.fillText(this._quadcode, 20, canvas.width / 2 - 5);
 	      context.fillText(this._tile.toString(), 20, canvas.width / 2 + 25);
 	
-	      var texture = new _three2['default'].Texture(canvas);
+	      var texture = new THREE.Texture(canvas);
 	
 	      // Silky smooth images when tilted
-	      texture.magFilter = _three2['default'].LinearFilter;
-	      texture.minFilter = _three2['default'].LinearMipMapLinearFilter;
+	      texture.magFilter = THREE.LinearFilter;
+	      texture.minFilter = THREE.LinearMipMapLinearFilter;
 	
 	      // TODO: Set this to renderer.getMaxAnisotropy() / 4
 	      texture.anisotropy = 4;
 	
 	      texture.needsUpdate = true;
 	
-	      var material = new _three2['default'].MeshBasicMaterial({
+	      var material = new THREE.MeshBasicMaterial({
 	        map: texture,
 	        transparent: true,
 	        depthWrite: false
 	      });
 	
-	      var geom = new _three2['default'].PlaneBufferGeometry(this._side, this._side, 1);
-	      var mesh = new _three2['default'].Mesh(geom, material);
+	      var geom = new THREE.PlaneBufferGeometry(this._side, this._side, 1);
+	      var mesh = new THREE.Mesh(geom, material);
 	
 	      mesh.rotation.x = -90 * Math.PI / 180;
 	      mesh.position.y = 0.1;
@@ -13652,14 +13702,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return;
 	        }
 	
-	        var texture = new _three2['default'].Texture();
+	        var texture = new THREE.Texture();
 	
 	        texture.image = image;
 	        texture.needsUpdate = true;
 	
 	        // Silky smooth images when tilted
-	        texture.magFilter = _three2['default'].LinearFilter;
-	        texture.minFilter = _three2['default'].LinearMipMapLinearFilter;
+	        texture.magFilter = THREE.LinearFilter;
+	        texture.minFilter = THREE.LinearMipMapLinearFilter;
 	
 	        // TODO: Set this to renderer.getMaxAnisotropy() / 4
 	        texture.anisotropy = 4;
@@ -13725,7 +13775,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
@@ -13735,7 +13785,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	// TODO: Make sure nothing is left behind in the heap after calling destroy()
 	
@@ -13978,7 +14028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_getSide',
 	    value: function _getSide(bounds) {
-	      return new _three2['default'].Vector3(bounds[0], 0, bounds[3]).sub(new _three2['default'].Vector3(bounds[0], 0, bounds[1])).length();
+	      return new THREE.Vector3(bounds[0], 0, bounds[3]).sub(new THREE.Vector3(bounds[0], 0, bounds[1])).length();
 	    }
 	  }]);
 	
@@ -13996,14 +14046,14 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	// jscs:disable
 	/* eslint-disable */
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	/**
 	 * @author mrdoob / http://mrdoob.com/
@@ -14014,11 +14064,11 @@ return /******/ (function(modules) { // webpackBootstrap
 		var indices = new Uint16Array([0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7]);
 		var positions = new Float32Array(8 * 3);
 	
-		var geometry = new _three2['default'].BufferGeometry();
-		geometry.setIndex(new _three2['default'].BufferAttribute(indices, 1));
-		geometry.addAttribute('position', new _three2['default'].BufferAttribute(positions, 3));
+		var geometry = new THREE.BufferGeometry();
+		geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+		geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
 	
-		_three2['default'].LineSegments.call(this, geometry, new _three2['default'].LineBasicMaterial({ linewidth: 2, color: 0xff0000 }));
+		THREE.LineSegments.call(this, geometry, new THREE.LineBasicMaterial({ linewidth: 2, color: 0xff0000 }));
 	
 		if (object !== undefined) {
 	
@@ -14026,12 +14076,12 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 	};
 	
-	BoxHelper.prototype = Object.create(_three2['default'].LineSegments.prototype);
+	BoxHelper.prototype = Object.create(THREE.LineSegments.prototype);
 	BoxHelper.prototype.constructor = BoxHelper;
 	
 	BoxHelper.prototype.update = (function () {
 	
-		var box = new _three2['default'].Box3();
+		var box = new THREE.Box3();
 	
 		return function (object) {
 	
@@ -14086,11 +14136,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	exports['default'] = function (colour, skyboxTarget) {
 	  var canvas = document.createElement('canvas');
@@ -14103,7 +14153,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // context.strokeStyle = '#D0D0CF';
 	  // context.strokeRect(0, 0, canvas.width, canvas.height);
 	
-	  var texture = new _three2['default'].Texture(canvas);
+	  var texture = new THREE.Texture(canvas);
 	
 	  // // Silky smooth images when tilted
 	  // texture.magFilter = THREE.LinearFilter;
@@ -14121,12 +14171,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var material;
 	
 	  if (!skyboxTarget) {
-	    material = new _three2['default'].MeshBasicMaterial({
+	    material = new THREE.MeshBasicMaterial({
 	      map: texture,
 	      depthWrite: false
 	    });
 	  } else {
-	    material = new _three2['default'].MeshStandardMaterial({
+	    material = new THREE.MeshStandardMaterial({
 	      map: texture,
 	      depthWrite: false
 	    });
@@ -14153,6 +14203,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -14177,7 +14229,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
+	
+	var _geoGeo = __webpack_require__(8);
+	
+	var _geoGeo2 = _interopRequireDefault(_geoGeo);
 	
 	// TODO: Offer on-the-fly slicing of static, non-tile-based GeoJSON files into a
 	// tile grid using geojson-vt
@@ -14217,7 +14273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    var defaults = {
 	      maxLOD: 14,
-	      distance: 30000,
+	      distance: 100000 * _geoGeo2['default'].multiplier,
 	      workers: false
 	    };
 	
@@ -14359,6 +14415,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -14379,7 +14437,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _reqwest = __webpack_require__(74);
 	
@@ -14489,13 +14547,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function requestTileAsync() {
 	      var _this = this;
 	
+	      if (!this._mesh) {
+	        this._mesh = this._createMesh();
+	        // this._shadowCanvas = this._createShadowCanvas();
+	      }
+	
 	      // Making this asynchronous really speeds up the LOD framerate
 	      setTimeout(function () {
-	        if (!_this._mesh) {
-	          _this._mesh = _this._createMesh();
-	          // this._shadowCanvas = this._createShadowCanvas();
-	        }
-	
 	        _this._requestTile();
 	      }, 0);
 	    }
@@ -14532,7 +14590,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return;
 	      }
 	
-	      var mesh = new _three2['default'].Object3D();
+	      var mesh = new THREE.Object3D();
 	      // mesh.add(this._createDebugMesh());
 	
 	      return mesh;
@@ -14550,25 +14608,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	      context.fillText(this._quadcode, 20, canvas.width / 2 - 5);
 	      context.fillText(this._tile.toString(), 20, canvas.width / 2 + 25);
 	
-	      var texture = new _three2['default'].Texture(canvas);
+	      var texture = new THREE.Texture(canvas);
 	
 	      // Silky smooth images when tilted
-	      texture.magFilter = _three2['default'].LinearFilter;
-	      texture.minFilter = _three2['default'].LinearMipMapLinearFilter;
+	      texture.magFilter = THREE.LinearFilter;
+	      texture.minFilter = THREE.LinearMipMapLinearFilter;
 	
 	      // TODO: Set this to renderer.getMaxAnisotropy() / 4
 	      texture.anisotropy = 4;
 	
 	      texture.needsUpdate = true;
 	
-	      var material = new _three2['default'].MeshBasicMaterial({
+	      var material = new THREE.MeshBasicMaterial({
 	        map: texture,
 	        transparent: true,
 	        depthWrite: false
 	      });
 	
-	      var geom = new _three2['default'].PlaneBufferGeometry(this._side, this._side, 1);
-	      var mesh = new _three2['default'].Mesh(geom, material);
+	      var geom = new THREE.PlaneBufferGeometry(this._side, this._side, 1);
+	      var mesh = new THREE.Mesh(geom, material);
 	
 	      mesh.rotation.x = -90 * Math.PI / 180;
 	      mesh.position.y = 0.1;
@@ -14771,6 +14829,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_abortRequest',
 	    value: function _abortRequest() {
+	      if (this._ready) {
+	        return;
+	      }
+	
+	      if (this._options.fetch && this._controller) {
+	        this._controller.abort();
+	        this._aborted = true;
+	        return;
+	      }
+	
 	      if (!this._request && !this._options.workers || this._ready) {
 	        return;
 	      }
@@ -14868,6 +14936,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      interactive: false,
 	      topojson: false,
 	      filter: null,
+	      layers: null,
 	      onEachFeature: null,
 	      polygonMaterial: null,
 	      onPolygonMesh: null,
@@ -14953,10 +15022,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _this2 = this;
 	
 	      return new Promise(function (resolve) {
+	        var layers = [];
+	
+	        if (_this2._options.layers) {
+	          layers = _this2._options.layers;
+	        }
+	
 	        // Collects features into a single FeatureCollection
 	        //
 	        // Also converts TopoJSON to GeoJSON if instructed
-	        _this2._geojson = _utilGeoJSON2['default'].collectFeatures(data, _this2._options.topojson);
+	        _this2._geojson = _utilGeoJSON2['default'].collectFeatures(data, layers, _this2._options.topojson);
 	
 	        // TODO: Check that GeoJSON is valid / usable
 	
@@ -15964,9 +16039,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	/*
 	 * GeoJSON helpers for handling data and generating objects
@@ -15974,7 +16049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _topojson2 = __webpack_require__(77);
 	
@@ -16001,8 +16076,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	// See: http://lists.geojson.org/pipermail/geojson-geojson.org/2009-June/000489.html
 	
 	// Light and dark colours used for poor-mans AO gradient on object sides
-	var light = new _three2['default'].Color(0xffffff);
-	var shadow = new _three2['default'].Color(0x666666);
+	var light = new THREE.Color(0xffffff);
+	var shadow = new THREE.Color(0x666666);
 	
 	var GeoJSON = (function () {
 	  var defaultStyle = {
@@ -16011,25 +16086,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    outlineColor: '#000000',
 	    transparent: false,
 	    opacity: 1,
-	    blending: _three2['default'].NormalBlending,
+	    blending: THREE.NormalBlending,
 	    height: 0,
 	    lineOpacity: 1,
 	    lineTransparent: false,
 	    lineColor: '#ffffff',
 	    lineWidth: 1,
-	    lineBlending: _three2['default'].NormalBlending
+	    lineBlending: THREE.NormalBlending
 	  };
 	
 	  // Attempts to merge together multiple GeoJSON Features or FeatureCollections
 	  // into a single FeatureCollection
-	  var collectFeatures = function collectFeatures(data, _topojson) {
+	  var collectFeatures = function collectFeatures(data, layers, _topojson) {
 	    var collections = [];
 	
 	    if (_topojson) {
-	      // TODO: Allow TopoJSON objects to be overridden as an option
-	
 	      // If not overridden, merge all features from all objects
 	      for (var tk in data.objects) {
+	        if (layers.length > 0) {
+	          if (!layers.includes(tk)) {
+	            continue;
+	          }
+	        }
+	
 	        collections.push(topojson.feature(data, data.objects[tk]));
 	      }
 	
@@ -16042,6 +16121,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        // If not overridden, merge all features from all objects
 	        for (var gk in data) {
+	          if (layers.length > 0) {
+	            if (!layers.includes(gk)) {
+	              continue;
+	            }
+	          }
+	
 	          if (!data[gk].type) {
 	            continue;
 	          }
@@ -17618,7 +17703,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 	
 	/*
 	 * BufferGeometry helpers
@@ -17626,7 +17711,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _textEncoding = __webpack_require__(83);
 	
@@ -17761,7 +17846,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	
 	  var createLineGeometry = function createLineGeometry(lines, offset) {
-	    var geometry = new _three2['default'].BufferGeometry();
+	    var geometry = new THREE.BufferGeometry();
 	
 	    var vertices = new Float32Array(lines.verticesCount * 3);
 	    var colours = new Float32Array(lines.verticesCount * 3);
@@ -17810,11 +17895,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    // itemSize = 3 because there are 3 values (components) per vertex
-	    geometry.addAttribute('position', new _three2['default'].BufferAttribute(vertices, 3));
-	    geometry.addAttribute('color', new _three2['default'].BufferAttribute(colours, 3));
+	    geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+	    geometry.addAttribute('color', new THREE.BufferAttribute(colours, 3));
 	
 	    if (pickingIds) {
-	      geometry.addAttribute('pickingId', new _three2['default'].BufferAttribute(pickingIds, 1));
+	      geometry.addAttribute('pickingId', new THREE.BufferAttribute(pickingIds, 1));
 	    }
 	
 	    geometry.computeBoundingBox();
@@ -17824,7 +17909,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	  // TODO: Make picking IDs optional
 	  var createGeometry = function createGeometry(attributes, offset) {
-	    var geometry = new _three2['default'].BufferGeometry();
+	    var geometry = new THREE.BufferGeometry();
 	
 	    // Three components per vertex per face (3 x 3 = 9)
 	    var vertices = new Float32Array(attributes.facesCount * 9);
@@ -17837,12 +17922,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      pickingIds = new Float32Array(attributes.facesCount * 3);
 	    }
 	
-	    var pA = new _three2['default'].Vector3();
-	    var pB = new _three2['default'].Vector3();
-	    var pC = new _three2['default'].Vector3();
+	    var pA = new THREE.Vector3();
+	    var pB = new THREE.Vector3();
+	    var pC = new THREE.Vector3();
 	
-	    var cb = new _three2['default'].Vector3();
-	    var ab = new _three2['default'].Vector3();
+	    var cb = new THREE.Vector3();
+	    var ab = new THREE.Vector3();
 	
 	    var index;
 	    var _faces;
@@ -17948,12 +18033,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    // itemSize = 3 because there are 3 values (components) per vertex
-	    geometry.addAttribute('position', new _three2['default'].BufferAttribute(vertices, 3));
-	    geometry.addAttribute('normal', new _three2['default'].BufferAttribute(normals, 3));
-	    geometry.addAttribute('color', new _three2['default'].BufferAttribute(colours, 3));
+	    geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+	    geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3));
+	    geometry.addAttribute('color', new THREE.BufferAttribute(colours, 3));
 	
 	    if (pickingIds) {
-	      geometry.addAttribute('pickingId', new _three2['default'].BufferAttribute(pickingIds, 1));
+	      geometry.addAttribute('pickingId', new THREE.BufferAttribute(pickingIds, 1));
 	    }
 	
 	    geometry.computeBoundingBox();
@@ -21390,9 +21475,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _PickingShader = __webpack_require__(87);
 	
@@ -21401,7 +21488,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// FROM: https://github.com/brianxu/GPUPicker/blob/master/GPUPicker.js
 	
 	var PickingMaterial = function PickingMaterial() {
-	  _three2['default'].ShaderMaterial.call(this, {
+	  THREE.ShaderMaterial.call(this, {
 	    uniforms: {
 	      size: {
 	        type: 'f',
@@ -21420,7 +21507,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  this.linePadding = 2;
 	};
 	
-	PickingMaterial.prototype = Object.create(_three2['default'].ShaderMaterial.prototype);
+	PickingMaterial.prototype = Object.create(THREE.ShaderMaterial.prototype);
 	
 	PickingMaterial.prototype.constructor = PickingMaterial;
 	
@@ -21471,6 +21558,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -21503,7 +21592,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _geoGeo = __webpack_require__(8);
 	
@@ -21549,7 +21638,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        color: '#ffffff',
 	        transparent: false,
 	        opacity: 1,
-	        blending: _three2['default'].NormalBlending,
+	        blending: THREE.NormalBlending,
 	        height: 0
 	      }
 	    };
@@ -21578,7 +21667,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // Otherwise, assume another component will eventually add a mesh to
 	          // the picking scene
 	          if (_this.isOutput()) {
-	            _this._pickingMesh = new _three2['default'].Object3D();
+	            _this._pickingMesh = new THREE.Object3D();
 	            _this.addToPicking(_this._pickingMesh);
 	          }
 	
@@ -21813,12 +21902,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	          height = _geoGeo2['default'].metresToWorld(options.style.height, options.pointScale);
 	        }
 	
-	        var colour = new _three2['default'].Color();
+	        var colour = new THREE.Color();
 	        colour.set(options.style.color);
 	
 	        // Light and dark colours used for poor-mans AO gradient on object sides
-	        var light = new _three2['default'].Color(0xffffff);
-	        var shadow = new _three2['default'].Color(0x666666);
+	        var light = new THREE.Color(0xffffff);
+	        var shadow = new THREE.Color(0x666666);
 	
 	        var flat = true;
 	
@@ -21905,7 +21994,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          };
 	
 	          if (options.style.outline) {
-	            var outlineColour = new _three2['default'].Color();
+	            var outlineColour = new THREE.Color();
 	            outlineColour.set(options.style.outlineColor || 0x000000);
 	
 	            outlineAttributes.push(PolygonLayer.Set2DOutline(_coordinates, outlineColour));
@@ -21987,29 +22076,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'SetMesh',
 	    value: function SetMesh(attributes, attributeLengths, flat, style, options, skybox) {
-	      var geometry = new _three2['default'].BufferGeometry();
+	      var geometry = new THREE.BufferGeometry();
 	
 	      for (var key in attributes) {
-	        geometry.addAttribute(key.slice(0, -1), new _three2['default'].BufferAttribute(attributes[key], attributeLengths[key]));
+	        geometry.addAttribute(key.slice(0, -1), new THREE.BufferAttribute(attributes[key], attributeLengths[key]));
 	      }
 	
 	      geometry.computeBoundingBox();
 	
 	      var material;
-	      if (options.polygonMaterial && options.polygonMaterial instanceof _three2['default'].Material) {
+	      if (options.polygonMaterial && options.polygonMaterial instanceof THREE.Material) {
 	        material = options.polygonMaterial;
 	      } else if (!skybox) {
-	        material = new _three2['default'].MeshPhongMaterial({
-	          vertexColors: _three2['default'].VertexColors,
-	          side: _three2['default'].BackSide,
+	        material = new THREE.MeshPhongMaterial({
+	          vertexColors: THREE.VertexColors,
+	          side: THREE.BackSide,
 	          transparent: style.transparent,
 	          opacity: style.opacity,
 	          blending: style.blending
 	        });
 	      } else {
-	        material = new _three2['default'].MeshStandardMaterial({
-	          vertexColors: _three2['default'].VertexColors,
-	          side: _three2['default'].BackSide,
+	        material = new THREE.MeshStandardMaterial({
+	          vertexColors: THREE.VertexColors,
+	          side: THREE.BackSide,
 	          transparent: style.transparent,
 	          opacity: style.opacity,
 	          blending: style.blending
@@ -22026,7 +22115,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (typeof options.onPolygonMesh === 'function') {
 	        mesh = options.onPolygonMesh(geometry, material);
 	      } else {
-	        mesh = new _three2['default'].Mesh(geometry, material);
+	        mesh = new THREE.Mesh(geometry, material);
 	
 	        mesh.castShadow = true;
 	        mesh.receiveShadow = true;
@@ -22043,9 +22132,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      if (options.interactive) {
 	        material = new _enginePickingMaterial2['default']();
-	        material.side = _three2['default'].BackSide;
+	        material.side = THREE.BackSide;
 	
-	        var pickingMesh = new _three2['default'].Mesh(geometry, material);
+	        var pickingMesh = new THREE.Mesh(geometry, material);
 	      }
 	
 	      return Promise.resolve({
@@ -22115,12 +22204,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        pickingIds = new Float32Array(polygon.facesCount * 3);
 	      }
 	
-	      var pA = new _three2['default'].Vector3();
-	      var pB = new _three2['default'].Vector3();
-	      var pC = new _three2['default'].Vector3();
+	      var pA = new THREE.Vector3();
+	      var pB = new THREE.Vector3();
+	      var pC = new THREE.Vector3();
 	
-	      var cb = new _three2['default'].Vector3();
-	      var ab = new _three2['default'].Vector3();
+	      var cb = new THREE.Vector3();
+	      var ab = new THREE.Vector3();
 	
 	      var index;
 	
@@ -22274,6 +22363,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -22308,7 +22399,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _geoGeo = __webpack_require__(8);
 	
@@ -22347,7 +22438,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        lineTransparent: false,
 	        lineColor: '#ffffff',
 	        lineWidth: 1,
-	        lineBlending: _three2['default'].NormalBlending
+	        lineBlending: THREE.NormalBlending
 	      }
 	    };
 	
@@ -22378,7 +22469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // Otherwise, assume another component will eventually add a mesh to
 	          // the picking scene
 	          if (_this.isOutput()) {
-	            _this._pickingMesh = new _three2['default'].Object3D();
+	            _this._pickingMesh = new THREE.Object3D();
 	            _this.addToPicking(_this._pickingMesh);
 	          }
 	
@@ -22588,7 +22679,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          height = _geoGeo2['default'].metresToWorld(options.style.lineHeight, options.pointScale);
 	        }
 	
-	        var colour = new _three2['default'].Color();
+	        var colour = new THREE.Color();
 	        colour.set(options.style.lineColor);
 	
 	        var flat = true;
@@ -22637,20 +22728,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'SetMesh',
 	    value: function SetMesh(attributes, attributeLengths, flat, style, options) {
-	      var geometry = new _three2['default'].BufferGeometry();
+	      var geometry = new THREE.BufferGeometry();
 	
 	      for (var key in attributes) {
-	        geometry.addAttribute(key.slice(0, -1), new _three2['default'].BufferAttribute(attributes[key], attributeLengths[key]));
+	        geometry.addAttribute(key.slice(0, -1), new THREE.BufferAttribute(attributes[key], attributeLengths[key]));
 	      }
 	
 	      geometry.computeBoundingBox();
 	
 	      var material;
-	      if (options.polylineMaterial && options.polylineMaterial instanceof _three2['default'].Material) {
+	      if (options.polylineMaterial && options.polylineMaterial instanceof THREE.Material) {
 	        material = options.polylineMaterial;
 	      } else {
-	        material = new _three2['default'].LineBasicMaterial({
-	          vertexColors: _three2['default'].VertexColors,
+	        material = new THREE.LineBasicMaterial({
+	          vertexColors: THREE.VertexColors,
 	          linewidth: style.lineWidth,
 	          transparent: style.lineTransparent,
 	          opacity: style.lineOpacity,
@@ -22664,7 +22755,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (typeof options.onPolylineMesh === 'function') {
 	        mesh = options.onPolylineMesh(geometry, material);
 	      } else {
-	        mesh = new _three2['default'].LineSegments(geometry, material);
+	        mesh = new THREE.LineSegments(geometry, material);
 	
 	        if (style.lineRenderOrder !== undefined) {
 	          material.depthWrite = false;
@@ -22682,7 +22773,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Make the line wider / easier to pick
 	        material.linewidth = style.lineWidth + material.linePadding;
 	
-	        var pickingMesh = new _three2['default'].LineSegments(geometry, material);
+	        var pickingMesh = new THREE.LineSegments(geometry, material);
 	      }
 	
 	      return Promise.resolve({
@@ -22777,6 +22868,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -22817,7 +22910,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _three = __webpack_require__(12);
 	
-	var _three2 = _interopRequireDefault(_three);
+	var THREE = _interopRequireWildcard(_three);
 	
 	var _geoGeo = __webpack_require__(8);
 	
@@ -22887,7 +22980,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          // Otherwise, assume another component will eventually add a mesh to
 	          // the picking scene
 	          if (_this.isOutput()) {
-	            _this._pickingMesh = new _three2['default'].Object3D();
+	            _this._pickingMesh = new THREE.Object3D();
 	            _this.addToPicking(_this._pickingMesh);
 	          }
 	
@@ -23094,29 +23187,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	          height = _geoGeo2['default'].metresToWorld(options.style.pointHeight, options.pointScale);
 	        }
 	
-	        var colour = new _three2['default'].Color();
+	        var colour = new THREE.Color();
 	        colour.set(options.style.pointColor);
 	
 	        // Use default geometry if none has been provided or the provided geometry
 	        // isn't valid
-	        if (!options.pointGeometry || !options.pointGeometry instanceof _three2['default'].Geometry || !options.pointGeometry instanceof _three2['default'].BufferGeometry) {
+	        if (!options.pointGeometry || !options.pointGeometry instanceof THREE.Geometry || !options.pointGeometry instanceof THREE.BufferGeometry) {
 	          // Debug geometry for points is a thin bar
 	          //
 	          // TODO: Allow point geometry to be customised / overridden
 	          var geometryWidth = _geoGeo2['default'].metresToWorld(25, options.pointScale);
 	          var geometryHeight = _geoGeo2['default'].metresToWorld(200, options.pointScale);
-	          var _geometry = new _three2['default'].BoxGeometry(geometryWidth, geometryHeight, geometryWidth);
+	          var _geometry = new THREE.BoxGeometry(geometryWidth, geometryHeight, geometryWidth);
 	
 	          // Shift geometry up so it sits on the ground
 	          _geometry.translate(0, geometryHeight * 0.5, 0);
 	
 	          // Pull attributes out of debug geometry
-	          geometry = new _three2['default'].BufferGeometry().fromGeometry(_geometry);
+	          geometry = new THREE.BufferGeometry().fromGeometry(_geometry);
 	        } else {
-	          if (options.geometry instanceof _three2['default'].BufferGeometry) {
+	          if (options.geometry instanceof THREE.BufferGeometry) {
 	            geometry = options.pointGeometry;
 	          } else {
-	            geometry = new _three2['default'].BufferGeometry().fromGeometry(options.pointGeometry);
+	            geometry = new THREE.BufferGeometry().fromGeometry(options.pointGeometry);
 	          }
 	        }
 	
@@ -23161,28 +23254,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'SetMesh',
 	    value: function SetMesh(attributes, attributeLengths, flat, style, options, skybox) {
-	      var geometry = new _three2['default'].BufferGeometry();
+	      var geometry = new THREE.BufferGeometry();
 	
 	      for (var key in attributes) {
-	        geometry.addAttribute(key.slice(0, -1), new _three2['default'].BufferAttribute(attributes[key], attributeLengths[key]));
+	        geometry.addAttribute(key.slice(0, -1), new THREE.BufferAttribute(attributes[key], attributeLengths[key]));
 	      }
 	
 	      geometry.computeBoundingBox();
 	
 	      var material;
-	      if (options.pointMaterial && options.pointMaterial instanceof _three2['default'].Material) {
+	      if (options.pointMaterial && options.pointMaterial instanceof THREE.Material) {
 	        material = options.pointMaterial;
 	      } else if (!skybox) {
-	        material = new _three2['default'].MeshPhongMaterial({
-	          vertexColors: _three2['default'].VertexColors,
+	        material = new THREE.MeshPhongMaterial({
+	          vertexColors: THREE.VertexColors,
 	          // side: THREE.BackSide,
 	          transparent: style.transparent,
 	          opacity: style.opacity,
 	          blending: style.blending
 	        });
 	      } else {
-	        material = new _three2['default'].MeshStandardMaterial({
-	          vertexColors: _three2['default'].VertexColors,
+	        material = new THREE.MeshStandardMaterial({
+	          vertexColors: THREE.VertexColors,
 	          // side: THREE.BackSide,
 	          transparent: style.transparent,
 	          opacity: style.opacity,
@@ -23200,7 +23293,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (typeof options.onPolygonMesh === 'function') {
 	        mesh = options.onPolygonMesh(geometry, material);
 	      } else {
-	        mesh = new _three2['default'].Mesh(geometry, material);
+	        mesh = new THREE.Mesh(geometry, material);
 	
 	        mesh.castShadow = true;
 	        mesh.receiveShadow = true;
@@ -23213,9 +23306,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	      if (options.interactive) {
 	        material = new _enginePickingMaterial2['default']();
-	        material.side = _three2['default'].BackSide;
+	        material.side = THREE.BackSide;
 	
-	        var pickingMesh = new _three2['default'].Mesh(geometry, material);
+	        var pickingMesh = new THREE.Mesh(geometry, material);
 	      }
 	
 	      return Promise.resolve({
@@ -23386,10 +23479,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var geojson = _geojson;
 	        var transferrables = [];
 	
+	        var layers = [];
+	
+	        if (_this._options.layers) {
+	          layers = _this._options.layers;
+	        }
+	
+	        // TODO: Allow filter method to be run here
 	        if (typeof geojson !== 'string') {
-	          _this._geojson = geojson = _utilBuffer2['default'].stringToUint8Array(JSON.stringify(geojson));
+	          // TODO: De-dupe with non-object processing in next section
+	          var fc = _utilGeoJSON2['default'].collectFeatures(geojson, layers, _this._options.topojson);
+	          var features = fc.features;
+	
+	          // Run filter, if provided
+	          if (_this._options.filter) {
+	            fc.features = features.filter(_this._options.filter);
+	          }
+	
+	          if (_this._options.onEachFeature) {
+	            var feature;
+	            for (var i = 0; i < features.length; i++) {
+	              feature = features[i];
+	              _this._options.onEachFeature(feature);
+	            };
+	          }
+	
+	          _this._geojson = geojson = _utilBuffer2['default'].stringToUint8Array(JSON.stringify(fc));
 	          transferrables.push(geojson.buffer);
-	          _this._execWorker(geojson, _this._options.topojson, _this._world._originPoint, style, _this._options.interactive, pointGeometry, transferrables).then(function () {
+	          _this._execWorker(geojson, _this._options.topojson, _this._options.headers, _this._world._originPoint, style, _this._options.interactive, pointGeometry, transferrables).then(function () {
 	            resolve();
 	          })['catch'](reject);
 	        } else if (typeof _this._options.filter === 'function' || typeof _this._options.onEachFeature === 'function') {
@@ -23399,7 +23516,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            //   return;
 	            // }
 	
-	            var fc = _utilGeoJSON2['default'].collectFeatures(res, _this._options.topojson);
+	            var fc = _utilGeoJSON2['default'].collectFeatures(res, layers, _this._options.topojson);
 	            var features = fc.features;
 	
 	            // Run filter, if provided
@@ -23955,10 +24072,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function Process(geojson, topojson, headers, originPoint, _style, _properties, _pointGeometry) {
 	      return new Promise(function (resolve, reject) {
 	        GeoJSONWorkerLayer.ProcessGeoJSON(geojson, headers).then(function (res) {
-	          // Collects features into a single FeatureCollection
-	          //
-	          // Also converts TopoJSON to GeoJSON if instructed
-	          var geojson = _utilGeoJSON2['default'].collectFeatures(res, topojson);
+	          var geojson = res;
+	
+	          if (!geojson.features) {
+	            // Collects features into a single FeatureCollection
+	            //
+	            // Also converts TopoJSON to GeoJSON if instructed
+	            geojson = _utilGeoJSON2['default'].collectFeatures(geojson, topojson);
+	          }
 	
 	          // TODO: Check that GeoJSON is valid / usable
 	
@@ -24081,6 +24202,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            if (geometry.type === 'Point' || geometry.type === 'MultiPoint') {
+	              if (!pointGeometry) {
+	                console.warn('Skipping point geometry as no function provided');
+	                continue;
+	              }
+	
 	              coordinates = _geometryPointLayer2['default'].isSingle(coordinates) ? [coordinates] : coordinates;
 	
 	              var converted = coordinates.map(function (coordinate) {
@@ -24573,6 +24699,1585 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var _GeoJSONTileLayer2 = __webpack_require__(71);
+	
+	var _GeoJSONTileLayer3 = _interopRequireDefault(_GeoJSONTileLayer2);
+	
+	var _MVTTile = __webpack_require__(95);
+	
+	var _MVTTile2 = _interopRequireDefault(_MVTTile);
+	
+	var _lodashAssign = __webpack_require__(7);
+	
+	var _lodashAssign2 = _interopRequireDefault(_lodashAssign);
+	
+	var MVTTileLayer = (function (_GeoJSONTileLayer) {
+	  _inherits(MVTTileLayer, _GeoJSONTileLayer);
+	
+	  function MVTTileLayer(path, options) {
+	    _classCallCheck(this, MVTTileLayer);
+	
+	    var defaults = {
+	      mvt: true,
+	      maxLOD: 16
+	    };
+	
+	    options = (0, _lodashAssign2['default'])({}, defaults, options);
+	
+	    _get(Object.getPrototypeOf(MVTTileLayer.prototype), 'constructor', this).call(this, path, options);
+	  }
+	
+	  _createClass(MVTTileLayer, [{
+	    key: '_createTile',
+	    value: function _createTile(quadcode, layer) {
+	      var newOptions = (0, _lodashAssign2['default'])({}, this.defaults, this._options, {
+	        outputToScene: false
+	      });
+	
+	      delete newOptions.attribution;
+	
+	      return new _MVTTile2['default'](quadcode, this._path, layer, newOptions);
+	    }
+	  }]);
+	
+	  return MVTTileLayer;
+	})(_GeoJSONTileLayer3['default']);
+	
+	exports['default'] = MVTTileLayer;
+	
+	var noNew = function noNew(path, options) {
+	  return new MVTTileLayer(path, options);
+	};
+	
+	exports.mvtTileLayer = noNew;
+
+/***/ }),
+/* 95 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var _GeoJSONTile2 = __webpack_require__(72);
+	
+	var _GeoJSONTile3 = _interopRequireDefault(_GeoJSONTile2);
+	
+	var _lodashAssign = __webpack_require__(7);
+	
+	var _lodashAssign2 = _interopRequireDefault(_lodashAssign);
+	
+	var _pbf = __webpack_require__(96);
+	
+	var _pbf2 = _interopRequireDefault(_pbf);
+	
+	var _mapboxVectorTile = __webpack_require__(98);
+	
+	// TODO: Process raw MVT data rather than convert to GeoJSON
+	// TODO: Make it so full request and processing cycle occurs within a worker
+	
+	var MVTTile = (function (_GeoJSONTile) {
+	  _inherits(MVTTile, _GeoJSONTile);
+	
+	  function MVTTile(quadcode, path, layer, options) {
+	    _classCallCheck(this, MVTTile);
+	
+	    var defaults = {
+	      mvt: true,
+	      fetch: true
+	    };
+	
+	    options = (0, _lodashAssign2['default'])({}, defaults, options);
+	
+	    _get(Object.getPrototypeOf(MVTTile.prototype), 'constructor', this).call(this, quadcode, path, layer, options);
+	
+	    this._controller;
+	    this._signal;
+	  }
+	
+	  _createClass(MVTTile, [{
+	    key: '_requestTile',
+	    value: function _requestTile() {
+	      var _this = this;
+	
+	      var urlParams = {
+	        x: this._tile[0],
+	        y: this._tile[1],
+	        z: this._tile[2]
+	      };
+	
+	      var url = this._getTileURL(urlParams);
+	
+	      if ('AbortController' in window) {
+	        // Abort any previous requests
+	        if (this._controller) {
+	          this._controller.abort();
+	        }
+	
+	        // Create a fresh abort controller so old ones don't cause problems
+	        this._controller = new AbortController();
+	        this._signal = this._controller.signal;
+	      }
+	
+	      this._aborted = false;
+	
+	      fetch(url, {
+	        signal: this._signal
+	      }).then(function (response) {
+	        return response.arrayBuffer();
+	      }).then(function (data) {
+	        var buffer = new _pbf2['default'](data);
+	        var vt = new _mapboxVectorTile.VectorTile(buffer);
+	
+	        var fc = { type: 'FeatureCollection', features: [] };
+	
+	        var layers = [];
+	
+	        if (_this._options.layers) {
+	          layers = _this._options.layers;
+	        }
+	
+	        // Process defined layers (otherwise all)
+	        for (var key in vt.layers) {
+	          if (layers.length > 0) {
+	            if (!layers.includes(key)) {
+	              continue;
+	            }
+	          }
+	
+	          var layer = vt.layers[key];
+	          for (var f = 0; f < layer.length; f++) {
+	            var feature = layer.feature(f);
+	            fc.features.push(feature.toGeoJSON(urlParams.x, urlParams.y, urlParams.z));
+	          }
+	        }
+	
+	        _this._processTileData(fc);
+	
+	        // Clean up
+	        buffer = null;
+	        vt = null;
+	        layers = null;
+	        fc = null;
+	      })['catch'](function (err) {
+	        if (err.name === 'AbortError') {
+	          return;
+	        }
+	
+	        console.error(err);
+	      });
+	    }
+	  }]);
+	
+	  return MVTTile;
+	})(_GeoJSONTile3['default']);
+	
+	exports['default'] = MVTTile;
+	
+	var noNew = function noNew(path, options) {
+	  return new MVTTile(path, options);
+	};
+	
+	exports.mvtTile = noNew;
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	module.exports = Pbf;
+	
+	var ieee754 = __webpack_require__(97);
+	
+	function Pbf(buf) {
+	    this.buf = ArrayBuffer.isView && ArrayBuffer.isView(buf) ? buf : new Uint8Array(buf || 0);
+	    this.pos = 0;
+	    this.type = 0;
+	    this.length = this.buf.length;
+	}
+	
+	Pbf.Varint  = 0; // varint: int32, int64, uint32, uint64, sint32, sint64, bool, enum
+	Pbf.Fixed64 = 1; // 64-bit: double, fixed64, sfixed64
+	Pbf.Bytes   = 2; // length-delimited: string, bytes, embedded messages, packed repeated fields
+	Pbf.Fixed32 = 5; // 32-bit: float, fixed32, sfixed32
+	
+	var SHIFT_LEFT_32 = (1 << 16) * (1 << 16),
+	    SHIFT_RIGHT_32 = 1 / SHIFT_LEFT_32;
+	
+	Pbf.prototype = {
+	
+	    destroy: function() {
+	        this.buf = null;
+	    },
+	
+	    // === READING =================================================================
+	
+	    readFields: function(readField, result, end) {
+	        end = end || this.length;
+	
+	        while (this.pos < end) {
+	            var val = this.readVarint(),
+	                tag = val >> 3,
+	                startPos = this.pos;
+	
+	            this.type = val & 0x7;
+	            readField(tag, result, this);
+	
+	            if (this.pos === startPos) this.skip(val);
+	        }
+	        return result;
+	    },
+	
+	    readMessage: function(readField, result) {
+	        return this.readFields(readField, result, this.readVarint() + this.pos);
+	    },
+	
+	    readFixed32: function() {
+	        var val = readUInt32(this.buf, this.pos);
+	        this.pos += 4;
+	        return val;
+	    },
+	
+	    readSFixed32: function() {
+	        var val = readInt32(this.buf, this.pos);
+	        this.pos += 4;
+	        return val;
+	    },
+	
+	    // 64-bit int handling is based on github.com/dpw/node-buffer-more-ints (MIT-licensed)
+	
+	    readFixed64: function() {
+	        var val = readUInt32(this.buf, this.pos) + readUInt32(this.buf, this.pos + 4) * SHIFT_LEFT_32;
+	        this.pos += 8;
+	        return val;
+	    },
+	
+	    readSFixed64: function() {
+	        var val = readUInt32(this.buf, this.pos) + readInt32(this.buf, this.pos + 4) * SHIFT_LEFT_32;
+	        this.pos += 8;
+	        return val;
+	    },
+	
+	    readFloat: function() {
+	        var val = ieee754.read(this.buf, this.pos, true, 23, 4);
+	        this.pos += 4;
+	        return val;
+	    },
+	
+	    readDouble: function() {
+	        var val = ieee754.read(this.buf, this.pos, true, 52, 8);
+	        this.pos += 8;
+	        return val;
+	    },
+	
+	    readVarint: function(isSigned) {
+	        var buf = this.buf,
+	            val, b;
+	
+	        b = buf[this.pos++]; val  =  b & 0x7f;        if (b < 0x80) return val;
+	        b = buf[this.pos++]; val |= (b & 0x7f) << 7;  if (b < 0x80) return val;
+	        b = buf[this.pos++]; val |= (b & 0x7f) << 14; if (b < 0x80) return val;
+	        b = buf[this.pos++]; val |= (b & 0x7f) << 21; if (b < 0x80) return val;
+	        b = buf[this.pos];   val |= (b & 0x0f) << 28;
+	
+	        return readVarintRemainder(val, isSigned, this);
+	    },
+	
+	    readVarint64: function() { // for compatibility with v2.0.1
+	        return this.readVarint(true);
+	    },
+	
+	    readSVarint: function() {
+	        var num = this.readVarint();
+	        return num % 2 === 1 ? (num + 1) / -2 : num / 2; // zigzag encoding
+	    },
+	
+	    readBoolean: function() {
+	        return Boolean(this.readVarint());
+	    },
+	
+	    readString: function() {
+	        var end = this.readVarint() + this.pos,
+	            str = readUtf8(this.buf, this.pos, end);
+	        this.pos = end;
+	        return str;
+	    },
+	
+	    readBytes: function() {
+	        var end = this.readVarint() + this.pos,
+	            buffer = this.buf.subarray(this.pos, end);
+	        this.pos = end;
+	        return buffer;
+	    },
+	
+	    // verbose for performance reasons; doesn't affect gzipped size
+	
+	    readPackedVarint: function(arr, isSigned) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readVarint(isSigned));
+	        return arr;
+	    },
+	    readPackedSVarint: function(arr) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readSVarint());
+	        return arr;
+	    },
+	    readPackedBoolean: function(arr) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readBoolean());
+	        return arr;
+	    },
+	    readPackedFloat: function(arr) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readFloat());
+	        return arr;
+	    },
+	    readPackedDouble: function(arr) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readDouble());
+	        return arr;
+	    },
+	    readPackedFixed32: function(arr) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readFixed32());
+	        return arr;
+	    },
+	    readPackedSFixed32: function(arr) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readSFixed32());
+	        return arr;
+	    },
+	    readPackedFixed64: function(arr) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readFixed64());
+	        return arr;
+	    },
+	    readPackedSFixed64: function(arr) {
+	        var end = readPackedEnd(this);
+	        arr = arr || [];
+	        while (this.pos < end) arr.push(this.readSFixed64());
+	        return arr;
+	    },
+	
+	    skip: function(val) {
+	        var type = val & 0x7;
+	        if (type === Pbf.Varint) while (this.buf[this.pos++] > 0x7f) {}
+	        else if (type === Pbf.Bytes) this.pos = this.readVarint() + this.pos;
+	        else if (type === Pbf.Fixed32) this.pos += 4;
+	        else if (type === Pbf.Fixed64) this.pos += 8;
+	        else throw new Error('Unimplemented type: ' + type);
+	    },
+	
+	    // === WRITING =================================================================
+	
+	    writeTag: function(tag, type) {
+	        this.writeVarint((tag << 3) | type);
+	    },
+	
+	    realloc: function(min) {
+	        var length = this.length || 16;
+	
+	        while (length < this.pos + min) length *= 2;
+	
+	        if (length !== this.length) {
+	            var buf = new Uint8Array(length);
+	            buf.set(this.buf);
+	            this.buf = buf;
+	            this.length = length;
+	        }
+	    },
+	
+	    finish: function() {
+	        this.length = this.pos;
+	        this.pos = 0;
+	        return this.buf.subarray(0, this.length);
+	    },
+	
+	    writeFixed32: function(val) {
+	        this.realloc(4);
+	        writeInt32(this.buf, val, this.pos);
+	        this.pos += 4;
+	    },
+	
+	    writeSFixed32: function(val) {
+	        this.realloc(4);
+	        writeInt32(this.buf, val, this.pos);
+	        this.pos += 4;
+	    },
+	
+	    writeFixed64: function(val) {
+	        this.realloc(8);
+	        writeInt32(this.buf, val & -1, this.pos);
+	        writeInt32(this.buf, Math.floor(val * SHIFT_RIGHT_32), this.pos + 4);
+	        this.pos += 8;
+	    },
+	
+	    writeSFixed64: function(val) {
+	        this.realloc(8);
+	        writeInt32(this.buf, val & -1, this.pos);
+	        writeInt32(this.buf, Math.floor(val * SHIFT_RIGHT_32), this.pos + 4);
+	        this.pos += 8;
+	    },
+	
+	    writeVarint: function(val) {
+	        val = +val || 0;
+	
+	        if (val > 0xfffffff || val < 0) {
+	            writeBigVarint(val, this);
+	            return;
+	        }
+	
+	        this.realloc(4);
+	
+	        this.buf[this.pos++] =           val & 0x7f  | (val > 0x7f ? 0x80 : 0); if (val <= 0x7f) return;
+	        this.buf[this.pos++] = ((val >>>= 7) & 0x7f) | (val > 0x7f ? 0x80 : 0); if (val <= 0x7f) return;
+	        this.buf[this.pos++] = ((val >>>= 7) & 0x7f) | (val > 0x7f ? 0x80 : 0); if (val <= 0x7f) return;
+	        this.buf[this.pos++] =   (val >>> 7) & 0x7f;
+	    },
+	
+	    writeSVarint: function(val) {
+	        this.writeVarint(val < 0 ? -val * 2 - 1 : val * 2);
+	    },
+	
+	    writeBoolean: function(val) {
+	        this.writeVarint(Boolean(val));
+	    },
+	
+	    writeString: function(str) {
+	        str = String(str);
+	        this.realloc(str.length * 4);
+	
+	        this.pos++; // reserve 1 byte for short string length
+	
+	        var startPos = this.pos;
+	        // write the string directly to the buffer and see how much was written
+	        this.pos = writeUtf8(this.buf, str, this.pos);
+	        var len = this.pos - startPos;
+	
+	        if (len >= 0x80) makeRoomForExtraLength(startPos, len, this);
+	
+	        // finally, write the message length in the reserved place and restore the position
+	        this.pos = startPos - 1;
+	        this.writeVarint(len);
+	        this.pos += len;
+	    },
+	
+	    writeFloat: function(val) {
+	        this.realloc(4);
+	        ieee754.write(this.buf, val, this.pos, true, 23, 4);
+	        this.pos += 4;
+	    },
+	
+	    writeDouble: function(val) {
+	        this.realloc(8);
+	        ieee754.write(this.buf, val, this.pos, true, 52, 8);
+	        this.pos += 8;
+	    },
+	
+	    writeBytes: function(buffer) {
+	        var len = buffer.length;
+	        this.writeVarint(len);
+	        this.realloc(len);
+	        for (var i = 0; i < len; i++) this.buf[this.pos++] = buffer[i];
+	    },
+	
+	    writeRawMessage: function(fn, obj) {
+	        this.pos++; // reserve 1 byte for short message length
+	
+	        // write the message directly to the buffer and see how much was written
+	        var startPos = this.pos;
+	        fn(obj, this);
+	        var len = this.pos - startPos;
+	
+	        if (len >= 0x80) makeRoomForExtraLength(startPos, len, this);
+	
+	        // finally, write the message length in the reserved place and restore the position
+	        this.pos = startPos - 1;
+	        this.writeVarint(len);
+	        this.pos += len;
+	    },
+	
+	    writeMessage: function(tag, fn, obj) {
+	        this.writeTag(tag, Pbf.Bytes);
+	        this.writeRawMessage(fn, obj);
+	    },
+	
+	    writePackedVarint:   function(tag, arr) { this.writeMessage(tag, writePackedVarint, arr);   },
+	    writePackedSVarint:  function(tag, arr) { this.writeMessage(tag, writePackedSVarint, arr);  },
+	    writePackedBoolean:  function(tag, arr) { this.writeMessage(tag, writePackedBoolean, arr);  },
+	    writePackedFloat:    function(tag, arr) { this.writeMessage(tag, writePackedFloat, arr);    },
+	    writePackedDouble:   function(tag, arr) { this.writeMessage(tag, writePackedDouble, arr);   },
+	    writePackedFixed32:  function(tag, arr) { this.writeMessage(tag, writePackedFixed32, arr);  },
+	    writePackedSFixed32: function(tag, arr) { this.writeMessage(tag, writePackedSFixed32, arr); },
+	    writePackedFixed64:  function(tag, arr) { this.writeMessage(tag, writePackedFixed64, arr);  },
+	    writePackedSFixed64: function(tag, arr) { this.writeMessage(tag, writePackedSFixed64, arr); },
+	
+	    writeBytesField: function(tag, buffer) {
+	        this.writeTag(tag, Pbf.Bytes);
+	        this.writeBytes(buffer);
+	    },
+	    writeFixed32Field: function(tag, val) {
+	        this.writeTag(tag, Pbf.Fixed32);
+	        this.writeFixed32(val);
+	    },
+	    writeSFixed32Field: function(tag, val) {
+	        this.writeTag(tag, Pbf.Fixed32);
+	        this.writeSFixed32(val);
+	    },
+	    writeFixed64Field: function(tag, val) {
+	        this.writeTag(tag, Pbf.Fixed64);
+	        this.writeFixed64(val);
+	    },
+	    writeSFixed64Field: function(tag, val) {
+	        this.writeTag(tag, Pbf.Fixed64);
+	        this.writeSFixed64(val);
+	    },
+	    writeVarintField: function(tag, val) {
+	        this.writeTag(tag, Pbf.Varint);
+	        this.writeVarint(val);
+	    },
+	    writeSVarintField: function(tag, val) {
+	        this.writeTag(tag, Pbf.Varint);
+	        this.writeSVarint(val);
+	    },
+	    writeStringField: function(tag, str) {
+	        this.writeTag(tag, Pbf.Bytes);
+	        this.writeString(str);
+	    },
+	    writeFloatField: function(tag, val) {
+	        this.writeTag(tag, Pbf.Fixed32);
+	        this.writeFloat(val);
+	    },
+	    writeDoubleField: function(tag, val) {
+	        this.writeTag(tag, Pbf.Fixed64);
+	        this.writeDouble(val);
+	    },
+	    writeBooleanField: function(tag, val) {
+	        this.writeVarintField(tag, Boolean(val));
+	    }
+	};
+	
+	function readVarintRemainder(l, s, p) {
+	    var buf = p.buf,
+	        h, b;
+	
+	    b = buf[p.pos++]; h  = (b & 0x70) >> 4;  if (b < 0x80) return toNum(l, h, s);
+	    b = buf[p.pos++]; h |= (b & 0x7f) << 3;  if (b < 0x80) return toNum(l, h, s);
+	    b = buf[p.pos++]; h |= (b & 0x7f) << 10; if (b < 0x80) return toNum(l, h, s);
+	    b = buf[p.pos++]; h |= (b & 0x7f) << 17; if (b < 0x80) return toNum(l, h, s);
+	    b = buf[p.pos++]; h |= (b & 0x7f) << 24; if (b < 0x80) return toNum(l, h, s);
+	    b = buf[p.pos++]; h |= (b & 0x01) << 31; if (b < 0x80) return toNum(l, h, s);
+	
+	    throw new Error('Expected varint not more than 10 bytes');
+	}
+	
+	function readPackedEnd(pbf) {
+	    return pbf.type === Pbf.Bytes ?
+	        pbf.readVarint() + pbf.pos : pbf.pos + 1;
+	}
+	
+	function toNum(low, high, isSigned) {
+	    if (isSigned) {
+	        return high * 0x100000000 + (low >>> 0);
+	    }
+	
+	    return ((high >>> 0) * 0x100000000) + (low >>> 0);
+	}
+	
+	function writeBigVarint(val, pbf) {
+	    var low, high;
+	
+	    if (val >= 0) {
+	        low  = (val % 0x100000000) | 0;
+	        high = (val / 0x100000000) | 0;
+	    } else {
+	        low  = ~(-val % 0x100000000);
+	        high = ~(-val / 0x100000000);
+	
+	        if (low ^ 0xffffffff) {
+	            low = (low + 1) | 0;
+	        } else {
+	            low = 0;
+	            high = (high + 1) | 0;
+	        }
+	    }
+	
+	    if (val >= 0x10000000000000000 || val < -0x10000000000000000) {
+	        throw new Error('Given varint doesn\'t fit into 10 bytes');
+	    }
+	
+	    pbf.realloc(10);
+	
+	    writeBigVarintLow(low, high, pbf);
+	    writeBigVarintHigh(high, pbf);
+	}
+	
+	function writeBigVarintLow(low, high, pbf) {
+	    pbf.buf[pbf.pos++] = low & 0x7f | 0x80; low >>>= 7;
+	    pbf.buf[pbf.pos++] = low & 0x7f | 0x80; low >>>= 7;
+	    pbf.buf[pbf.pos++] = low & 0x7f | 0x80; low >>>= 7;
+	    pbf.buf[pbf.pos++] = low & 0x7f | 0x80; low >>>= 7;
+	    pbf.buf[pbf.pos]   = low & 0x7f;
+	}
+	
+	function writeBigVarintHigh(high, pbf) {
+	    var lsb = (high & 0x07) << 4;
+	
+	    pbf.buf[pbf.pos++] |= lsb         | ((high >>>= 3) ? 0x80 : 0); if (!high) return;
+	    pbf.buf[pbf.pos++]  = high & 0x7f | ((high >>>= 7) ? 0x80 : 0); if (!high) return;
+	    pbf.buf[pbf.pos++]  = high & 0x7f | ((high >>>= 7) ? 0x80 : 0); if (!high) return;
+	    pbf.buf[pbf.pos++]  = high & 0x7f | ((high >>>= 7) ? 0x80 : 0); if (!high) return;
+	    pbf.buf[pbf.pos++]  = high & 0x7f | ((high >>>= 7) ? 0x80 : 0); if (!high) return;
+	    pbf.buf[pbf.pos++]  = high & 0x7f;
+	}
+	
+	function makeRoomForExtraLength(startPos, len, pbf) {
+	    var extraLen =
+	        len <= 0x3fff ? 1 :
+	        len <= 0x1fffff ? 2 :
+	        len <= 0xfffffff ? 3 : Math.ceil(Math.log(len) / (Math.LN2 * 7));
+	
+	    // if 1 byte isn't enough for encoding message length, shift the data to the right
+	    pbf.realloc(extraLen);
+	    for (var i = pbf.pos - 1; i >= startPos; i--) pbf.buf[i + extraLen] = pbf.buf[i];
+	}
+	
+	function writePackedVarint(arr, pbf)   { for (var i = 0; i < arr.length; i++) pbf.writeVarint(arr[i]);   }
+	function writePackedSVarint(arr, pbf)  { for (var i = 0; i < arr.length; i++) pbf.writeSVarint(arr[i]);  }
+	function writePackedFloat(arr, pbf)    { for (var i = 0; i < arr.length; i++) pbf.writeFloat(arr[i]);    }
+	function writePackedDouble(arr, pbf)   { for (var i = 0; i < arr.length; i++) pbf.writeDouble(arr[i]);   }
+	function writePackedBoolean(arr, pbf)  { for (var i = 0; i < arr.length; i++) pbf.writeBoolean(arr[i]);  }
+	function writePackedFixed32(arr, pbf)  { for (var i = 0; i < arr.length; i++) pbf.writeFixed32(arr[i]);  }
+	function writePackedSFixed32(arr, pbf) { for (var i = 0; i < arr.length; i++) pbf.writeSFixed32(arr[i]); }
+	function writePackedFixed64(arr, pbf)  { for (var i = 0; i < arr.length; i++) pbf.writeFixed64(arr[i]);  }
+	function writePackedSFixed64(arr, pbf) { for (var i = 0; i < arr.length; i++) pbf.writeSFixed64(arr[i]); }
+	
+	// Buffer code below from https://github.com/feross/buffer, MIT-licensed
+	
+	function readUInt32(buf, pos) {
+	    return ((buf[pos]) |
+	        (buf[pos + 1] << 8) |
+	        (buf[pos + 2] << 16)) +
+	        (buf[pos + 3] * 0x1000000);
+	}
+	
+	function writeInt32(buf, val, pos) {
+	    buf[pos] = val;
+	    buf[pos + 1] = (val >>> 8);
+	    buf[pos + 2] = (val >>> 16);
+	    buf[pos + 3] = (val >>> 24);
+	}
+	
+	function readInt32(buf, pos) {
+	    return ((buf[pos]) |
+	        (buf[pos + 1] << 8) |
+	        (buf[pos + 2] << 16)) +
+	        (buf[pos + 3] << 24);
+	}
+	
+	function readUtf8(buf, pos, end) {
+	    var str = '';
+	    var i = pos;
+	
+	    while (i < end) {
+	        var b0 = buf[i];
+	        var c = null; // codepoint
+	        var bytesPerSequence =
+	            b0 > 0xEF ? 4 :
+	            b0 > 0xDF ? 3 :
+	            b0 > 0xBF ? 2 : 1;
+	
+	        if (i + bytesPerSequence > end) break;
+	
+	        var b1, b2, b3;
+	
+	        if (bytesPerSequence === 1) {
+	            if (b0 < 0x80) {
+	                c = b0;
+	            }
+	        } else if (bytesPerSequence === 2) {
+	            b1 = buf[i + 1];
+	            if ((b1 & 0xC0) === 0x80) {
+	                c = (b0 & 0x1F) << 0x6 | (b1 & 0x3F);
+	                if (c <= 0x7F) {
+	                    c = null;
+	                }
+	            }
+	        } else if (bytesPerSequence === 3) {
+	            b1 = buf[i + 1];
+	            b2 = buf[i + 2];
+	            if ((b1 & 0xC0) === 0x80 && (b2 & 0xC0) === 0x80) {
+	                c = (b0 & 0xF) << 0xC | (b1 & 0x3F) << 0x6 | (b2 & 0x3F);
+	                if (c <= 0x7FF || (c >= 0xD800 && c <= 0xDFFF)) {
+	                    c = null;
+	                }
+	            }
+	        } else if (bytesPerSequence === 4) {
+	            b1 = buf[i + 1];
+	            b2 = buf[i + 2];
+	            b3 = buf[i + 3];
+	            if ((b1 & 0xC0) === 0x80 && (b2 & 0xC0) === 0x80 && (b3 & 0xC0) === 0x80) {
+	                c = (b0 & 0xF) << 0x12 | (b1 & 0x3F) << 0xC | (b2 & 0x3F) << 0x6 | (b3 & 0x3F);
+	                if (c <= 0xFFFF || c >= 0x110000) {
+	                    c = null;
+	                }
+	            }
+	        }
+	
+	        if (c === null) {
+	            c = 0xFFFD;
+	            bytesPerSequence = 1;
+	
+	        } else if (c > 0xFFFF) {
+	            c -= 0x10000;
+	            str += String.fromCharCode(c >>> 10 & 0x3FF | 0xD800);
+	            c = 0xDC00 | c & 0x3FF;
+	        }
+	
+	        str += String.fromCharCode(c);
+	        i += bytesPerSequence;
+	    }
+	
+	    return str;
+	}
+	
+	function writeUtf8(buf, str, pos) {
+	    for (var i = 0, c, lead; i < str.length; i++) {
+	        c = str.charCodeAt(i); // code point
+	
+	        if (c > 0xD7FF && c < 0xE000) {
+	            if (lead) {
+	                if (c < 0xDC00) {
+	                    buf[pos++] = 0xEF;
+	                    buf[pos++] = 0xBF;
+	                    buf[pos++] = 0xBD;
+	                    lead = c;
+	                    continue;
+	                } else {
+	                    c = lead - 0xD800 << 10 | c - 0xDC00 | 0x10000;
+	                    lead = null;
+	                }
+	            } else {
+	                if (c > 0xDBFF || (i + 1 === str.length)) {
+	                    buf[pos++] = 0xEF;
+	                    buf[pos++] = 0xBF;
+	                    buf[pos++] = 0xBD;
+	                } else {
+	                    lead = c;
+	                }
+	                continue;
+	            }
+	        } else if (lead) {
+	            buf[pos++] = 0xEF;
+	            buf[pos++] = 0xBF;
+	            buf[pos++] = 0xBD;
+	            lead = null;
+	        }
+	
+	        if (c < 0x80) {
+	            buf[pos++] = c;
+	        } else {
+	            if (c < 0x800) {
+	                buf[pos++] = c >> 0x6 | 0xC0;
+	            } else {
+	                if (c < 0x10000) {
+	                    buf[pos++] = c >> 0xC | 0xE0;
+	                } else {
+	                    buf[pos++] = c >> 0x12 | 0xF0;
+	                    buf[pos++] = c >> 0xC & 0x3F | 0x80;
+	                }
+	                buf[pos++] = c >> 0x6 & 0x3F | 0x80;
+	            }
+	            buf[pos++] = c & 0x3F | 0x80;
+	        }
+	    }
+	    return pos;
+	}
+
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports) {
+
+	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+	  var e, m
+	  var eLen = (nBytes * 8) - mLen - 1
+	  var eMax = (1 << eLen) - 1
+	  var eBias = eMax >> 1
+	  var nBits = -7
+	  var i = isLE ? (nBytes - 1) : 0
+	  var d = isLE ? -1 : 1
+	  var s = buffer[offset + i]
+	
+	  i += d
+	
+	  e = s & ((1 << (-nBits)) - 1)
+	  s >>= (-nBits)
+	  nBits += eLen
+	  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+	
+	  m = e & ((1 << (-nBits)) - 1)
+	  e >>= (-nBits)
+	  nBits += mLen
+	  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
+	
+	  if (e === 0) {
+	    e = 1 - eBias
+	  } else if (e === eMax) {
+	    return m ? NaN : ((s ? -1 : 1) * Infinity)
+	  } else {
+	    m = m + Math.pow(2, mLen)
+	    e = e - eBias
+	  }
+	  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+	}
+	
+	exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+	  var e, m, c
+	  var eLen = (nBytes * 8) - mLen - 1
+	  var eMax = (1 << eLen) - 1
+	  var eBias = eMax >> 1
+	  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+	  var i = isLE ? 0 : (nBytes - 1)
+	  var d = isLE ? 1 : -1
+	  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+	
+	  value = Math.abs(value)
+	
+	  if (isNaN(value) || value === Infinity) {
+	    m = isNaN(value) ? 1 : 0
+	    e = eMax
+	  } else {
+	    e = Math.floor(Math.log(value) / Math.LN2)
+	    if (value * (c = Math.pow(2, -e)) < 1) {
+	      e--
+	      c *= 2
+	    }
+	    if (e + eBias >= 1) {
+	      value += rt / c
+	    } else {
+	      value += rt * Math.pow(2, 1 - eBias)
+	    }
+	    if (value * c >= 2) {
+	      e++
+	      c /= 2
+	    }
+	
+	    if (e + eBias >= eMax) {
+	      m = 0
+	      e = eMax
+	    } else if (e + eBias >= 1) {
+	      m = ((value * c) - 1) * Math.pow(2, mLen)
+	      e = e + eBias
+	    } else {
+	      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+	      e = 0
+	    }
+	  }
+	
+	  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
+	
+	  e = (e << mLen) | m
+	  eLen += mLen
+	  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
+	
+	  buffer[offset + i - d] |= s * 128
+	}
+
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	module.exports.VectorTile = __webpack_require__(99);
+	module.exports.VectorTileFeature = __webpack_require__(101);
+	module.exports.VectorTileLayer = __webpack_require__(100);
+
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var VectorTileLayer = __webpack_require__(100);
+	
+	module.exports = VectorTile;
+	
+	function VectorTile(pbf, end) {
+	    this.layers = pbf.readFields(readTile, {}, end);
+	}
+	
+	function readTile(tag, layers, pbf) {
+	    if (tag === 3) {
+	        var layer = new VectorTileLayer(pbf, pbf.readVarint() + pbf.pos);
+	        if (layer.length) layers[layer.name] = layer;
+	    }
+	}
+	
+
+
+/***/ }),
+/* 100 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var VectorTileFeature = __webpack_require__(101);
+	
+	module.exports = VectorTileLayer;
+	
+	function VectorTileLayer(pbf, end) {
+	    // Public
+	    this.version = 1;
+	    this.name = null;
+	    this.extent = 4096;
+	    this.length = 0;
+	
+	    // Private
+	    this._pbf = pbf;
+	    this._keys = [];
+	    this._values = [];
+	    this._features = [];
+	
+	    pbf.readFields(readLayer, this, end);
+	
+	    this.length = this._features.length;
+	}
+	
+	function readLayer(tag, layer, pbf) {
+	    if (tag === 15) layer.version = pbf.readVarint();
+	    else if (tag === 1) layer.name = pbf.readString();
+	    else if (tag === 5) layer.extent = pbf.readVarint();
+	    else if (tag === 2) layer._features.push(pbf.pos);
+	    else if (tag === 3) layer._keys.push(pbf.readString());
+	    else if (tag === 4) layer._values.push(readValueMessage(pbf));
+	}
+	
+	function readValueMessage(pbf) {
+	    var value = null,
+	        end = pbf.readVarint() + pbf.pos;
+	
+	    while (pbf.pos < end) {
+	        var tag = pbf.readVarint() >> 3;
+	
+	        value = tag === 1 ? pbf.readString() :
+	            tag === 2 ? pbf.readFloat() :
+	            tag === 3 ? pbf.readDouble() :
+	            tag === 4 ? pbf.readVarint64() :
+	            tag === 5 ? pbf.readVarint() :
+	            tag === 6 ? pbf.readSVarint() :
+	            tag === 7 ? pbf.readBoolean() : null;
+	    }
+	
+	    return value;
+	}
+	
+	// return feature `i` from this layer as a `VectorTileFeature`
+	VectorTileLayer.prototype.feature = function(i) {
+	    if (i < 0 || i >= this._features.length) throw new Error('feature index out of bounds');
+	
+	    this._pbf.pos = this._features[i];
+	
+	    var end = this._pbf.readVarint() + this._pbf.pos;
+	    return new VectorTileFeature(this._pbf, end, this.extent, this._keys, this._values);
+	};
+
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var Point = __webpack_require__(102);
+	
+	module.exports = VectorTileFeature;
+	
+	function VectorTileFeature(pbf, end, extent, keys, values) {
+	    // Public
+	    this.properties = {};
+	    this.extent = extent;
+	    this.type = 0;
+	
+	    // Private
+	    this._pbf = pbf;
+	    this._geometry = -1;
+	    this._keys = keys;
+	    this._values = values;
+	
+	    pbf.readFields(readFeature, this, end);
+	}
+	
+	function readFeature(tag, feature, pbf) {
+	    if (tag == 1) feature.id = pbf.readVarint();
+	    else if (tag == 2) readTag(pbf, feature);
+	    else if (tag == 3) feature.type = pbf.readVarint();
+	    else if (tag == 4) feature._geometry = pbf.pos;
+	}
+	
+	function readTag(pbf, feature) {
+	    var end = pbf.readVarint() + pbf.pos;
+	
+	    while (pbf.pos < end) {
+	        var key = feature._keys[pbf.readVarint()],
+	            value = feature._values[pbf.readVarint()];
+	        feature.properties[key] = value;
+	    }
+	}
+	
+	VectorTileFeature.types = ['Unknown', 'Point', 'LineString', 'Polygon'];
+	
+	VectorTileFeature.prototype.loadGeometry = function() {
+	    var pbf = this._pbf;
+	    pbf.pos = this._geometry;
+	
+	    var end = pbf.readVarint() + pbf.pos,
+	        cmd = 1,
+	        length = 0,
+	        x = 0,
+	        y = 0,
+	        lines = [],
+	        line;
+	
+	    while (pbf.pos < end) {
+	        if (length <= 0) {
+	            var cmdLen = pbf.readVarint();
+	            cmd = cmdLen & 0x7;
+	            length = cmdLen >> 3;
+	        }
+	
+	        length--;
+	
+	        if (cmd === 1 || cmd === 2) {
+	            x += pbf.readSVarint();
+	            y += pbf.readSVarint();
+	
+	            if (cmd === 1) { // moveTo
+	                if (line) lines.push(line);
+	                line = [];
+	            }
+	
+	            line.push(new Point(x, y));
+	
+	        } else if (cmd === 7) {
+	
+	            // Workaround for https://github.com/mapbox/mapnik-vector-tile/issues/90
+	            if (line) {
+	                line.push(line[0].clone()); // closePolygon
+	            }
+	
+	        } else {
+	            throw new Error('unknown command ' + cmd);
+	        }
+	    }
+	
+	    if (line) lines.push(line);
+	
+	    return lines;
+	};
+	
+	VectorTileFeature.prototype.bbox = function() {
+	    var pbf = this._pbf;
+	    pbf.pos = this._geometry;
+	
+	    var end = pbf.readVarint() + pbf.pos,
+	        cmd = 1,
+	        length = 0,
+	        x = 0,
+	        y = 0,
+	        x1 = Infinity,
+	        x2 = -Infinity,
+	        y1 = Infinity,
+	        y2 = -Infinity;
+	
+	    while (pbf.pos < end) {
+	        if (length <= 0) {
+	            var cmdLen = pbf.readVarint();
+	            cmd = cmdLen & 0x7;
+	            length = cmdLen >> 3;
+	        }
+	
+	        length--;
+	
+	        if (cmd === 1 || cmd === 2) {
+	            x += pbf.readSVarint();
+	            y += pbf.readSVarint();
+	            if (x < x1) x1 = x;
+	            if (x > x2) x2 = x;
+	            if (y < y1) y1 = y;
+	            if (y > y2) y2 = y;
+	
+	        } else if (cmd !== 7) {
+	            throw new Error('unknown command ' + cmd);
+	        }
+	    }
+	
+	    return [x1, y1, x2, y2];
+	};
+	
+	VectorTileFeature.prototype.toGeoJSON = function(x, y, z) {
+	    var size = this.extent * Math.pow(2, z),
+	        x0 = this.extent * x,
+	        y0 = this.extent * y,
+	        coords = this.loadGeometry(),
+	        type = VectorTileFeature.types[this.type],
+	        i, j;
+	
+	    function project(line) {
+	        for (var j = 0; j < line.length; j++) {
+	            var p = line[j], y2 = 180 - (p.y + y0) * 360 / size;
+	            line[j] = [
+	                (p.x + x0) * 360 / size - 180,
+	                360 / Math.PI * Math.atan(Math.exp(y2 * Math.PI / 180)) - 90
+	            ];
+	        }
+	    }
+	
+	    switch (this.type) {
+	    case 1:
+	        var points = [];
+	        for (i = 0; i < coords.length; i++) {
+	            points[i] = coords[i][0];
+	        }
+	        coords = points;
+	        project(coords);
+	        break;
+	
+	    case 2:
+	        for (i = 0; i < coords.length; i++) {
+	            project(coords[i]);
+	        }
+	        break;
+	
+	    case 3:
+	        coords = classifyRings(coords);
+	        for (i = 0; i < coords.length; i++) {
+	            for (j = 0; j < coords[i].length; j++) {
+	                project(coords[i][j]);
+	            }
+	        }
+	        break;
+	    }
+	
+	    if (coords.length === 1) {
+	        coords = coords[0];
+	    } else {
+	        type = 'Multi' + type;
+	    }
+	
+	    var result = {
+	        type: "Feature",
+	        geometry: {
+	            type: type,
+	            coordinates: coords
+	        },
+	        properties: this.properties
+	    };
+	
+	    if ('id' in this) {
+	        result.id = this.id;
+	    }
+	
+	    return result;
+	};
+	
+	// classifies an array of rings into polygons with outer rings and holes
+	
+	function classifyRings(rings) {
+	    var len = rings.length;
+	
+	    if (len <= 1) return [rings];
+	
+	    var polygons = [],
+	        polygon,
+	        ccw;
+	
+	    for (var i = 0; i < len; i++) {
+	        var area = signedArea(rings[i]);
+	        if (area === 0) continue;
+	
+	        if (ccw === undefined) ccw = area < 0;
+	
+	        if (ccw === area < 0) {
+	            if (polygon) polygons.push(polygon);
+	            polygon = [rings[i]];
+	
+	        } else {
+	            polygon.push(rings[i]);
+	        }
+	    }
+	    if (polygon) polygons.push(polygon);
+	
+	    return polygons;
+	}
+	
+	function signedArea(ring) {
+	    var sum = 0;
+	    for (var i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
+	        p1 = ring[i];
+	        p2 = ring[j];
+	        sum += (p2.x - p1.x) * (p1.y + p2.y);
+	    }
+	    return sum;
+	}
+
+
+/***/ }),
+/* 102 */
+/***/ (function(module, exports) {
+
+	'use strict';
+	
+	module.exports = Point;
+	
+	/**
+	 * A standalone point geometry with useful accessor, comparison, and
+	 * modification methods.
+	 *
+	 * @class Point
+	 * @param {Number} x the x-coordinate. this could be longitude or screen
+	 * pixels, or any other sort of unit.
+	 * @param {Number} y the y-coordinate. this could be latitude or screen
+	 * pixels, or any other sort of unit.
+	 * @example
+	 * var point = new Point(-77, 38);
+	 */
+	function Point(x, y) {
+	    this.x = x;
+	    this.y = y;
+	}
+	
+	Point.prototype = {
+	
+	    /**
+	     * Clone this point, returning a new point that can be modified
+	     * without affecting the old one.
+	     * @return {Point} the clone
+	     */
+	    clone: function() { return new Point(this.x, this.y); },
+	
+	    /**
+	     * Add this point's x & y coordinates to another point,
+	     * yielding a new point.
+	     * @param {Point} p the other point
+	     * @return {Point} output point
+	     */
+	    add:     function(p) { return this.clone()._add(p); },
+	
+	    /**
+	     * Subtract this point's x & y coordinates to from point,
+	     * yielding a new point.
+	     * @param {Point} p the other point
+	     * @return {Point} output point
+	     */
+	    sub:     function(p) { return this.clone()._sub(p); },
+	
+	    /**
+	     * Multiply this point's x & y coordinates by point,
+	     * yielding a new point.
+	     * @param {Point} p the other point
+	     * @return {Point} output point
+	     */
+	    multByPoint:    function(p) { return this.clone()._multByPoint(p); },
+	
+	    /**
+	     * Divide this point's x & y coordinates by point,
+	     * yielding a new point.
+	     * @param {Point} p the other point
+	     * @return {Point} output point
+	     */
+	    divByPoint:     function(p) { return this.clone()._divByPoint(p); },
+	
+	    /**
+	     * Multiply this point's x & y coordinates by a factor,
+	     * yielding a new point.
+	     * @param {Point} k factor
+	     * @return {Point} output point
+	     */
+	    mult:    function(k) { return this.clone()._mult(k); },
+	
+	    /**
+	     * Divide this point's x & y coordinates by a factor,
+	     * yielding a new point.
+	     * @param {Point} k factor
+	     * @return {Point} output point
+	     */
+	    div:     function(k) { return this.clone()._div(k); },
+	
+	    /**
+	     * Rotate this point around the 0, 0 origin by an angle a,
+	     * given in radians
+	     * @param {Number} a angle to rotate around, in radians
+	     * @return {Point} output point
+	     */
+	    rotate:  function(a) { return this.clone()._rotate(a); },
+	
+	    /**
+	     * Rotate this point around p point by an angle a,
+	     * given in radians
+	     * @param {Number} a angle to rotate around, in radians
+	     * @param {Point} p Point to rotate around
+	     * @return {Point} output point
+	     */
+	    rotateAround:  function(a,p) { return this.clone()._rotateAround(a,p); },
+	
+	    /**
+	     * Multiply this point by a 4x1 transformation matrix
+	     * @param {Array<Number>} m transformation matrix
+	     * @return {Point} output point
+	     */
+	    matMult: function(m) { return this.clone()._matMult(m); },
+	
+	    /**
+	     * Calculate this point but as a unit vector from 0, 0, meaning
+	     * that the distance from the resulting point to the 0, 0
+	     * coordinate will be equal to 1 and the angle from the resulting
+	     * point to the 0, 0 coordinate will be the same as before.
+	     * @return {Point} unit vector point
+	     */
+	    unit:    function() { return this.clone()._unit(); },
+	
+	    /**
+	     * Compute a perpendicular point, where the new y coordinate
+	     * is the old x coordinate and the new x coordinate is the old y
+	     * coordinate multiplied by -1
+	     * @return {Point} perpendicular point
+	     */
+	    perp:    function() { return this.clone()._perp(); },
+	
+	    /**
+	     * Return a version of this point with the x & y coordinates
+	     * rounded to integers.
+	     * @return {Point} rounded point
+	     */
+	    round:   function() { return this.clone()._round(); },
+	
+	    /**
+	     * Return the magitude of this point: this is the Euclidean
+	     * distance from the 0, 0 coordinate to this point's x and y
+	     * coordinates.
+	     * @return {Number} magnitude
+	     */
+	    mag: function() {
+	        return Math.sqrt(this.x * this.x + this.y * this.y);
+	    },
+	
+	    /**
+	     * Judge whether this point is equal to another point, returning
+	     * true or false.
+	     * @param {Point} other the other point
+	     * @return {boolean} whether the points are equal
+	     */
+	    equals: function(other) {
+	        return this.x === other.x &&
+	               this.y === other.y;
+	    },
+	
+	    /**
+	     * Calculate the distance from this point to another point
+	     * @param {Point} p the other point
+	     * @return {Number} distance
+	     */
+	    dist: function(p) {
+	        return Math.sqrt(this.distSqr(p));
+	    },
+	
+	    /**
+	     * Calculate the distance from this point to another point,
+	     * without the square root step. Useful if you're comparing
+	     * relative distances.
+	     * @param {Point} p the other point
+	     * @return {Number} distance
+	     */
+	    distSqr: function(p) {
+	        var dx = p.x - this.x,
+	            dy = p.y - this.y;
+	        return dx * dx + dy * dy;
+	    },
+	
+	    /**
+	     * Get the angle from the 0, 0 coordinate to this point, in radians
+	     * coordinates.
+	     * @return {Number} angle
+	     */
+	    angle: function() {
+	        return Math.atan2(this.y, this.x);
+	    },
+	
+	    /**
+	     * Get the angle from this point to another point, in radians
+	     * @param {Point} b the other point
+	     * @return {Number} angle
+	     */
+	    angleTo: function(b) {
+	        return Math.atan2(this.y - b.y, this.x - b.x);
+	    },
+	
+	    /**
+	     * Get the angle between this point and another point, in radians
+	     * @param {Point} b the other point
+	     * @return {Number} angle
+	     */
+	    angleWith: function(b) {
+	        return this.angleWithSep(b.x, b.y);
+	    },
+	
+	    /*
+	     * Find the angle of the two vectors, solving the formula for
+	     * the cross product a x b = |a||b|sin(θ) for θ.
+	     * @param {Number} x the x-coordinate
+	     * @param {Number} y the y-coordinate
+	     * @return {Number} the angle in radians
+	     */
+	    angleWithSep: function(x, y) {
+	        return Math.atan2(
+	            this.x * y - this.y * x,
+	            this.x * x + this.y * y);
+	    },
+	
+	    _matMult: function(m) {
+	        var x = m[0] * this.x + m[1] * this.y,
+	            y = m[2] * this.x + m[3] * this.y;
+	        this.x = x;
+	        this.y = y;
+	        return this;
+	    },
+	
+	    _add: function(p) {
+	        this.x += p.x;
+	        this.y += p.y;
+	        return this;
+	    },
+	
+	    _sub: function(p) {
+	        this.x -= p.x;
+	        this.y -= p.y;
+	        return this;
+	    },
+	
+	    _mult: function(k) {
+	        this.x *= k;
+	        this.y *= k;
+	        return this;
+	    },
+	
+	    _div: function(k) {
+	        this.x /= k;
+	        this.y /= k;
+	        return this;
+	    },
+	
+	    _multByPoint: function(p) {
+	        this.x *= p.x;
+	        this.y *= p.y;
+	        return this;
+	    },
+	
+	    _divByPoint: function(p) {
+	        this.x /= p.x;
+	        this.y /= p.y;
+	        return this;
+	    },
+	
+	    _unit: function() {
+	        this._div(this.mag());
+	        return this;
+	    },
+	
+	    _perp: function() {
+	        var y = this.y;
+	        this.y = this.x;
+	        this.x = -y;
+	        return this;
+	    },
+	
+	    _rotate: function(angle) {
+	        var cos = Math.cos(angle),
+	            sin = Math.sin(angle),
+	            x = cos * this.x - sin * this.y,
+	            y = sin * this.x + cos * this.y;
+	        this.x = x;
+	        this.y = y;
+	        return this;
+	    },
+	
+	    _rotateAround: function(angle, p) {
+	        var cos = Math.cos(angle),
+	            sin = Math.sin(angle),
+	            x = p.x + cos * (this.x - p.x) - sin * (this.y - p.y),
+	            y = p.y + sin * (this.x - p.x) + cos * (this.y - p.y);
+	        this.x = x;
+	        this.y = y;
+	        return this;
+	    },
+	
+	    _round: function() {
+	        this.x = Math.round(this.x);
+	        this.y = Math.round(this.y);
+	        return this;
+	    }
+	};
+	
+	/**
+	 * Construct a point from an array if necessary, otherwise if the input
+	 * is already a Point, or an unknown type, return it unchanged
+	 * @param {Array<Number>|Point|*} a any kind of input value
+	 * @return {Point} constructed point, or passed-through value.
+	 * @example
+	 * // this
+	 * var point = Point.convert([0, 1]);
+	 * // is equivalent to
+	 * var point = new Point(0, 1);
+	 */
+	Point.convert = function (a) {
+	    if (a instanceof Point) {
+	        return a;
+	    }
+	    if (Array.isArray(a)) {
+	        return new Point(a[0], a[1]);
+	    }
+	    return a;
+	};
+
+
+/***/ }),
+/* 103 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
 	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -24617,7 +26322,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.topoJSONLayer = noNew;
 
 /***/ }),
-/* 95 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	Object.defineProperty(exports, '__esModule', {
@@ -24668,7 +26373,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.topoJSONWorkerLayer = noNew;
 
 /***/ }),
-/* 96 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	Object.defineProperty(exports, '__esModule', {
@@ -24679,7 +26384,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	// TODO: A lot of these utils don't need to be in separate, tiny files
 	
-	var _wrapNum = __webpack_require__(97);
+	var _wrapNum = __webpack_require__(106);
 	
 	var _wrapNum2 = _interopRequireDefault(_wrapNum);
 	
@@ -24716,7 +26421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ }),
-/* 97 */
+/* 106 */
 /***/ (function(module, exports) {
 
 	Object.defineProperty(exports, "__esModule", {
