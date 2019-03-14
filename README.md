@@ -15,13 +15,13 @@ A framework for 3D geospatial visualization in the browser
 
 ## Examples
 
-* [Basic example](https://github.com/UDST/vizicities/tree/master/examples/basic) (2D basemap and 3D buildings) ([demo](http://cdn.rawgit.com/UDST/vizicities/master/examples/basic/index.html))
-* [Buildings coloured by height](https://github.com/UDST/vizicities/tree/master/examples/colour-by-height) ([demo](http://cdn.rawgit.com/UDST/vizicities/master/examples/colour-by-height/index.html))
-* [Basic GeoJSON example](https://github.com/UDST/vizicities/tree/master/examples/geojson) (points, linestrings and polygons) ([demo](http://cdn.rawgit.com/UDST/vizicities/master/examples/geojson/index.html))
-* [Interactivity](https://github.com/UDST/vizicities/tree/master/examples/interactive) (open console and click on features) ([demo](http://cdn.rawgit.com/UDST/vizicities/master/examples/interactive/index.html))
-* [NYC MTA routes](https://github.com/UDST/vizicities/tree/master/examples/mta-routes) ([demo](http://cdn.rawgit.com/UDST/vizicities/master/examples/mta-routes/index.html))
-* [Lots of GeoJSON](https://github.com/UDST/vizicities/tree/master/examples/lots-of-features) features ([demo](http://cdn.rawgit.com/UDST/vizicities/master/examples/lots-of-features/index.html))
-* [All the things](https://github.com/UDST/vizicities/tree/master/examples/all-the-things) (will test even the best computers) ([demo](http://cdn.rawgit.com/UDST/vizicities/master/examples/all-the-things/index.html))
+* [Basic GeoJSON](https://github.com/robhawkes/vizicities/tree/dev/examples/web-workers-basic-geojson) (2D basemap and 3D buildings) ([demo](https://raw.githack.com/robhawkes/vizicities/dev/examples/web-workers-basic-geojson/index.html))
+* [Basic MVT](https://github.com/robhawkes/vizicities/tree/dev/examples/web-workers-basic-mvt) (2D basemap and 3D buildings) ([demo](https://raw.githack.com/robhawkes/vizicities/dev/examples/web-workers-basic-mvt/index.html))
+* [Buildings coloured by height](https://github.com/robhawkes/vizicities/tree/dev/examples/colour-by-height) ([demo](https://raw.githack.com/robhawkes/vizicities/dev/examples/colour-by-height/index.html))
+* [Interactivity](https://github.com/robhawkes/vizicities/tree/dev/examples/interactive) (open console and click on features) ([demo](https://raw.githack.com/robhawkes/vizicities/dev/examples/interactive/index.html))
+* [NYC MTA routes](https://github.com/robhawkes/vizicities/tree/dev/examples/mta-routes) ([demo](https://raw.githack.com/robhawkes/vizicities/dev/examples/mta-routes/index.html))
+* [Lots of GeoJSON](https://github.com/robhawkes/vizicities/tree/dev/examples/lots-of-features) features ([demo](https://raw.githack.com/robhawkes/vizicities/dev/examples/lots-of-features/index.html))
+* [All the things](https://github.com/robhawkes/vizicities/tree/dev/examples/web-workers-all-the-things) (will test even the best computers) ([demo](https://raw.githack.com/robhawkes/vizicities/dev/examples/web-workers-all-the-things/index.html))
 
 
 ## Main changes since 0.2
