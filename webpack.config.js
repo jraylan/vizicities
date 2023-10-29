@@ -4,7 +4,6 @@ module.exports = {
   entry: {
     'vizicities': './src/vizicities.js',
     'vizicities-worker': './src/vizicities-worker.js',
-    'vizicities.css': './src/vizicities.css'
 
   },
   output: {
