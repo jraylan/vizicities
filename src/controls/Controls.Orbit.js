@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import * as THREE from 'three';
 import OrbitControls from 'three/examples/js/controls/OrbitControls';
-import {TweenLite} from '../../examples/vendor/TweenMax.min';
+import {TweenLite} from './gsap';
 
 class Orbit extends EventEmitter {
   constructor() {
