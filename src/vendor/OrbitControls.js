@@ -2,7 +2,6 @@
 /* eslint-disable */
 
 import * as THREE from 'three';
-import { OrbitControls as _OrbitControls } from "../../examples/vendor/OrbitControls";
 import Hammer from 'hammerjs';
 1
 /**
