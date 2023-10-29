@@ -4,6 +4,7 @@ module.exports = {
   entry: {
     'vizicities': './src/vizicities.js',
     'vizicities-worker': './src/vizicities-worker.js'
+
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -13,5 +14,13 @@ module.exports = {
     fallback: {
       util: require.resolve("util/")
     }
-  }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        loader: "css-loader"
+      },
+    ],
+  },
 };

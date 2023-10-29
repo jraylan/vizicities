@@ -27,6 +27,9 @@ import PickingMaterial from './engine/PickingMaterial';
 
 import Util from './util/index';
 
+import css from "./vizicities.css";
+
+
 const VIZI = {
   version: '0.3',
 
