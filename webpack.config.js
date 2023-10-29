@@ -10,9 +10,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
   },
+  devtool: 'source-map',
   resolve: {
     fallback: {
-      util: require.resolve("util/")
+      util: require.resolve("util/"),
+      THREE: require.resolve('three')
     }
   },
   module: {
@@ -20,6 +22,18 @@ module.exports = {
       {
         test: /\.css$/i,
         loader: "css-loader"
+      },{
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use:[
+            'babel-loader'
+        ]
+      },{
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use:[
+            'babel-loader'
+        ]
       },
     ],
   },

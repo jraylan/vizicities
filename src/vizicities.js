@@ -1,3 +1,6 @@
+import 'three';
+
+
 import World, {world} from './World';
 import Controls from './controls/index';
 
@@ -27,7 +30,7 @@ import PickingMaterial from './engine/PickingMaterial';
 
 import Util from './util/index';
 
-import css from "./vizicities.css";
+import "./vizicities.css";
 
 
 const VIZI = {

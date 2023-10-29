@@ -1,6 +1,39 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 4017:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Z: () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+var Stringify = function () {
+  var functionToString = function (f) {
+    return f.toString();
+  };
+
+  // Based on https://github.com/tangrams/tangram/blob/2a31893c814cf15d5077f87ffa10af20160716b9/src/utils/utils.js#L245
+  var stringToFunction = function (str) {
+    if (typeof str === 'string' && str.match(/^\s*function\s*\w*\s*\([\s\S]*\)\s*\{[\s\S]*\}/m) != null) {
+      var f;
+      try {
+        eval('f = ' + str);
+        return f;
+      } catch (err) {
+        return str;
+      }
+    }
+  };
+  return {
+    functionToString: functionToString,
+    stringToFunction: stringToFunction
+  };
+}();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Stringify);
+
+/***/ }),
+
 /***/ 9187:
 /***/ ((module) => {
 
@@ -41,10 +74,10 @@ function earcut(data, holeIndices, dim) {
 
         // minX, minY and invSize are later used to transform coords into integers for z-order calculation
         invSize = Math.max(maxX - minX, maxY - minY);
-        invSize = invSize !== 0 ? 1 / invSize : 0;
+        invSize = invSize !== 0 ? 32767 / invSize : 0;
     }
 
-    earcutLinked(outerNode, triangles, dim, minX, minY, invSize);
+    earcutLinked(outerNode, triangles, dim, minX, minY, invSize, 0);
 
     return triangles;
 }
@@ -108,9 +141,9 @@ function earcutLinked(ear, triangles, dim, minX, minY, invSize, pass) {
 
         if (invSize ? isEarHashed(ear, minX, minY, invSize) : isEar(ear)) {
             // cut off the triangle
-            triangles.push(prev.i / dim);
-            triangles.push(ear.i / dim);
-            triangles.push(next.i / dim);
+            triangles.push(prev.i / dim | 0);
+            triangles.push(ear.i / dim | 0);
+            triangles.push(next.i / dim | 0);
 
             removeNode(ear);
 
@@ -131,7 +164,7 @@ function earcutLinked(ear, triangles, dim, minX, minY, invSize, pass) {
 
             // if this didn't work, try curing all small self-intersections locally
             } else if (pass === 1) {
-                ear = cureLocalIntersections(ear, triangles, dim);
+                ear = cureLocalIntersections(filterPoints(ear), triangles, dim);
                 earcutLinked(ear, triangles, dim, minX, minY, invSize, 2);
 
             // as a last resort, try splitting the remaining polygon into two
@@ -153,10 +186,18 @@ function isEar(ear) {
     if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
 
     // now make sure we don't have other points inside the potential ear
-    var p = ear.next.next;
+    var ax = a.x, bx = b.x, cx = c.x, ay = a.y, by = b.y, cy = c.y;
 
-    while (p !== ear.prev) {
-        if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+    // triangle bbox; min & max are calculated like this for speed
+    var x0 = ax < bx ? (ax < cx ? ax : cx) : (bx < cx ? bx : cx),
+        y0 = ay < by ? (ay < cy ? ay : cy) : (by < cy ? by : cy),
+        x1 = ax > bx ? (ax > cx ? ax : cx) : (bx > cx ? bx : cx),
+        y1 = ay > by ? (ay > cy ? ay : cy) : (by > cy ? by : cy);
+
+    var p = c.next;
+    while (p !== a) {
+        if (p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1 &&
+            pointInTriangle(ax, ay, bx, by, cx, cy, p.x, p.y) &&
             area(p.prev, p, p.next) >= 0) return false;
         p = p.next;
     }
@@ -171,45 +212,43 @@ function isEarHashed(ear, minX, minY, invSize) {
 
     if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
 
+    var ax = a.x, bx = b.x, cx = c.x, ay = a.y, by = b.y, cy = c.y;
+
     // triangle bbox; min & max are calculated like this for speed
-    var minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : (b.x < c.x ? b.x : c.x),
-        minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : (b.y < c.y ? b.y : c.y),
-        maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : (b.x > c.x ? b.x : c.x),
-        maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : (b.y > c.y ? b.y : c.y);
+    var x0 = ax < bx ? (ax < cx ? ax : cx) : (bx < cx ? bx : cx),
+        y0 = ay < by ? (ay < cy ? ay : cy) : (by < cy ? by : cy),
+        x1 = ax > bx ? (ax > cx ? ax : cx) : (bx > cx ? bx : cx),
+        y1 = ay > by ? (ay > cy ? ay : cy) : (by > cy ? by : cy);
 
     // z-order range for the current triangle bbox;
-    var minZ = zOrder(minTX, minTY, minX, minY, invSize),
-        maxZ = zOrder(maxTX, maxTY, minX, minY, invSize);
+    var minZ = zOrder(x0, y0, minX, minY, invSize),
+        maxZ = zOrder(x1, y1, minX, minY, invSize);
 
     var p = ear.prevZ,
         n = ear.nextZ;
 
     // look for points inside the triangle in both directions
     while (p && p.z >= minZ && n && n.z <= maxZ) {
-        if (p !== ear.prev && p !== ear.next &&
-            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
-            area(p.prev, p, p.next) >= 0) return false;
+        if (p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1 && p !== a && p !== c &&
+            pointInTriangle(ax, ay, bx, by, cx, cy, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
         p = p.prevZ;
 
-        if (n !== ear.prev && n !== ear.next &&
-            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
-            area(n.prev, n, n.next) >= 0) return false;
+        if (n.x >= x0 && n.x <= x1 && n.y >= y0 && n.y <= y1 && n !== a && n !== c &&
+            pointInTriangle(ax, ay, bx, by, cx, cy, n.x, n.y) && area(n.prev, n, n.next) >= 0) return false;
         n = n.nextZ;
     }
 
     // look for remaining points in decreasing z-order
     while (p && p.z >= minZ) {
-        if (p !== ear.prev && p !== ear.next &&
-            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
-            area(p.prev, p, p.next) >= 0) return false;
+        if (p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1 && p !== a && p !== c &&
+            pointInTriangle(ax, ay, bx, by, cx, cy, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
         p = p.prevZ;
     }
 
     // look for remaining points in increasing z-order
     while (n && n.z <= maxZ) {
-        if (n !== ear.prev && n !== ear.next &&
-            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) &&
-            area(n.prev, n, n.next) >= 0) return false;
+        if (n.x >= x0 && n.x <= x1 && n.y >= y0 && n.y <= y1 && n !== a && n !== c &&
+            pointInTriangle(ax, ay, bx, by, cx, cy, n.x, n.y) && area(n.prev, n, n.next) >= 0) return false;
         n = n.nextZ;
     }
 
@@ -225,9 +264,9 @@ function cureLocalIntersections(start, triangles, dim) {
 
         if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
 
-            triangles.push(a.i / dim);
-            triangles.push(p.i / dim);
-            triangles.push(b.i / dim);
+            triangles.push(a.i / dim | 0);
+            triangles.push(p.i / dim | 0);
+            triangles.push(b.i / dim | 0);
 
             // remove two nodes involved
             removeNode(p);
@@ -238,7 +277,7 @@ function cureLocalIntersections(start, triangles, dim) {
         p = p.next;
     } while (p !== start);
 
-    return p;
+    return filterPoints(p);
 }
 
 // try splitting polygon into two and triangulate them independently
@@ -257,8 +296,8 @@ function splitEarcut(start, triangles, dim, minX, minY, invSize) {
                 c = filterPoints(c, c.next);
 
                 // run earcut on each half
-                earcutLinked(a, triangles, dim, minX, minY, invSize);
-                earcutLinked(c, triangles, dim, minX, minY, invSize);
+                earcutLinked(a, triangles, dim, minX, minY, invSize, 0);
+                earcutLinked(c, triangles, dim, minX, minY, invSize, 0);
                 return;
             }
             b = b.next;
@@ -284,8 +323,7 @@ function eliminateHoles(data, holeIndices, outerNode, dim) {
 
     // process holes from left to right
     for (i = 0; i < queue.length; i++) {
-        eliminateHole(queue[i], outerNode);
-        outerNode = filterPoints(outerNode, outerNode.next);
+        outerNode = eliminateHole(queue[i], outerNode);
     }
 
     return outerNode;
@@ -297,11 +335,16 @@ function compareX(a, b) {
 
 // find a bridge between vertices that connects hole with an outer ring and and link it
 function eliminateHole(hole, outerNode) {
-    outerNode = findHoleBridge(hole, outerNode);
-    if (outerNode) {
-        var b = splitPolygon(outerNode, hole);
-        filterPoints(b, b.next);
+    var bridge = findHoleBridge(hole, outerNode);
+    if (!bridge) {
+        return outerNode;
     }
+
+    var bridgeReverse = splitPolygon(bridge, hole);
+
+    // filter collinear points around the cuts
+    filterPoints(bridgeReverse, bridgeReverse.next);
+    return filterPoints(bridge, bridge.next);
 }
 
 // David Eberly's algorithm for finding a bridge between hole and outer polygon
@@ -319,19 +362,14 @@ function findHoleBridge(hole, outerNode) {
             var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
             if (x <= hx && x > qx) {
                 qx = x;
-                if (x === hx) {
-                    if (hy === p.y) return p;
-                    if (hy === p.next.y) return p.next;
-                }
                 m = p.x < p.next.x ? p : p.next;
+                if (x === hx) return m; // hole touches outer segment; pick leftmost endpoint
             }
         }
         p = p.next;
     } while (p !== outerNode);
 
     if (!m) return null;
-
-    if (hx === qx) return m.prev; // hole touches outer segment; pick lower endpoint
 
     // look for points inside the triangle of hole point, segment intersection and endpoint;
     // if there are no points found, we have a valid connection;
@@ -343,31 +381,37 @@ function findHoleBridge(hole, outerNode) {
         tanMin = Infinity,
         tan;
 
-    p = m.next;
+    p = m;
 
-    while (p !== stop) {
+    do {
         if (hx >= p.x && p.x >= mx && hx !== p.x &&
                 pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
 
             tan = Math.abs(hy - p.y) / (hx - p.x); // tangential
 
-            if ((tan < tanMin || (tan === tanMin && p.x > m.x)) && locallyInside(p, hole)) {
+            if (locallyInside(p, hole) &&
+                (tan < tanMin || (tan === tanMin && (p.x > m.x || (p.x === m.x && sectorContainsSector(m, p)))))) {
                 m = p;
                 tanMin = tan;
             }
         }
 
         p = p.next;
-    }
+    } while (p !== stop);
 
     return m;
+}
+
+// whether sector in vertex m contains sector in vertex p in the same coordinates
+function sectorContainsSector(m, p) {
+    return area(m.prev, m, p.prev) < 0 && area(p.next, m, m.next) < 0;
 }
 
 // interlink polygon nodes in z-order
 function indexCurve(start, minX, minY, invSize) {
     var p = start;
     do {
-        if (p.z === null) p.z = zOrder(p.x, p.y, minX, minY, invSize);
+        if (p.z === 0) p.z = zOrder(p.x, p.y, minX, minY, invSize);
         p.prevZ = p.prev;
         p.nextZ = p.next;
         p = p.next;
@@ -435,8 +479,8 @@ function sortLinked(list) {
 // z-order of a point given coords and inverse of the longer side of data bbox
 function zOrder(x, y, minX, minY, invSize) {
     // coords are transformed into non-negative 15-bit integer range
-    x = 32767 * (x - minX) * invSize;
-    y = 32767 * (y - minY) * invSize;
+    x = (x - minX) * invSize | 0;
+    y = (y - minY) * invSize | 0;
 
     x = (x | (x << 8)) & 0x00FF00FF;
     x = (x | (x << 4)) & 0x0F0F0F0F;
@@ -456,7 +500,7 @@ function getLeftmost(start) {
     var p = start,
         leftmost = start;
     do {
-        if (p.x < leftmost.x) leftmost = p;
+        if (p.x < leftmost.x || (p.x === leftmost.x && p.y < leftmost.y)) leftmost = p;
         p = p.next;
     } while (p !== start);
 
@@ -465,15 +509,17 @@ function getLeftmost(start) {
 
 // check if a point lies within a convex triangle
 function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
-    return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
-           (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
-           (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0;
+    return (cx - px) * (ay - py) >= (ax - px) * (cy - py) &&
+           (ax - px) * (by - py) >= (bx - px) * (ay - py) &&
+           (bx - px) * (cy - py) >= (cx - px) * (by - py);
 }
 
 // check if a diagonal between two polygon nodes is valid (lies in polygon interior)
 function isValidDiagonal(a, b) {
-    return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) &&
-           locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b);
+    return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) && // dones't intersect other edges
+           (locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b) && // locally visible
+            (area(a.prev, a, b.prev) || area(a, b.prev, b)) || // does not create opposite-facing sectors
+            equals(a, b) && area(a.prev, a, a.next) > 0 && area(b.prev, b, b.next) > 0); // special zero-length case
 }
 
 // signed area of a triangle
@@ -488,10 +534,28 @@ function equals(p1, p2) {
 
 // check if two segments intersect
 function intersects(p1, q1, p2, q2) {
-    if ((equals(p1, q1) && equals(p2, q2)) ||
-        (equals(p1, q2) && equals(p2, q1))) return true;
-    return area(p1, q1, p2) > 0 !== area(p1, q1, q2) > 0 &&
-           area(p2, q2, p1) > 0 !== area(p2, q2, q1) > 0;
+    var o1 = sign(area(p1, q1, p2));
+    var o2 = sign(area(p1, q1, q2));
+    var o3 = sign(area(p2, q2, p1));
+    var o4 = sign(area(p2, q2, q1));
+
+    if (o1 !== o2 && o3 !== o4) return true; // general case
+
+    if (o1 === 0 && onSegment(p1, p2, q1)) return true; // p1, q1 and p2 are collinear and p2 lies on p1q1
+    if (o2 === 0 && onSegment(p1, q2, q1)) return true; // p1, q1 and q2 are collinear and q2 lies on p1q1
+    if (o3 === 0 && onSegment(p2, p1, q2)) return true; // p2, q2 and p1 are collinear and p1 lies on p2q2
+    if (o4 === 0 && onSegment(p2, q1, q2)) return true; // p2, q2 and q1 are collinear and q1 lies on p2q2
+
+    return false;
+}
+
+// for collinear points p, q, r, check if point q lies on segment pr
+function onSegment(p, q, r) {
+    return q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y);
+}
+
+function sign(num) {
+    return num > 0 ? 1 : num < 0 ? -1 : 0;
 }
 
 // check if a polygon diagonal intersects any polygon segments
@@ -590,7 +654,7 @@ function Node(i, x, y) {
     this.next = null;
 
     // z-order curve value
-    this.z = null;
+    this.z = 0;
 
     // previous and next nodes in z-order
     this.prevZ = null;
@@ -1667,59 +1731,49 @@ module.exports = assign;
 
 /***/ }),
 
-/***/ 1698:
+/***/ 921:
 /***/ ((module) => {
 
-/**
- * Secure random string generator with custom alphabet.
- *
- * Alphabet must contain 256 symbols or less. Otherwise, the generator
- * will not be secure.
- *
- * @param {generator} random The random bytes generator.
- * @param {string} alphabet Symbols to be used in new random string.
- * @param {size} size The number of symbols in new random string.
- *
- * @return {string} Random string.
- *
- * @example
- * const format = require('nanoid/format')
- *
- * function random (size) {
- *   const result = []
- *   for (let i = 0; i < size; i++) {
- *     result.push(randomByte())
- *   }
- *   return result
- * }
- *
- * format(random, "abcdef", 5) //=> "fbaef"
- *
- * @name format
- * @function
- */
-module.exports = function (random, alphabet, size) {
-  var mask = (2 << Math.log(alphabet.length - 1) / Math.LN2) - 1
-  var step = Math.ceil(1.6 * mask * size / alphabet.length)
+// This file replaces `format.js` in bundlers like webpack or Rollup,
+// according to `browser` config in `package.json`.
 
+module.exports = function (random, alphabet, size) {
+  // We can’t use bytes bigger than the alphabet. To make bytes values closer
+  // to the alphabet, we apply bitmask on them. We look for the closest
+  // `2 ** x - 1` number, which will be bigger than alphabet size. If we have
+  // 30 symbols in the alphabet, we will take 31 (00011111).
+  // We do not use faster Math.clz32, because it is not available in browsers.
+  var mask = (2 << Math.log(alphabet.length - 1) / Math.LN2) - 1
+  // Bitmask is not a perfect solution (in our example it will pass 31 bytes,
+  // which is bigger than the alphabet). As a result, we will need more bytes,
+  // than ID size, because we will refuse bytes bigger than the alphabet.
+
+  // Every hardware random generator call is costly,
+  // because we need to wait for entropy collection. This is why often it will
+  // be faster to ask for few extra bytes in advance, to avoid additional calls.
+
+  // Here we calculate how many random bytes should we call in advance.
+  // It depends on ID length, mask / alphabet size and magic number 1.6
+  // (which was selected according benchmarks).
+
+  // -~f => Math.ceil(f) if n is float number
+  // -~i => i + 1 if n is integer number
+  var step = -~(1.6 * mask * size / alphabet.length)
   var id = ''
+
   while (true) {
     var bytes = random(step)
-    for (var i = 0; i < step; i++) {
-      var byte = bytes[i] & mask
-      if (alphabet[byte]) {
-        id += alphabet[byte]
-        if (id.length === size) return id
-      }
+    // Compact alternative for `for (var i = 0; i < step; i++)`
+    var i = step
+    while (i--) {
+      // If random byte is bigger than alphabet even after bitmask,
+      // we refuse it by `|| ''`.
+      id += alphabet[bytes[i] & mask] || ''
+      // More compact than `id.length + 1 === size`
+      if (id.length === +size) return id
     }
   }
 }
-
-/**
- * @callback generator
- * @param {number} bytes The number of bytes to generate.
- * @return {number[]} Random bytes.
- */
 
 
 /***/ }),
@@ -2498,11 +2552,11 @@ var alphabet = __webpack_require__(9829);
 // Ignore all milliseconds before a certain time to reduce the size of the date entropy without sacrificing uniqueness.
 // This number should be updated every year or so to keep the generated id short.
 // To regenerate `new Date() - 0` and bump the version. Always bump the version!
-var REDUCE_TIME = 1459707606518;
+var REDUCE_TIME = 1567752802062;
 
 // don't change unless we change the algos or REDUCE_TIME
 // must be an integer and less than 16
-var version = 6;
+var version = 7;
 
 // Counter is used when shortid is called multiple times in one second.
 var counter;
@@ -2548,7 +2602,7 @@ module.exports = build;
 
 var alphabet = __webpack_require__(9829);
 var random = __webpack_require__(3766);
-var format = __webpack_require__(1698);
+var format = __webpack_require__(921);
 
 function generate(number) {
     var loopCounter = 0;
@@ -6675,43 +6729,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 /***/ }),
 
-/***/ 122:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   Z: () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-var Stringify = (function() {
-  var functionToString = function(f) {
-    return f.toString();
-  };
-
-  // Based on https://github.com/tangrams/tangram/blob/2a31893c814cf15d5077f87ffa10af20160716b9/src/utils/utils.js#L245
-  var stringToFunction = function(str) {
-    if (typeof str === 'string' && str.match(/^\s*function\s*\w*\s*\([\s\S]*\)\s*\{[\s\S]*\}/m) != null) {
-      var f;
-
-      try {
-        eval('f = ' + str);
-        return f;
-      } catch (err) {
-        return str;
-      }
-    }
-  };
-
-  return {
-    functionToString: functionToString,
-    stringToFunction: stringToFunction
-  };
-})();
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Stringify);
-
-
-/***/ }),
-
 /***/ 2676:
 /***/ (() => {
 
@@ -6835,25 +6852,21 @@ class LatLon {
     if (isNaN(lat) || isNaN(lon)) {
       throw new Error('Invalid LatLon object: (' + lat + ', ' + lon + ')');
     }
-
     this.lat = +lat;
     this.lon = +lon;
-
     if (alt !== undefined) {
       this.alt = +alt;
     }
   }
-
   clone() {
     return new LatLon(this.lat, this.lon, this.alt);
   }
 }
-
 /* harmony default export */ const geo_LatLon = (LatLon);
 
 // Accepts (LatLon), ([lat, lon, alt]), ([lat, lon]) and (lat, lon, alt)
 // Also converts between lng and lon
-var noNew = function(a, b, c) {
+var noNew = function (a, b, c) {
   if (a instanceof LatLon) {
     return a;
   }
@@ -6880,7 +6893,6 @@ var noNew = function(a, b, c) {
 
 // Initialise without requiring new keyword
 
-
 ;// CONCATENATED MODULE: ./src/geo/Point.js
 /*
  * Point is a helper class for ensuring consistent world positions.
@@ -6891,10 +6903,9 @@ var noNew = function(a, b, c) {
 
 class Point {
   constructor(x, y, round) {
-    this.x = (round ? Math.round(x) : x);
-    this.y = (round ? Math.round(y) : y);
+    this.x = round ? Math.round(x) : x;
+    this.y = round ? Math.round(y) : y;
   }
-
   clone() {
     return new Point(this.x, this.y);
   }
@@ -6923,11 +6934,10 @@ class Point {
     return this;
   }
 }
-
 /* harmony default export */ const geo_Point = (Point);
 
 // Accepts (point), ([x, y]) and (x, y, round)
-var Point_point = function(x, y, round) {
+var Point_point = function (x, y, round) {
   if (x instanceof Point) {
     return x;
   }
@@ -6942,9 +6952,7 @@ var Point_point = function(x, y, round) {
 
 // Initialise without requiring new keyword
 
-
 ;// CONCATENATED MODULE: ./src/geo/Geo.js
-
 
 
 var Geo = {};
@@ -6970,48 +6978,33 @@ Geo.ECC2 = 0.081819191 * 0.081819191;
 // A multiplier of 0.1 would mean a 1:0.1 mapping between WebGL and EPSG:3857
 // coordinates (1 EPSG:3857 metre === 0.1 WebGL units)
 Geo.multiplier = 1;
-
-Geo.project = function(latlon) {
+Geo.project = function (latlon) {
   var d = Math.PI / 180;
   var max = Geo.MAX_LATITUDE;
   var lat = Math.max(Math.min(max, latlon.lat), -max);
   var sin = Math.sin(lat * d);
-
-  return Point_point(
-    Geo.R * latlon.lon * d,
-    Geo.R * Math.log((1 + sin) / (1 - sin)) / 2
-  );
-},
-
-Geo.unproject = function(point) {
+  return Point_point(Geo.R * latlon.lon * d, Geo.R * Math.log((1 + sin) / (1 - sin)) / 2);
+}, Geo.unproject = function (point) {
   var d = 180 / Math.PI;
-
-  return noNew(
-    (2 * Math.atan(Math.exp(point.y / Geo.R)) - (Math.PI / 2)) * d,
-    point.x * d / Geo.R
-  );
+  return noNew((2 * Math.atan(Math.exp(point.y / Geo.R)) - Math.PI / 2) * d, point.x * d / Geo.R);
 };
 
 // Converts geo coords to pixel / WebGL ones
 // This just reverses the Y axis to match WebGL
-Geo.latLonToPoint = function(latlon) {
+Geo.latLonToPoint = function (latlon) {
   var projected = Geo.project(latlon);
   projected.y *= -1;
-
   projected.x *= Geo.multiplier;
   projected.y *= Geo.multiplier;
-
   return projected;
 };
 
 // Converts pixel / WebGL coords to geo coords
 // This just reverses the Y axis to match WebGL
-Geo.pointToLatLon = function(point) {
+Geo.pointToLatLon = function (point) {
   var _point = Point_point(point.x, point.y * -1);
-
   _point.x /= Geo.multiplier;
   _point.y /= Geo.multiplier;
-
   return Geo.unproject(_point);
 };
 
@@ -7023,11 +7016,9 @@ Geo.pointToLatLon = function(point) {
 // Accurate scale factor uses proper Web Mercator scaling
 // See pg.9: http://www.hydrometronics.com/downloads/Web%20Mercator%20-%20Non-Conformal,%20Non-Mercator%20(notes).pdf
 // See: http://jsfiddle.net/robhawkes/yws924cf/
-Geo.pointScale = function(latlon, accurate) {
+Geo.pointScale = function (latlon, accurate) {
   var rad = Math.PI / 180;
-
   var k;
-
   if (!accurate) {
     k = 1 / Math.cos(latlon.lat * rad);
 
@@ -7036,12 +7027,9 @@ Geo.pointScale = function(latlon, accurate) {
   } else {
     var lat = latlon.lat * rad;
     var lon = latlon.lon * rad;
-
     var a = Geo.R;
-
     var sinLat = Math.sin(lat);
     var sinLat2 = sinLat * sinLat;
-
     var cosLat = Math.cos(lat);
 
     // Radius meridian
@@ -7051,10 +7039,10 @@ Geo.pointScale = function(latlon, accurate) {
     var v = a / Math.sqrt(1 - Geo.ECC2 * sinLat2);
 
     // Scale N/S
-    var h = (a / p) / cosLat;
+    var h = a / p / cosLat;
 
     // Scale E/W
-    k = (a / v) / cosLat;
+    k = a / v / cosLat;
 
     // [scaleX, scaleY]
     return [k, h];
@@ -7064,19 +7052,19 @@ Geo.pointScale = function(latlon, accurate) {
 // Convert real metres to projected units
 //
 // Latitude scale is chosen because it fluctuates more than longitude
-Geo.metresToProjected = function(metres, pointScale) {
+Geo.metresToProjected = function (metres, pointScale) {
   return metres * pointScale[1];
 };
 
 // Convert projected units to real metres
 //
 // Latitude scale is chosen because it fluctuates more than longitude
-Geo.projectedToMetres = function(projectedUnits, pointScale) {
+Geo.projectedToMetres = function (projectedUnits, pointScale) {
   return projectedUnits / pointScale[1];
 };
 
 // Convert real metres to a value in world (WebGL) units
-Geo.metresToWorld = function(metres, pointScale) {
+Geo.metresToWorld = function (metres, pointScale) {
   // Transform metres to projected metres using the latitude point scale
   //
   // Latitude scale is chosen because it fluctuates more than longitude
@@ -7085,22 +7073,21 @@ Geo.metresToWorld = function(metres, pointScale) {
 };
 
 // Convert world (WebGL) units to a value in real metres
-Geo.worldToMetres = function(worldUnits, pointScale) {
+Geo.worldToMetres = function (worldUnits, pointScale) {
   var projectedUnits = worldUnits;
   var realMetres = Geo.projectedToMetres(projectedUnits, pointScale);
-
   return realMetres / Geo.multiplier;
 };
 
 // Returns the world width in pixels for a given zoom, assuming tile dimensions
 // of 256x256 pixels
-Geo.scale = function(zoom) {
+Geo.scale = function (zoom) {
   return 256 * Math.pow(2, zoom);
 };
 
 // Returns zoom level for a given scale value
 // This only works with a scale value that is based on map pixel width
-Geo.zoom = function(scale) {
+Geo.zoom = function (scale) {
   return Math.log(scale / 256) / Math.LN2;
 };
 
@@ -7108,49 +7095,35 @@ Geo.zoom = function(scale) {
 // approximation or Haversine
 //
 // See: http://www.movable-type.co.uk/scripts/latlong.html
-Geo.distance = function(latlon1, latlon2, accurate) {
+Geo.distance = function (latlon1, latlon2, accurate) {
   var rad = Math.PI / 180;
-
   var lat1;
   var lat2;
-
   var a;
-
   if (!accurate) {
     lat1 = latlon1.lat * rad;
     lat2 = latlon2.lat * rad;
-
     a = Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos((latlon2.lon - latlon1.lon) * rad);
-
     return Geo.R * Math.acos(Math.min(a, 1));
   } else {
     lat1 = latlon1.lat * rad;
     lat2 = latlon2.lat * rad;
-
     var lon1 = latlon1.lon * rad;
     var lon2 = latlon2.lon * rad;
-
     var deltaLat = lat2 - lat1;
     var deltaLon = lon2 - lon1;
-
     var halfDeltaLat = deltaLat / 2;
     var halfDeltaLon = deltaLon / 2;
-
     a = Math.sin(halfDeltaLat) * Math.sin(halfDeltaLat) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(halfDeltaLon) * Math.sin(halfDeltaLon);
-
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
     return Geo.R * c;
   }
 };
-
-Geo.bounds = (function() {
+Geo.bounds = function () {
   var d = Geo.R * Math.PI * Geo.multiplier;
   return [[-d, -d], [d, d]];
-})();
-
+}();
 /* harmony default export */ const geo_Geo = (Geo);
-
 // EXTERNAL MODULE: ./node_modules/eventemitter3/index.js
 var eventemitter3 = __webpack_require__(6729);
 var eventemitter3_default = /*#__PURE__*/__webpack_require__.n(eventemitter3);
@@ -54789,14 +54762,13 @@ function LensFlare() {
 // This can be imported from anywhere and will still reference the same scene,
 // though there is a helper reference in Engine.scene
 
-/* harmony default export */ const engine_Scene = ((function() {
+/* harmony default export */ const engine_Scene = ((function () {
   var scene = new Scene();
 
   // TODO: Re-enable when this works with the skybox
   // scene.fog = new THREE.Fog(0xffffff, 1, 15000);
   return scene;
 })());
-
 ;// CONCATENATED MODULE: ./src/vendor/CSS3DRenderer.js
 // jscs:disable
 /* eslint-disable */
@@ -54807,263 +54779,143 @@ function LensFlare() {
  */
 
 
-
-var CSS3DObject = function ( element ) {
-
-	Object3D.call( this );
-
-	this.element = element;
-	this.element.style.position = 'absolute';
-
-	this.addEventListener( 'removed', function ( event ) {
-
-		if ( this.element.parentNode !== null ) {
-
-			this.element.parentNode.removeChild( this.element );
-
-		}
-
-	} );
-
+var CSS3DObject = function (element) {
+  Object3D.call(this);
+  this.element = element;
+  this.element.style.position = 'absolute';
+  this.addEventListener('removed', function (event) {
+    if (this.element.parentNode !== null) {
+      this.element.parentNode.removeChild(this.element);
+    }
+  });
 };
-
-CSS3DObject.prototype = Object.create( Object3D.prototype );
+CSS3DObject.prototype = Object.create(Object3D.prototype);
 CSS3DObject.prototype.constructor = CSS3DObject;
-
-var CSS3DSprite = function ( element ) {
-
-	CSS3DObject.call( this, element );
-
+var CSS3DSprite = function (element) {
+  CSS3DObject.call(this, element);
 };
-
-CSS3DSprite.prototype = Object.create( CSS3DObject.prototype );
+CSS3DSprite.prototype = Object.create(CSS3DObject.prototype);
 CSS3DSprite.prototype.constructor = CSS3DSprite;
 
 //
 
 var CSS3DRenderer = function () {
-
-	console.log( 'THREE.CSS3DRenderer', REVISION );
-
-	var _width, _height;
-	var _widthHalf, _heightHalf;
-
-	var matrix = new Matrix4();
-
-	var cache = {
-		camera: { fov: 0, style: '' },
-		objects: {}
-	};
-
-	var domElement = document.createElement( 'div' );
-	domElement.style.overflow = 'hidden';
-
-	domElement.style.WebkitTransformStyle = 'preserve-3d';
-	domElement.style.MozTransformStyle = 'preserve-3d';
-	domElement.style.oTransformStyle = 'preserve-3d';
-	domElement.style.transformStyle = 'preserve-3d';
-
-	this.domElement = domElement;
-
-	var cameraElement = document.createElement( 'div' );
-
-	cameraElement.style.WebkitTransformStyle = 'preserve-3d';
-	cameraElement.style.MozTransformStyle = 'preserve-3d';
-	cameraElement.style.oTransformStyle = 'preserve-3d';
-	cameraElement.style.transformStyle = 'preserve-3d';
-
-	domElement.appendChild( cameraElement );
-
-	this.setClearColor = function () {};
-
-	this.getSize = function() {
-
-		return {
-			width: _width,
-			height: _height
-		};
-
-	};
-
-	this.setSize = function ( width, height ) {
-
-		_width = width;
-		_height = height;
-
-		_widthHalf = _width / 2;
-		_heightHalf = _height / 2;
-
-		domElement.style.width = width + 'px';
-		domElement.style.height = height + 'px';
-
-		cameraElement.style.width = width + 'px';
-		cameraElement.style.height = height + 'px';
-
-	};
-
-	var epsilon = function ( value ) {
-
-		return Math.abs( value ) < Number.EPSILON ? 0 : value;
-
-	};
-
-	var getCameraCSSMatrix = function ( matrix ) {
-
-		var elements = matrix.elements;
-
-		return 'matrix3d(' +
-			epsilon( elements[ 0 ] ) + ',' +
-			epsilon( - elements[ 1 ] ) + ',' +
-			epsilon( elements[ 2 ] ) + ',' +
-			epsilon( elements[ 3 ] ) + ',' +
-			epsilon( elements[ 4 ] ) + ',' +
-			epsilon( - elements[ 5 ] ) + ',' +
-			epsilon( elements[ 6 ] ) + ',' +
-			epsilon( elements[ 7 ] ) + ',' +
-			epsilon( elements[ 8 ] ) + ',' +
-			epsilon( - elements[ 9 ] ) + ',' +
-			epsilon( elements[ 10 ] ) + ',' +
-			epsilon( elements[ 11 ] ) + ',' +
-			epsilon( elements[ 12 ] ) + ',' +
-			epsilon( - elements[ 13 ] ) + ',' +
-			epsilon( elements[ 14 ] ) + ',' +
-			epsilon( elements[ 15 ] ) +
-		')';
-
-	};
-
-	var getObjectCSSMatrix = function ( matrix ) {
-
-		var elements = matrix.elements;
-
-		return 'translate3d(-50%,-50%,0) matrix3d(' +
-			epsilon( elements[ 0 ] ) + ',' +
-			epsilon( elements[ 1 ] ) + ',' +
-			epsilon( elements[ 2 ] ) + ',' +
-			epsilon( elements[ 3 ] ) + ',' +
-			epsilon( - elements[ 4 ] ) + ',' +
-			epsilon( - elements[ 5 ] ) + ',' +
-			epsilon( - elements[ 6 ] ) + ',' +
-			epsilon( - elements[ 7 ] ) + ',' +
-			epsilon( elements[ 8 ] ) + ',' +
-			epsilon( elements[ 9 ] ) + ',' +
-			epsilon( elements[ 10 ] ) + ',' +
-			epsilon( elements[ 11 ] ) + ',' +
-			epsilon( elements[ 12 ] ) + ',' +
-			epsilon( elements[ 13 ] ) + ',' +
-			epsilon( elements[ 14 ] ) + ',' +
-			epsilon( elements[ 15 ] ) +
-		')';
-
-	};
-
-	var renderObject = function ( object, camera ) {
-
-		if ( object instanceof CSS3DObject ) {
-
-			var style;
-
-			if ( object instanceof CSS3DSprite ) {
-
-				// http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
-
-				matrix.copy( camera.matrixWorldInverse );
-				matrix.transpose();
-				matrix.copyPosition( object.matrixWorld );
-				matrix.scale( object.scale );
-
-				matrix.elements[ 3 ] = 0;
-				matrix.elements[ 7 ] = 0;
-				matrix.elements[ 11 ] = 0;
-				matrix.elements[ 15 ] = 1;
-
-				style = getObjectCSSMatrix( matrix );
-
-			} else {
-
-				style = getObjectCSSMatrix( object.matrixWorld );
-
-			}
-
-			var element = object.element;
-			var cachedStyle = cache.objects[ object.id ];
-
-			if ( cachedStyle === undefined || cachedStyle !== style ) {
-
-				element.style.WebkitTransform = style;
-				element.style.MozTransform = style;
-				element.style.oTransform = style;
-				element.style.transform = style;
-
-				cache.objects[ object.id ] = style;
-
-			}
-
-			if ( element.parentNode !== cameraElement ) {
-
-				cameraElement.appendChild( element );
-
-			}
-
-		}
-
-		for ( var i = 0, l = object.children.length; i < l; i ++ ) {
-
-			renderObject( object.children[ i ], camera );
-
-		}
-
-	};
-
-	this.render = function ( scene, camera ) {
-
-		var fov = 0.5 / Math.tan( _Math.degToRad( camera.fov * 0.5 ) ) * _height;
-
-		if ( cache.camera.fov !== fov ) {
-
-			domElement.style.WebkitPerspective = fov + 'px';
-			domElement.style.MozPerspective = fov + 'px';
-			domElement.style.oPerspective = fov + 'px';
-			domElement.style.perspective = fov + 'px';
-
-			cache.camera.fov = fov;
-
-		}
-
-		scene.updateMatrixWorld();
-
-		if ( camera.parent === null ) camera.updateMatrixWorld();
-
-		camera.matrixWorldInverse.getInverse( camera.matrixWorld );
-
-		var style = 'translate3d(0,0,' + fov + 'px)' + getCameraCSSMatrix( camera.matrixWorldInverse ) +
-			' translate3d(' + _widthHalf + 'px,' + _heightHalf + 'px, 0)';
-
-		if ( cache.camera.style !== style ) {
-
-			cameraElement.style.WebkitTransform = style;
-			cameraElement.style.MozTransform = style;
-			cameraElement.style.oTransform = style;
-			cameraElement.style.transform = style;
-
-			cache.camera.style = style;
-
-		}
-
-		renderObject( scene, camera );
-
-	};
-
+  console.log('THREE.CSS3DRenderer', REVISION);
+  var _width, _height;
+  var _widthHalf, _heightHalf;
+  var matrix = new Matrix4();
+  var cache = {
+    camera: {
+      fov: 0,
+      style: ''
+    },
+    objects: {}
+  };
+  var domElement = document.createElement('div');
+  domElement.style.overflow = 'hidden';
+  domElement.style.WebkitTransformStyle = 'preserve-3d';
+  domElement.style.MozTransformStyle = 'preserve-3d';
+  domElement.style.oTransformStyle = 'preserve-3d';
+  domElement.style.transformStyle = 'preserve-3d';
+  this.domElement = domElement;
+  var cameraElement = document.createElement('div');
+  cameraElement.style.WebkitTransformStyle = 'preserve-3d';
+  cameraElement.style.MozTransformStyle = 'preserve-3d';
+  cameraElement.style.oTransformStyle = 'preserve-3d';
+  cameraElement.style.transformStyle = 'preserve-3d';
+  domElement.appendChild(cameraElement);
+  this.setClearColor = function () {};
+  this.getSize = function () {
+    return {
+      width: _width,
+      height: _height
+    };
+  };
+  this.setSize = function (width, height) {
+    _width = width;
+    _height = height;
+    _widthHalf = _width / 2;
+    _heightHalf = _height / 2;
+    domElement.style.width = width + 'px';
+    domElement.style.height = height + 'px';
+    cameraElement.style.width = width + 'px';
+    cameraElement.style.height = height + 'px';
+  };
+  var epsilon = function (value) {
+    return Math.abs(value) < Number.EPSILON ? 0 : value;
+  };
+  var getCameraCSSMatrix = function (matrix) {
+    var elements = matrix.elements;
+    return 'matrix3d(' + epsilon(elements[0]) + ',' + epsilon(-elements[1]) + ',' + epsilon(elements[2]) + ',' + epsilon(elements[3]) + ',' + epsilon(elements[4]) + ',' + epsilon(-elements[5]) + ',' + epsilon(elements[6]) + ',' + epsilon(elements[7]) + ',' + epsilon(elements[8]) + ',' + epsilon(-elements[9]) + ',' + epsilon(elements[10]) + ',' + epsilon(elements[11]) + ',' + epsilon(elements[12]) + ',' + epsilon(-elements[13]) + ',' + epsilon(elements[14]) + ',' + epsilon(elements[15]) + ')';
+  };
+  var getObjectCSSMatrix = function (matrix) {
+    var elements = matrix.elements;
+    return 'translate3d(-50%,-50%,0) matrix3d(' + epsilon(elements[0]) + ',' + epsilon(elements[1]) + ',' + epsilon(elements[2]) + ',' + epsilon(elements[3]) + ',' + epsilon(-elements[4]) + ',' + epsilon(-elements[5]) + ',' + epsilon(-elements[6]) + ',' + epsilon(-elements[7]) + ',' + epsilon(elements[8]) + ',' + epsilon(elements[9]) + ',' + epsilon(elements[10]) + ',' + epsilon(elements[11]) + ',' + epsilon(elements[12]) + ',' + epsilon(elements[13]) + ',' + epsilon(elements[14]) + ',' + epsilon(elements[15]) + ')';
+  };
+  var renderObject = function (object, camera) {
+    if (object instanceof CSS3DObject) {
+      var style;
+      if (object instanceof CSS3DSprite) {
+        // http://swiftcoder.wordpress.com/2008/11/25/constructing-a-billboard-matrix/
+
+        matrix.copy(camera.matrixWorldInverse);
+        matrix.transpose();
+        matrix.copyPosition(object.matrixWorld);
+        matrix.scale(object.scale);
+        matrix.elements[3] = 0;
+        matrix.elements[7] = 0;
+        matrix.elements[11] = 0;
+        matrix.elements[15] = 1;
+        style = getObjectCSSMatrix(matrix);
+      } else {
+        style = getObjectCSSMatrix(object.matrixWorld);
+      }
+      var element = object.element;
+      var cachedStyle = cache.objects[object.id];
+      if (cachedStyle === undefined || cachedStyle !== style) {
+        element.style.WebkitTransform = style;
+        element.style.MozTransform = style;
+        element.style.oTransform = style;
+        element.style.transform = style;
+        cache.objects[object.id] = style;
+      }
+      if (element.parentNode !== cameraElement) {
+        cameraElement.appendChild(element);
+      }
+    }
+    for (var i = 0, l = object.children.length; i < l; i++) {
+      renderObject(object.children[i], camera);
+    }
+  };
+  this.render = function (scene, camera) {
+    var fov = 0.5 / Math.tan(_Math.degToRad(camera.fov * 0.5)) * _height;
+    if (cache.camera.fov !== fov) {
+      domElement.style.WebkitPerspective = fov + 'px';
+      domElement.style.MozPerspective = fov + 'px';
+      domElement.style.oPerspective = fov + 'px';
+      domElement.style.perspective = fov + 'px';
+      cache.camera.fov = fov;
+    }
+    scene.updateMatrixWorld();
+    if (camera.parent === null) camera.updateMatrixWorld();
+    camera.matrixWorldInverse.getInverse(camera.matrixWorld);
+    var style = 'translate3d(0,0,' + fov + 'px)' + getCameraCSSMatrix(camera.matrixWorldInverse) + ' translate3d(' + _widthHalf + 'px,' + _heightHalf + 'px, 0)';
+    if (cache.camera.style !== style) {
+      cameraElement.style.WebkitTransform = style;
+      cameraElement.style.MozTransform = style;
+      cameraElement.style.oTransform = style;
+      cameraElement.style.transform = style;
+      cache.camera.style = style;
+    }
+    renderObject(scene, camera);
+  };
 };
-
-
 
 
 
 three_module_namespaceObject.CSS3DObject = CSS3DObject;
 three_module_namespaceObject.CSS3DSprite = CSS3DSprite;
 three_module_namespaceObject.CSS3DRenderer = CSS3DRenderer;
-
 ;// CONCATENATED MODULE: ./src/vendor/CSS2DRenderer.js
 // jscs:disable
 /* eslint-disable */
@@ -55073,125 +54925,79 @@ three_module_namespaceObject.CSS3DRenderer = CSS3DRenderer;
  */
 
 
-
-var CSS2DObject = function ( element ) {
-
-	Object3D.call( this );
-
-	this.element = element;
-	this.element.style.position = 'absolute';
-
-	this.addEventListener( 'removed', function ( event ) {
-
-		if ( this.element.parentNode !== null ) {
-
-			this.element.parentNode.removeChild( this.element );
-
-		}
-
-	} );
-
+var CSS2DObject = function (element) {
+  Object3D.call(this);
+  this.element = element;
+  this.element.style.position = 'absolute';
+  this.addEventListener('removed', function (event) {
+    if (this.element.parentNode !== null) {
+      this.element.parentNode.removeChild(this.element);
+    }
+  });
 };
-
-CSS2DObject.prototype = Object.create( Object3D.prototype );
+CSS2DObject.prototype = Object.create(Object3D.prototype);
 CSS2DObject.prototype.constructor = CSS2DObject;
 
 //
 
 var CSS2DRenderer = function () {
+  console.log('THREE.CSS2DRenderer', REVISION);
+  var _width, _height;
+  var _widthHalf, _heightHalf;
+  var vector = new Vector3();
+  var viewMatrix = new Matrix4();
+  var viewProjectionMatrix = new Matrix4();
+  var frustum = new Frustum();
+  var domElement = document.createElement('div');
+  domElement.style.overflow = 'hidden';
+  this.domElement = domElement;
+  this.setSize = function (width, height) {
+    _width = width;
+    _height = height;
+    _widthHalf = _width / 2;
+    _heightHalf = _height / 2;
+    domElement.style.width = width + 'px';
+    domElement.style.height = height + 'px';
+  };
+  var renderObject = function (object, camera) {
+    if (object instanceof CSS2DObject) {
+      vector.setFromMatrixPosition(object.matrixWorld);
+      vector.applyMatrix4(viewProjectionMatrix);
+      var element = object.element;
+      var style = 'translate(-50%,-50%) translate(' + (vector.x * _widthHalf + _widthHalf) + 'px,' + (-vector.y * _heightHalf + _heightHalf) + 'px)';
+      element.style.WebkitTransform = style;
+      element.style.MozTransform = style;
+      element.style.oTransform = style;
+      element.style.transform = style;
+      if (element.parentNode !== domElement) {
+        domElement.appendChild(element);
+      }
 
-	console.log( 'THREE.CSS2DRenderer', REVISION );
-
-	var _width, _height;
-	var _widthHalf, _heightHalf;
-
-	var vector = new Vector3();
-	var viewMatrix = new Matrix4();
-	var viewProjectionMatrix = new Matrix4();
-
-	var frustum = new Frustum();
-
-	var domElement = document.createElement( 'div' );
-	domElement.style.overflow = 'hidden';
-
-	this.domElement = domElement;
-
-	this.setSize = function ( width, height ) {
-
-		_width = width;
-		_height = height;
-
-		_widthHalf = _width / 2;
-		_heightHalf = _height / 2;
-
-		domElement.style.width = width + 'px';
-		domElement.style.height = height + 'px';
-
-	};
-
-	var renderObject = function ( object, camera ) {
-
-		if ( object instanceof CSS2DObject ) {
-
-			vector.setFromMatrixPosition( object.matrixWorld );
-			vector.applyMatrix4( viewProjectionMatrix );
-
-			var element = object.element;
-			var style = 'translate(-50%,-50%) translate(' + ( vector.x * _widthHalf + _widthHalf ) + 'px,' + ( - vector.y * _heightHalf + _heightHalf ) + 'px)';
-
-			element.style.WebkitTransform = style;
-			element.style.MozTransform = style;
-			element.style.oTransform = style;
-			element.style.transform = style;
-
-			if ( element.parentNode !== domElement ) {
-
-				domElement.appendChild( element );
-
-			}
-
-			// Hide if outside view frustum
-			if (!frustum.containsPoint(object.position)) {
-				element.style.display = 'none';
-			} else {
-				element.style.display = 'block';
-			}
-
-		}
-
-		for ( var i = 0, l = object.children.length; i < l; i ++ ) {
-
-			renderObject( object.children[ i ], camera );
-
-		}
-
-	};
-
-	this.render = function ( scene, camera ) {
-
-		scene.updateMatrixWorld();
-
-		if ( camera.parent === null ) camera.updateMatrixWorld();
-
-		camera.matrixWorldInverse.getInverse( camera.matrixWorld );
-
-		viewMatrix.copy( camera.matrixWorldInverse.getInverse( camera.matrixWorld ) );
-		viewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, viewMatrix );
-
-		frustum.setFromMatrix( new Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );
-
-		renderObject( scene, camera );
-
-	};
-
+      // Hide if outside view frustum
+      if (!frustum.containsPoint(object.position)) {
+        element.style.display = 'none';
+      } else {
+        element.style.display = 'block';
+      }
+    }
+    for (var i = 0, l = object.children.length; i < l; i++) {
+      renderObject(object.children[i], camera);
+    }
+  };
+  this.render = function (scene, camera) {
+    scene.updateMatrixWorld();
+    if (camera.parent === null) camera.updateMatrixWorld();
+    camera.matrixWorldInverse.getInverse(camera.matrixWorld);
+    viewMatrix.copy(camera.matrixWorldInverse.getInverse(camera.matrixWorld));
+    viewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, viewMatrix);
+    frustum.setFromMatrix(new Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+    renderObject(scene, camera);
+  };
 };
-
-
 
 
 three_module_namespaceObject.CSS2DObject = CSS2DObject;
 three_module_namespaceObject.CSS2DRenderer = CSS2DRenderer;
-
 ;// CONCATENATED MODULE: ./src/layer/Layer.js
 
 
@@ -55217,21 +55023,16 @@ three_module_namespaceObject.CSS2DRenderer = CSS2DRenderer;
 class Layer extends (eventemitter3_default()) {
   constructor(options) {
     super();
-
     var defaults = {
       id: shortid_default().generate(),
       output: true,
       outputToScene: true
     };
-
     this._options = lodash_assign_default()({}, defaults, options);
-
     if (this.isOutput()) {
       this._object3D = new Object3D();
-
       this._dom3D = document.createElement('div');
       this._domObject3D = new CSS3DObject(this._dom3D);
-
       this._dom2D = document.createElement('div');
       this._domObject2D = new CSS2DObject(this._dom2D);
     }
@@ -55246,19 +55047,15 @@ class Layer extends (eventemitter3_default()) {
   remove(object) {
     this._object3D.remove(object);
   }
-
   addDOM3D(object) {
     this._domObject3D.add(object);
   }
-
   removeDOM3D(object) {
     this._domObject3D.remove(object);
   }
-
   addDOM2D(object) {
     this._domObject2D.add(object);
   }
-
   removeDOM2D(object) {
     this._domObject2D.remove(object);
   }
@@ -55271,7 +55068,6 @@ class Layer extends (eventemitter3_default()) {
   // Internal method called by World.addLayer to actually add the layer
   _addToWorld(world) {
     this._world = world;
-
     return new Promise((resolve, reject) => {
       this._onAdd(world).then(() => {
         this.emit('added');
@@ -55284,12 +55080,10 @@ class Layer extends (eventemitter3_default()) {
   _onAdd(world) {
     return Promise.resolve(this);
   }
-
   getPickingId() {
     if (this._world._engine._picking) {
       return this._world._engine._picking.getNextId();
     }
-
     return false;
   }
 
@@ -55298,22 +55092,17 @@ class Layer extends (eventemitter3_default()) {
     if (!this._world._engine._picking) {
       return;
     }
-
     this._world._engine._picking.add(object);
   }
-
   removeFromPicking(object) {
     if (!this._world._engine._picking) {
       return;
     }
-
     this._world._engine._picking.remove(object);
   }
-
   isOutput() {
     return this._options.output;
   }
-
   isOutputToScene() {
     return this._options.outputToScene;
   }
@@ -55321,7 +55110,6 @@ class Layer extends (eventemitter3_default()) {
   // TODO: Also hide any attached DOM layers
   hide() {
     this._object3D.visible = false;
-
     if (this._pickingMesh) {
       this._pickingMesh.visible = false;
     }
@@ -55330,7 +55118,6 @@ class Layer extends (eventemitter3_default()) {
   // TODO: Also show any attached DOM layers
   show() {
     this._object3D.visible = true;
-
     if (this._pickingMesh) {
       this._pickingMesh.visible = true;
     }
@@ -55343,74 +55130,57 @@ class Layer extends (eventemitter3_default()) {
       var child;
       for (var i = this._object3D.children.length - 1; i >= 0; i--) {
         child = this._object3D.children[i];
-
         if (!child) {
           continue;
         }
-
         this.remove(child);
-
         if (child.geometry) {
           // Dispose of mesh and materials
           child.geometry.dispose();
           child.geometry = null;
         }
-
         if (child.material) {
           if (child.material.map) {
             child.material.map.dispose();
             child.material.map = null;
           }
-
           child.material.dispose();
           child.material = null;
         }
       }
     }
-
     if (this._domObject3D && this._domObject3D.children) {
       // Remove everything else in the layer
       var child;
       for (var i = this._domObject3D.children.length - 1; i >= 0; i--) {
         child = this._domObject3D.children[i];
-
         if (!child) {
           continue;
         }
-
         this.removeDOM3D(child);
       }
     }
-
     if (this._domObject2D && this._domObject2D.children) {
       // Remove everything else in the layer
       var child;
       for (var i = this._domObject2D.children.length - 1; i >= 0; i--) {
         child = this._domObject2D.children[i];
-
         if (!child) {
           continue;
         }
-
         this.removeDOM2D(child);
       }
     }
-
     this._domObject3D = null;
     this._domObject2D = null;
-
     this._world = null;
     this._object3D = null;
   }
 }
-
 /* harmony default export */ const layer_Layer = (Layer);
-
-var Layer_noNew = function(options) {
+var Layer_noNew = function (options) {
   return new Layer(options);
 };
-
-
 
 // EXTERNAL MODULE: ./node_modules/reqwest/reqwest.js
 var reqwest = __webpack_require__(7643);
@@ -55432,16 +55202,13 @@ var earcut_default = /*#__PURE__*/__webpack_require__.n(earcut);
  */
 
 
-
-var extrudePolygon = function(points, faces, _options) {
+var extrudePolygon = function (points, faces, _options) {
   var defaults = {
     top: 1,
     bottom: 0,
     closed: true
   };
-
   var options = lodash_assign_default()({}, defaults, _options);
-
   var n = points.length;
   var positions;
   var cells;
@@ -55450,22 +55217,25 @@ var extrudePolygon = function(points, faces, _options) {
   var sideCells;
 
   // If bottom and top values are identical then return the flat shape
-  (options.top === options.bottom) ? flat() : full();
-
+  options.top === options.bottom ? flat() : full();
   function flat() {
-    positions = points.map(function(p) { return [p[0], options.top, p[1]]; });
+    positions = points.map(function (p) {
+      return [p[0], options.top, p[1]];
+    });
     cells = faces;
     topCells = faces;
   }
-
   function full() {
     positions = [];
-    points.forEach(function(p) { positions.push([p[0], options.top, p[1]]); });
-    points.forEach(function(p) { positions.push([p[0], options.bottom, p[1]]); });
-
+    points.forEach(function (p) {
+      positions.push([p[0], options.top, p[1]]);
+    });
+    points.forEach(function (p) {
+      positions.push([p[0], options.bottom, p[1]]);
+    });
     cells = [];
     for (var i = 0; i < n; i++) {
-      if (i === (n - 1)) {
+      if (i === n - 1) {
         cells.push([i + n, n, i]);
         cells.push([0, i, n]);
       } else {
@@ -55473,20 +55243,22 @@ var extrudePolygon = function(points, faces, _options) {
         cells.push([i + 1, i, i + n + 1]);
       }
     }
-
     sideCells = [].concat(cells);
-
     if (options.closed) {
       var top = faces;
-      var bottom = top.map(function(p) { return p.map(function(v) { return v + n; }); });
-      bottom = bottom.map(function(p) { return [p[0], p[2], p[1]]; });
+      var bottom = top.map(function (p) {
+        return p.map(function (v) {
+          return v + n;
+        });
+      });
+      bottom = bottom.map(function (p) {
+        return [p[0], p[2], p[1]];
+      });
       cells = cells.concat(top).concat(bottom);
-
       topCells = top;
       bottomCells = bottom;
     }
   }
-
   return {
     positions: positions,
     faces: cells,
@@ -55495,9 +55267,7 @@ var extrudePolygon = function(points, faces, _options) {
     sides: sideCells
   };
 };
-
 /* harmony default export */ const util_extrudePolygon = (extrudePolygon);
-
 ;// CONCATENATED MODULE: ./src/util/GeoJSON.js
 /*
  * GeoJSON helpers for handling data and generating objects
@@ -55519,9 +55289,8 @@ var extrudePolygon = function(points, faces, _options) {
 
 // Light and dark colours used for poor-mans AO gradient on object sides
 var light = new Color(0xffffff);
-var shadow  = new Color(0x666666);
-
-var GeoJSON = (function() {
+var shadow = new Color(0x666666);
+var GeoJSON = function () {
   var defaultStyle = {
     color: '#ffffff',
     outline: false,
@@ -55539,9 +55308,8 @@ var GeoJSON = (function() {
 
   // Attempts to merge together multiple GeoJSON Features or FeatureCollections
   // into a single FeatureCollection
-  var collectFeatures = function(data, layers, _topojson) {
+  var collectFeatures = function (data, layers, _topojson) {
     var collections = [];
-
     if (_topojson) {
       // If not overridden, merge all features from all objects
       for (var tk in data.objects) {
@@ -55550,10 +55318,8 @@ var GeoJSON = (function() {
             continue;
           }
         }
-
         collections.push(topojson.feature(data, data.objects[tk]));
       }
-
       return geojson_merge_default()(collections);
     } else {
       // If root doesn't have a type then let's see if there are features in the
@@ -55568,14 +55334,11 @@ var GeoJSON = (function() {
               continue;
             }
           }
-
           if (!data[gk].type) {
             continue;
           }
-
           collections.push(data[gk]);
         }
-
         return geojson_merge_default()(collections);
       } else if (Array.isArray(data)) {
         return geojson_merge_default()(data);
@@ -55587,10 +55350,9 @@ var GeoJSON = (function() {
 
   // TODO: This is only used by GeoJSONTile so either roll it into that or
   // update GeoJSONTile to use the new GeoJSONLayer or geometry layers
-  var lineStringAttributes = function(coordinates, colour, height) {
+  var lineStringAttributes = function (coordinates, colour, height) {
     var _coords = [];
     var _colours = [];
-
     var nextCoord;
 
     // Connect coordinate with the next to make a pair
@@ -55600,13 +55362,10 @@ var GeoJSON = (function() {
     coordinates.forEach((coordinate, index) => {
       _colours.push([colour.r, colour.g, colour.b]);
       _coords.push([coordinate[0], height, coordinate[1]]);
-
-      nextCoord = (coordinates[index + 1]) ? coordinates[index + 1] : coordinate;
-
+      nextCoord = coordinates[index + 1] ? coordinates[index + 1] : coordinate;
       _colours.push([colour.r, colour.g, colour.b]);
       _coords.push([nextCoord[0], height, nextCoord[1]]);
     });
-
     return {
       vertices: _coords,
       colours: _colours
@@ -55615,23 +55374,19 @@ var GeoJSON = (function() {
 
   // TODO: This is only used by GeoJSONTile so either roll it into that or
   // update GeoJSONTile to use the new GeoJSONLayer or geometry layers
-  var multiLineStringAttributes = function(coordinates, colour, height) {
+  var multiLineStringAttributes = function (coordinates, colour, height) {
     var _coords = [];
     var _colours = [];
-
     var result;
     coordinates.forEach(coordinate => {
       result = lineStringAttributes(coordinate, colour, height);
-
       result.vertices.forEach(coord => {
         _coords.push(coord);
       });
-
       result.colours.forEach(colour => {
         _colours.push(colour);
       });
     });
-
     return {
       vertices: _coords,
       colours: _colours
@@ -55640,42 +55395,32 @@ var GeoJSON = (function() {
 
   // TODO: This is only used by GeoJSONTile so either roll it into that or
   // update GeoJSONTile to use the new GeoJSONLayer or geometry layers
-  var polygonAttributes = function(coordinates, colour, height) {
+  var polygonAttributes = function (coordinates, colour, height) {
     var earcutData = _toEarcut(coordinates);
-
     var faces = _triangulate(earcutData.vertices, earcutData.holes, earcutData.dimensions);
-
     var groupedVertices = [];
     for (i = 0, il = earcutData.vertices.length; i < il; i += earcutData.dimensions) {
       groupedVertices.push(earcutData.vertices.slice(i, i + earcutData.dimensions));
     }
-
     var extruded = util_extrudePolygon(groupedVertices, faces, {
       bottom: 0,
       top: height
     });
-
     var topColor = colour.clone().multiply(light);
     var bottomColor = colour.clone().multiply(shadow);
-
     var _vertices = extruded.positions;
     var _faces = [];
     var _colours = [];
-
     var _colour;
     extruded.top.forEach((face, fi) => {
       _colour = [];
-
       _colour.push([colour.r, colour.g, colour.b]);
       _colour.push([colour.r, colour.g, colour.b]);
       _colour.push([colour.r, colour.g, colour.b]);
-
       _faces.push(face);
       _colours.push(_colour);
     });
-
     var allFlat = true;
-
     if (extruded.sides) {
       if (allFlat) {
         allFlat = false;
@@ -55690,14 +55435,13 @@ var GeoJSON = (function() {
           _colour.push([bottomColor.r, bottomColor.g, bottomColor.b]);
           _colour.push([bottomColor.r, bottomColor.g, bottomColor.b]);
           _colour.push([topColor.r, topColor.g, topColor.b]);
-        // Reverse winding for the second face
-        // top-top-bottom
+          // Reverse winding for the second face
+          // top-top-bottom
         } else {
           _colour.push([topColor.r, topColor.g, topColor.b]);
           _colour.push([topColor.r, topColor.g, topColor.b]);
           _colour.push([bottomColor.r, bottomColor.g, bottomColor.b]);
         }
-
         _faces.push(face);
         _colours.push(_colour);
       });
@@ -55716,11 +55460,14 @@ var GeoJSON = (function() {
 
   // TODO: This is only used by GeoJSONTile so either roll it into that or
   // update GeoJSONTile to use the new GeoJSONLayer or geometry layers
-  var _toEarcut = function(data) {
+  var _toEarcut = function (data) {
     var dim = data[0][0].length;
-    var result = {vertices: [], holes: [], dimensions: dim};
+    var result = {
+      vertices: [],
+      holes: [],
+      dimensions: dim
+    };
     var holeIndex = 0;
-
     for (var i = 0; i < data.length; i++) {
       for (var j = 0; j < data[i].length; j++) {
         for (var d = 0; d < dim; d++) {
@@ -55732,18 +55479,16 @@ var GeoJSON = (function() {
         result.holes.push(holeIndex);
       }
     }
-
     return result;
   };
 
   // TODO: This is only used by GeoJSONTile so either roll it into that or
   // update GeoJSONTile to use the new GeoJSONLayer or geometry layers
-  var _triangulate = function(contour, holes, dim) {
+  var _triangulate = function (contour, holes, dim) {
     // console.time('earcut');
 
     var faces = earcut_default()(contour, holes, dim);
     var result = [];
-
     for (i = 0, il = faces.length; i < il; i += 3) {
       result.push(faces.slice(i, i + 3));
     }
@@ -55752,7 +55497,6 @@ var GeoJSON = (function() {
 
     return result;
   };
-
   return {
     defaultStyle: defaultStyle,
     collectFeatures: collectFeatures,
@@ -55760,39 +55504,32 @@ var GeoJSON = (function() {
     multiLineStringAttributes: multiLineStringAttributes,
     polygonAttributes: polygonAttributes
   };
-})();
-
+}();
 /* harmony default export */ const util_GeoJSON = (GeoJSON);
-
 ;// CONCATENATED MODULE: ./src/util/WorkerPoolWorker.js
 const DEBUG = false;
-
 class WorkerPoolWorker {
   constructor(options) {
     this.workerScript = options.workerScript;
-
     this.ready = false;
     this.busy = false;
     this.deferred = null;
   }
-
   start() {
     return new Promise((resolve, reject) => {
       this.worker = new Worker(this.workerScript);
-
-      var onStartup = (event) => {
+      var onStartup = event => {
         if (!event.data || event.data.type !== 'startup') {
           reject();
           return;
         }
-
         this.ready = true;
 
         // Remove temporary message handler
         this.worker.removeEventListener('message', onStartup);
 
         // Set up listener to respond to normal events now
-        this.worker.addEventListener('message', (event) => {
+        this.worker.addEventListener('message', event => {
           this.onMessage(event);
         });
 
@@ -55804,61 +55541,52 @@ class WorkerPoolWorker {
       this.worker.addEventListener('message', onStartup);
     });
   }
-
   exec(method, args, transferrables) {
-    if (DEBUG) { console.log('Execute', method, args, transferrables); }
-
+    if (DEBUG) {
+      console.log('Execute', method, args, transferrables);
+    }
     var deferred = Promise.deferred();
-
     this.busy = true;
     this.deferred = deferred;
-
     this.worker.postMessage({
       method: method,
       args: args
     }, transferrables);
-
     return deferred.promise;
   }
-
   onMessage(event) {
-    if (DEBUG) { console.log('Message received from worker', (performance || Date).now()); }
-
+    if (DEBUG) {
+      console.log('Message received from worker', (performance || Date).now());
+    }
     this.busy = false;
-
     if (!event.data || event.data.type === 'error' || event.data.type !== 'result') {
       this.deferred.reject(event.data.payload);
       return;
     }
-
     this.deferred.resolve(event.data.payload);
   }
 }
-
 /* harmony default export */ const util_WorkerPoolWorker = (WorkerPoolWorker);
 
 // Quick shim to create deferred native promises
-Promise.deferred = function() {
+Promise.deferred = function () {
   var result = {};
-
   result.promise = new Promise((resolve, reject) => {
     result.resolve = resolve;
     result.reject = reject;
   });
-
   return result;
 };
-
 ;// CONCATENATED MODULE: ./src/util/WorkerPool.js
-
 
 const WorkerPool_DEBUG = false;
 
 // Polyfill for Array.find
 if (!Array.prototype.find) {
   Object.defineProperty(Array.prototype, 'find', {
-    value: function(predicate) {
+    value: function (predicate) {
       'use strict';
+
       if (this == null) {
         throw new TypeError('Array.prototype.find called on null or undefined');
       }
@@ -55869,7 +55597,6 @@ if (!Array.prototype.find) {
       var length = list.length >>> 0;
       var thisArg = arguments[1];
       var value;
-
       for (var i = 0; i < length; i++) {
         value = list[i];
         if (predicate.call(thisArg, value, i, list)) {
@@ -55880,31 +55607,27 @@ if (!Array.prototype.find) {
     }
   });
 }
-
 class WorkerPool {
   constructor(options) {
     this.numThreads = options.numThreads || 2;
     this.workerScript = options.workerScript;
-
     this.workers = [];
     this.tasks = [];
   }
-
   createWorkers() {
     return new Promise((resolve, reject) => {
       var workerPromises = [];
-
       for (var i = 0; i < this.numThreads; i++) {
         workerPromises.push(this.createWorker());
       }
-
       Promise.all(workerPromises).then(() => {
-        if (WorkerPool_DEBUG) { console.log('All workers ready', (performance || Date).now()); }
+        if (WorkerPool_DEBUG) {
+          console.log('All workers ready', (performance || Date).now());
+        }
         resolve();
       }).catch(reject);
     });
   }
-
   createWorker() {
     return new Promise((resolve, reject) => {
       // Initialise worker
@@ -55914,18 +55637,18 @@ class WorkerPool {
 
       // Start worker and wait for it to be ready
       return worker.start().then(() => {
-        if (WorkerPool_DEBUG) { console.log('Worker ready', (performance || Date).now()); }
+        if (WorkerPool_DEBUG) {
+          console.log('Worker ready', (performance || Date).now());
+        }
 
         // Add worker to pool
         this.workers.push(worker);
-
         resolve();
       }).catch(reject);
     });
   }
-
   getFreeWorker() {
-    return this.workers.find((worker) => {
+    return this.workers.find(worker => {
       return !worker.busy;
     });
   }
@@ -55951,19 +55674,20 @@ class WorkerPool {
     // Return task promise
     return task.deferred.promise;
   }
-
   processTasks() {
-    if (WorkerPool_DEBUG) { console.log('Processing tasks'); }
-
+    if (WorkerPool_DEBUG) {
+      console.log('Processing tasks');
+    }
     if (this.tasks.length === 0) {
       return;
     }
 
     // Find free worker
     var worker = this.getFreeWorker();
-
     if (!worker) {
-      if (WorkerPool_DEBUG) { console.log('No workers free'); }
+      if (WorkerPool_DEBUG) {
+        console.log('No workers free');
+      }
       return;
     }
 
@@ -55971,63 +55695,51 @@ class WorkerPool {
     var task = this.tasks.shift();
 
     // Execute task on worker
-    worker.exec(task.method, task.args, task.transferrables).then((result) => {
+    worker.exec(task.method, task.args, task.transferrables).then(result => {
       // Trigger task processing
       this.processTasks();
 
       // Return result in deferred task promise
       task.deferred.resolve(result);
-    }).catch((err) => {
+    }).catch(err => {
       // Trigger task processing
       this.processTasks();
-
       task.deferred.reject(err);
     });
   }
 }
-
 /* harmony default export */ const util_WorkerPool = (WorkerPool);
 
 // Quick shim to create deferred native promises
-Promise.deferred = function() {
+Promise.deferred = function () {
   var result = {};
-
   result.promise = new Promise((resolve, reject) => {
     result.resolve = resolve;
     result.reject = reject;
   });
-
   return result;
 };
-
 ;// CONCATENATED MODULE: ./src/util/Worker.js
 
-
-var Worker_Worker = (function() {
+var Worker_Worker = function () {
   var _maxWorkers = 2;
   var pool;
-
-  var createWorkers = function(maxWorkers, workerScript) {
+  var createWorkers = function (maxWorkers, workerScript) {
     pool = new util_WorkerPool({
-      numThreads: (maxWorkers) ? maxWorkers : _maxWorkers,
-      workerScript: (workerScript) ? workerScript : 'vizicities-worker.js'
+      numThreads: maxWorkers ? maxWorkers : _maxWorkers,
+      workerScript: workerScript ? workerScript : 'vizicities-worker.js'
     });
-
     return pool.createWorkers();
   };
-
-  var exec = function(method, args, transferrables) {
+  var exec = function (method, args, transferrables) {
     return pool.exec(method, args, transferrables);
   };
-
   return {
     createWorkers: createWorkers,
     exec: exec
   };
-})();
-
+}();
 /* harmony default export */ const util_Worker = (Worker_Worker);
-
 // EXTERNAL MODULE: ./node_modules/text-encoding/index.js
 var text_encoding = __webpack_require__(8731);
 ;// CONCATENATED MODULE: ./src/util/Buffer.js
@@ -56037,14 +55749,12 @@ var text_encoding = __webpack_require__(8731);
 
 
 
-
-var Buffer = (function() {
+var Buffer = function () {
   // Merge TypedArrays of the same type
   // Returns merged array as well as indexes for splitting the array
-  var mergeFloat32Arrays = function(arrays) {
+  var mergeFloat32Arrays = function (arrays) {
     var size = 0;
     var map = new Int32Array(arrays.length * 2);
-
     var lastIndex = 0;
     var length;
 
@@ -56063,17 +55773,11 @@ var Buffer = (function() {
     arrays.forEach((_array, index) => {
       mergedArray.set(_array, map[index * 2]);
     });
-
-    return [
-      mergedArray,
-      map
-    ];
+    return [mergedArray, map];
   };
-
-  var splitFloat32Array = function(data) {
+  var splitFloat32Array = function (data) {
     var arr = data[0];
     var map = data[1];
-
     var start;
     var arrays = [];
 
@@ -56082,15 +55786,13 @@ var Buffer = (function() {
       start = i * 2;
       arrays.push(arr.subarray(map[start], map[start + 1]));
     }
-
     return arrays;
   };
 
   // TODO: Create a generic method that can work for any typed array
-  var mergeUint8Arrays = function(arrays) {
+  var mergeUint8Arrays = function (arrays) {
     var size = 0;
     var map = new Int32Array(arrays.length * 2);
-
     var lastIndex = 0;
     var length;
 
@@ -56109,18 +55811,13 @@ var Buffer = (function() {
     arrays.forEach((_array, index) => {
       mergedArray.set(_array, map[index * 2]);
     });
-
-    return [
-      mergedArray,
-      map
-    ];
+    return [mergedArray, map];
   };
 
   // TODO: Dedupe with splitFloat32Array
-  var splitUint8Array = function(data) {
+  var splitUint8Array = function (data) {
     var arr = data[0];
     var map = data[1];
-
     var start;
     var arrays = [];
 
@@ -56129,14 +55826,13 @@ var Buffer = (function() {
       start = i * 2;
       arrays.push(arr.subarray(map[start], map[start + 1]));
     }
-
     return arrays;
   };
 
   // Merge multiple attribute objects into a single attribute object
   //
   // Attribute objects must all use the same attribute keys
-  var mergeAttributes = function(attributes) {
+  var mergeAttributes = function (attributes) {
     var lengths = {};
 
     // Find array lengths
@@ -56145,80 +55841,60 @@ var Buffer = (function() {
         if (!lengths[k]) {
           lengths[k] = 0;
         }
-
         lengths[k] += _attributes[k].length;
       }
     });
-
     var mergedAttributes = {};
 
     // Set up arrays to merge into
     for (var k in lengths) {
       mergedAttributes[k] = new Float32Array(lengths[k]);
     }
-
     var lastLengths = {};
-
     attributes.forEach(_attributes => {
       for (var k in _attributes) {
         if (!lastLengths[k]) {
           lastLengths[k] = 0;
         }
-
         mergedAttributes[k].set(_attributes[k], lastLengths[k]);
-
         lastLengths[k] += _attributes[k].length;
       }
     });
-
     return mergedAttributes;
   };
-
-  var createLineGeometry = function(lines, offset) {
+  var createLineGeometry = function (lines, offset) {
     var geometry = new BufferGeometry();
-
     var vertices = new Float32Array(lines.verticesCount * 3);
     var colours = new Float32Array(lines.verticesCount * 3);
-
     var pickingIds;
     if (lines.pickingIds) {
       // One component per vertex (1)
       pickingIds = new Float32Array(lines.verticesCount);
     }
-
     var _vertices;
     var _colour;
     var _pickingId;
-
     var lastIndex = 0;
-
     for (var i = 0; i < lines.vertices.length; i++) {
       _vertices = lines.vertices[i];
       _colour = lines.colours[i];
-
       if (pickingIds) {
         _pickingId = lines.pickingIds[i];
       }
-
       for (var j = 0; j < _vertices.length; j++) {
         var ax = _vertices[j][0] + offset.x;
         var ay = _vertices[j][1];
         var az = _vertices[j][2] + offset.y;
-
         var c1 = _colour[j];
-
         vertices[lastIndex * 3 + 0] = ax;
         vertices[lastIndex * 3 + 1] = ay;
         vertices[lastIndex * 3 + 2] = az;
-
         colours[lastIndex * 3 + 0] = c1[0];
         colours[lastIndex * 3 + 1] = c1[1];
         colours[lastIndex * 3 + 2] = c1[2];
-
         if (pickingIds) {
           pickingIds[lastIndex] = _pickingId;
         }
-
         lastIndex++;
       }
     }
@@ -56226,38 +55902,31 @@ var Buffer = (function() {
     // itemSize = 3 because there are 3 values (components) per vertex
     geometry.addAttribute('position', new BufferAttribute(vertices, 3));
     geometry.addAttribute('color', new BufferAttribute(colours, 3));
-
     if (pickingIds) {
       geometry.addAttribute('pickingId', new BufferAttribute(pickingIds, 1));
     }
-
     geometry.computeBoundingBox();
-
     return geometry;
   };
 
   // TODO: Make picking IDs optional
-  var createGeometry = function(attributes, offset) {
+  var createGeometry = function (attributes, offset) {
     var geometry = new BufferGeometry();
 
     // Three components per vertex per face (3 x 3 = 9)
     var vertices = new Float32Array(attributes.facesCount * 9);
     var normals = new Float32Array(attributes.facesCount * 9);
     var colours = new Float32Array(attributes.facesCount * 9);
-
     var pickingIds;
     if (attributes.pickingIds) {
       // One component per vertex per face (1 x 3 = 3)
       pickingIds = new Float32Array(attributes.facesCount * 3);
     }
-
     var pA = new Vector3();
     var pB = new Vector3();
     var pC = new Vector3();
-
     var cb = new Vector3();
     var ab = new Vector3();
-
     var index;
     var _faces;
     var _vertices;
@@ -56268,35 +55937,25 @@ var Buffer = (function() {
       _faces = attributes.faces[i];
       _vertices = attributes.vertices[i];
       _colour = attributes.colours[i];
-
       if (pickingIds) {
         _pickingId = attributes.pickingIds[i];
       }
-
       for (var j = 0; j < _faces.length; j++) {
         // Array of vertex indexes for the face
         index = _faces[j][0];
-
         var ax = _vertices[index][0] + offset.x;
         var ay = _vertices[index][1];
         var az = _vertices[index][2] + offset.y;
-
         var c1 = _colour[j][0];
-
         index = _faces[j][1];
-
         var bx = _vertices[index][0] + offset.x;
         var by = _vertices[index][1];
         var bz = _vertices[index][2] + offset.y;
-
         var c2 = _colour[j][1];
-
         index = _faces[j][2];
-
         var cx = _vertices[index][0] + offset.x;
         var cy = _vertices[index][1];
         var cz = _vertices[index][2] + offset.y;
-
         var c3 = _colour[j][2];
 
         // Flat face normals
@@ -56304,59 +55963,45 @@ var Buffer = (function() {
         pA.set(ax, ay, az);
         pB.set(bx, by, bz);
         pC.set(cx, cy, cz);
-
         cb.subVectors(pC, pB);
         ab.subVectors(pA, pB);
         cb.cross(ab);
-
         cb.normalize();
-
         var nx = cb.x;
         var ny = cb.y;
         var nz = cb.z;
-
         vertices[lastIndex * 9 + 0] = ax;
         vertices[lastIndex * 9 + 1] = ay;
         vertices[lastIndex * 9 + 2] = az;
-
         normals[lastIndex * 9 + 0] = nx;
         normals[lastIndex * 9 + 1] = ny;
         normals[lastIndex * 9 + 2] = nz;
-
         colours[lastIndex * 9 + 0] = c1[0];
         colours[lastIndex * 9 + 1] = c1[1];
         colours[lastIndex * 9 + 2] = c1[2];
-
         vertices[lastIndex * 9 + 3] = bx;
         vertices[lastIndex * 9 + 4] = by;
         vertices[lastIndex * 9 + 5] = bz;
-
         normals[lastIndex * 9 + 3] = nx;
         normals[lastIndex * 9 + 4] = ny;
         normals[lastIndex * 9 + 5] = nz;
-
         colours[lastIndex * 9 + 3] = c2[0];
         colours[lastIndex * 9 + 4] = c2[1];
         colours[lastIndex * 9 + 5] = c2[2];
-
         vertices[lastIndex * 9 + 6] = cx;
         vertices[lastIndex * 9 + 7] = cy;
         vertices[lastIndex * 9 + 8] = cz;
-
         normals[lastIndex * 9 + 6] = nx;
         normals[lastIndex * 9 + 7] = ny;
         normals[lastIndex * 9 + 8] = nz;
-
         colours[lastIndex * 9 + 6] = c3[0];
         colours[lastIndex * 9 + 7] = c3[1];
         colours[lastIndex * 9 + 8] = c3[2];
-
         if (pickingIds) {
           pickingIds[lastIndex * 3 + 0] = _pickingId;
           pickingIds[lastIndex * 3 + 1] = _pickingId;
           pickingIds[lastIndex * 3 + 2] = _pickingId;
         }
-
         lastIndex++;
       }
     }
@@ -56365,33 +56010,25 @@ var Buffer = (function() {
     geometry.addAttribute('position', new BufferAttribute(vertices, 3));
     geometry.addAttribute('normal', new BufferAttribute(normals, 3));
     geometry.addAttribute('color', new BufferAttribute(colours, 3));
-
     if (pickingIds) {
       geometry.addAttribute('pickingId', new BufferAttribute(pickingIds, 1));
     }
-
     geometry.computeBoundingBox();
-
     return geometry;
   };
-
   var textEncoder = new text_encoding.TextEncoder('utf-8');
   var textDecoder = new text_encoding.TextDecoder('utf-8');
-
-  var stringToUint8Array = function(str) {
+  var stringToUint8Array = function (str) {
     return textEncoder.encode(str);
   };
-
-  var uint8ArrayToString = function(ab) {
+  var uint8ArrayToString = function (ab) {
     return textDecoder.decode(ab);
   };
-
-  var fillTypedArray = function(arr, value) {
+  var fillTypedArray = function (arr, value) {
     for (var i = 0; i < arr.length; i++) {
       arr[i] = value;
     }
   };
-
   return {
     mergeFloat32Arrays: mergeFloat32Arrays,
     splitFloat32Array: splitFloat32Array,
@@ -56404,89 +56041,57 @@ var Buffer = (function() {
     uint8ArrayToString: uint8ArrayToString,
     fillTypedArray: fillTypedArray
   };
-})();
-
+}();
 /* harmony default export */ const util_Buffer = (Buffer);
-
 // EXTERNAL MODULE: ./src/util/Stringify.js
-var Stringify = __webpack_require__(122);
+var Stringify = __webpack_require__(4017);
 ;// CONCATENATED MODULE: ./src/engine/PickingShader.js
 // FROM: https://github.com/brianxu/GPUPicker/blob/master/GPUPicker.js
 
 var PickingShader = {
-  vertexShader: [
-		'attribute float pickingId;',
-		// '',
-		// 'uniform float size;',
-		// 'uniform float scale;',
-		'',
-		'varying vec4 worldId;',
-		'',
-		'void main() {',
-		'  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );',
-		// '  gl_PointSize = size * ( scale / length( mvPosition.xyz ) );',
-		'  vec3 a = fract(vec3(1.0/255.0, 1.0/(255.0*255.0), 1.0/(255.0*255.0*255.0)) * pickingId);',
-		'  a -= a.xxy * vec3(0.0, 1.0/255.0, 1.0/255.0);',
-		'  worldId = vec4(a,1);',
-		'  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-		'}'
-	].join('\n'),
-
-  fragmentShader: [
-		'#ifdef GL_ES\n',
-		'precision highp float;\n',
-		'#endif\n',
-		'',
-		'varying vec4 worldId;',
-		'',
-		'void main() {',
-		'  gl_FragColor = worldId;',
-		'}'
-	].join('\n')
+  vertexShader: ['attribute float pickingId;',
+  // '',
+  // 'uniform float size;',
+  // 'uniform float scale;',
+  '', 'varying vec4 worldId;', '', 'void main() {', '  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );',
+  // '  gl_PointSize = size * ( scale / length( mvPosition.xyz ) );',
+  '  vec3 a = fract(vec3(1.0/255.0, 1.0/(255.0*255.0), 1.0/(255.0*255.0*255.0)) * pickingId);', '  a -= a.xxy * vec3(0.0, 1.0/255.0, 1.0/255.0);', '  worldId = vec4(a,1);', '  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', '}'].join('\n'),
+  fragmentShader: ['#ifdef GL_ES\n', 'precision highp float;\n', '#endif\n', '', 'varying vec4 worldId;', '', 'void main() {', '  gl_FragColor = worldId;', '}'].join('\n')
 };
-
 /* harmony default export */ const engine_PickingShader = (PickingShader);
-
 ;// CONCATENATED MODULE: ./src/engine/PickingMaterial.js
 
 
 
 // FROM: https://github.com/brianxu/GPUPicker/blob/master/GPUPicker.js
 
-var PickingMaterial = function() {
+var PickingMaterial = function () {
   ShaderMaterial.call(this, {
     uniforms: {
       size: {
         type: 'f',
-        value: 0.01,
+        value: 0.01
       },
       scale: {
         type: 'f',
-        value: 400,
+        value: 400
       }
     },
     // attributes: ['position', 'id'],
     vertexShader: engine_PickingShader.vertexShader,
     fragmentShader: engine_PickingShader.fragmentShader
   });
-
   this.linePadding = 2;
 };
-
 PickingMaterial.prototype = Object.create(ShaderMaterial.prototype);
-
 PickingMaterial.prototype.constructor = PickingMaterial;
-
-PickingMaterial.prototype.setPointSize = function(size) {
+PickingMaterial.prototype.setPointSize = function (size) {
   this.uniforms.size.value = size;
 };
-
-PickingMaterial.prototype.setPointScale = function(scale) {
+PickingMaterial.prototype.setPointScale = function (scale) {
   this.uniforms.scale.value = scale;
 };
-
 /* harmony default export */ const engine_PickingMaterial = (PickingMaterial);
-
 ;// CONCATENATED MODULE: ./src/layer/geometry/PolygonLayer.js
 // TODO: Move duplicated logic between geometry layrs into GeometryLayer
 
@@ -56503,7 +56108,6 @@ PickingMaterial.prototype.setPointScale = function(scale) {
 
 // TODO: Allow _setBufferAttributes to use a custom function passed in to
 // generate a custom mesh
-
 
 
 
@@ -56535,21 +56139,17 @@ class PolygonLayer extends layer_Layer {
         height: 0
       }
     };
-
     var _options = lodash_assign_default()({}, defaults, options);
-
     super(_options);
 
     // Return coordinates as array of polygons so it's easy to support
     // MultiPolygon features (a single polygon would be a MultiPolygon with a
     // single polygon in the array)
-    this._coordinates = (PolygonLayer.isSingle(coordinates)) ? [coordinates] : coordinates;
+    this._coordinates = PolygonLayer.isSingle(coordinates) ? [coordinates] : coordinates;
   }
-
   _onAdd(world) {
     return new Promise((resolve, reject) => {
       this._setCoordinates();
-
       if (this._options.interactive) {
         // Only add to picking mesh if this layer is controlling output
         //
@@ -56559,20 +56159,15 @@ class PolygonLayer extends layer_Layer {
           this._pickingMesh = new Object3D();
           this.addToPicking(this._pickingMesh);
         }
-
         this._setPickingId();
         this._addPickingEvents();
       }
-
-      PolygonLayer.SetBufferAttributes(this._projectedCoordinates, this._options).then((result) => {
+      PolygonLayer.SetBufferAttributes(this._projectedCoordinates, this._options).then(result => {
         this._bufferAttributes = util_Buffer.mergeAttributes(result.attributes);
-
         if (result.outlineAttributes.length > 0) {
           this._outlineBufferAttributes = util_Buffer.mergeAttributes(result.outlineAttributes);
         }
-
         this._flat = result.flat;
-
         if (this.isOutput()) {
           var attributeLengths = {
             positions: 3,
@@ -56580,28 +56175,23 @@ class PolygonLayer extends layer_Layer {
             colors: 3,
             tops: 1
           };
-
           if (this._options.interactive) {
             attributeLengths.pickingIds = 1;
           }
-
           var style = this._options.style;
 
           // Set mesh if not merging elsewhere
-          PolygonLayer.SetMesh(this._bufferAttributes, attributeLengths, this._flat, style, this._options, this._world._environment._skybox).then((result) => {
+          PolygonLayer.SetMesh(this._bufferAttributes, attributeLengths, this._flat, style, this._options, this._world._environment._skybox).then(result => {
             // Output mesh
             this.add(result.mesh);
-
             if (result.pickingMesh) {
               this._pickingMesh.add(result.pickingMesh);
             }
           });
         }
-
         result.attributes = null;
         result.outlineAttributes = null;
         result = null;
-
         resolve(this);
       }).catch(reject);
     });
@@ -56634,7 +56224,6 @@ class PolygonLayer extends layer_Layer {
       // Re-emit click event from the layer
       this.emit('click', this, point2d, point3d, intersects);
     });
-
     this._world.on('pick-hover-' + this._pickingId, (point2d, point3d, intersects) => {
       // Re-emit click event from the layer
       this.emit('hover', this, point2d, point3d, intersects);
@@ -56643,23 +56232,20 @@ class PolygonLayer extends layer_Layer {
 
   // Create and store reference to THREE.BufferAttribute data for this layer
   static SetBufferAttributes(coordinates, options) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       var height = 0;
 
       // Convert height into world units
       if (options.style.height && options.style.height !== 0) {
         height = geo_Geo.metresToWorld(options.style.height, options.pointScale);
       }
-
       var colour = new Color();
       colour.set(options.style.color);
 
       // Light and dark colours used for poor-mans AO gradient on object sides
       var light = new Color(0xffffff);
-      var shadow  = new Color(0x666666);
-
+      var shadow = new Color(0x666666);
       var flat = true;
-
       var outlineAttributes = [];
 
       // For each polygon
@@ -56669,39 +56255,30 @@ class PolygonLayer extends layer_Layer {
 
         // Triangulate faces using earcut
         var faces = PolygonLayer.Triangulate(_earcut.vertices, _earcut.holes, _earcut.dimensions);
-
         var groupedVertices = [];
         for (i = 0, il = _earcut.vertices.length; i < il; i += _earcut.dimensions) {
           groupedVertices.push(_earcut.vertices.slice(i, i + _earcut.dimensions));
         }
-
         var extruded = util_extrudePolygon(groupedVertices, faces, {
           bottom: 0,
           top: height
         });
-
         var topColor = colour.clone().multiply(light);
         var bottomColor = colour.clone().multiply(shadow);
-
         var _vertices = extruded.positions;
         var _faces = [];
         var _colours = [];
         var _tops = [];
-
         var _colour;
         extruded.top.forEach((face, fi) => {
           _colour = [];
-
           _colour.push([colour.r, colour.g, colour.b]);
           _colour.push([colour.r, colour.g, colour.b]);
           _colour.push([colour.r, colour.g, colour.b]);
-
           _tops.push([true, true, true]);
-
           _faces.push(face);
           _colours.push(_colour);
         });
-
         if (extruded.sides) {
           flat = false;
 
@@ -56714,18 +56291,15 @@ class PolygonLayer extends layer_Layer {
               _colour.push([bottomColor.r, bottomColor.g, bottomColor.b]);
               _colour.push([bottomColor.r, bottomColor.g, bottomColor.b]);
               _colour.push([topColor.r, topColor.g, topColor.b]);
-
               _tops.push([false, false, true]);
-            // Reverse winding for the second face
-            // top-top-bottom
+              // Reverse winding for the second face
+              // top-top-bottom
             } else {
               _colour.push([topColor.r, topColor.g, topColor.b]);
               _colour.push([topColor.r, topColor.g, topColor.b]);
               _colour.push([bottomColor.r, bottomColor.g, bottomColor.b]);
-
               _tops.push([true, true, false]);
             }
-
             _faces.push(face);
             _colours.push(_colour);
           });
@@ -56741,14 +56315,11 @@ class PolygonLayer extends layer_Layer {
           tops: _tops,
           facesCount: _faces.length
         };
-
         if (options.style.outline) {
           var outlineColour = new Color();
           outlineColour.set(options.style.outlineColor || 0x000000);
-
           outlineAttributes.push(PolygonLayer.Set2DOutline(_coordinates, outlineColour));
         }
-
         if (options.interactive && options.pickingId) {
           // Inject picking ID
           polygon.pickingId = options.pickingId;
@@ -56757,7 +56328,6 @@ class PolygonLayer extends layer_Layer {
         // Convert polygon representation to proper attribute arrays
         return PolygonLayer.ToAttributes(polygon);
       });
-
       resolve({
         attributes: attributes,
         outlineAttributes: outlineAttributes,
@@ -56765,11 +56335,9 @@ class PolygonLayer extends layer_Layer {
       });
     });
   }
-
   getBufferAttributes() {
     return this._bufferAttributes;
   }
-
   getOutlineBufferAttributes() {
     return this._outlineBufferAttributes;
   }
@@ -56787,9 +56355,8 @@ class PolygonLayer extends layer_Layer {
   // Threshold angle is currently in rads
   static Set2DOutline(coordinates, colour) {
     var _vertices = [];
-
-    coordinates.forEach((ring) => {
-      var _ring = ring.map((coordinate) => {
+    coordinates.forEach(ring => {
+      var _ring = ring.map(coordinate => {
         return [coordinate.x, 0, coordinate.y];
       });
 
@@ -56801,43 +56368,31 @@ class PolygonLayer extends layer_Layer {
           first = false;
           continue;
         }
-
         _ring.splice(verticeCount + 1, 0, _ring[verticeCount]);
       }
-
       _vertices = _vertices.concat(_ring);
     });
-
     _colour = [colour.r, colour.g, colour.b];
-
     var vertices = new Float32Array(_vertices.length * 3);
     var colours = new Float32Array(_vertices.length * 3);
-
     var lastIndex = 0;
-
     for (var i = 0; i < _vertices.length; i++) {
       var ax = _vertices[i][0];
       var ay = _vertices[i][1];
       var az = _vertices[i][2];
-
       var c1 = _colour;
-
       vertices[lastIndex * 3 + 0] = ax;
       vertices[lastIndex * 3 + 1] = ay;
       vertices[lastIndex * 3 + 2] = az;
-
       colours[lastIndex * 3 + 0] = c1[0];
       colours[lastIndex * 3 + 1] = c1[1];
       colours[lastIndex * 3 + 2] = c1[2];
-
       lastIndex++;
     }
-
     var attributes = {
       positions: vertices,
       colors: colours
     };
-
     return attributes;
   }
 
@@ -56850,16 +56405,12 @@ class PolygonLayer extends layer_Layer {
     this._coordinates = null;
     this._projectedCoordinates = null;
   }
-
   static SetMesh(attributes, attributeLengths, flat, style, options, skybox) {
     var geometry = new BufferGeometry();
-
     for (var key in attributes) {
       geometry.addAttribute(key.slice(0, -1), new BufferAttribute(attributes[key], attributeLengths[key]));
     }
-
     geometry.computeBoundingBox();
-
     var material;
     if (options.polygonMaterial && options.polygonMaterial instanceof Material) {
       material = options.polygonMaterial;
@@ -56884,7 +56435,6 @@ class PolygonLayer extends layer_Layer {
       material.envMapIntensity = 3;
       material.envMap = skybox.getRenderTarget();
     }
-
     var mesh;
 
     // Pass mesh through callback, if defined
@@ -56892,27 +56442,21 @@ class PolygonLayer extends layer_Layer {
       mesh = options.onPolygonMesh(geometry, material);
     } else {
       mesh = new Mesh(geometry, material);
-
       mesh.castShadow = true;
       mesh.receiveShadow = true;
     }
-
     if (flat || style.renderOrder !== undefined) {
       if (!style.ignoreDepth) {
         material.depthWrite = false;
       }
-
-      var renderOrder = (style.renderOrder !== undefined) ? style.renderOrder : 3;
+      var renderOrder = style.renderOrder !== undefined ? style.renderOrder : 3;
       mesh.renderOrder = renderOrder;
     }
-
     if (options.interactive) {
       material = new engine_PickingMaterial();
       material.side = BackSide;
-
       var pickingMesh = new Mesh(geometry, material);
     }
-
     return Promise.resolve({
       mesh: mesh,
       pickingMesh: pickingMesh
@@ -56925,10 +56469,8 @@ class PolygonLayer extends layer_Layer {
   _setCoordinates() {
     this._bounds = [];
     this._coordinates = this._convertCoordinates(this._coordinates);
-
     this._projectedBounds = [];
     this._projectedCoordinates = this._projectCoordinates();
-
     this._center = this._coordinates[0][0][0];
   }
 
@@ -56964,10 +56506,8 @@ class PolygonLayer extends layer_Layer {
             this._offset = Point_point(0, 0);
             this._offset.x = -1 * point.x;
             this._offset.y = -1 * point.y;
-
             this._options.pointScale = this._world.pointScale(latlon);
           }
-
           return point;
         });
       });
@@ -56977,9 +56517,12 @@ class PolygonLayer extends layer_Layer {
   // Convert coordinates array to something earcut can understand
   static ToEarcut(coordinates) {
     var dim = 2;
-    var result = {vertices: [], holes: [], dimensions: dim};
+    var result = {
+      vertices: [],
+      holes: [],
+      dimensions: dim
+    };
     var holeIndex = 0;
-
     for (var i = 0; i < coordinates.length; i++) {
       for (var j = 0; j < coordinates[i].length; j++) {
         // for (var d = 0; d < dim; d++) {
@@ -56987,12 +56530,12 @@ class PolygonLayer extends layer_Layer {
         result.vertices.push(coordinates[i][j].y);
         // }
       }
+
       if (i > 0) {
         holeIndex += coordinates[i - 1].length;
         result.holes.push(holeIndex);
       }
     }
-
     return result;
   }
 
@@ -57002,7 +56545,6 @@ class PolygonLayer extends layer_Layer {
 
     var faces = earcut_default()(contour, holes, dim);
     var result = [];
-
     for (i = 0, il = faces.length; i < il; i += 3) {
       result.push(faces.slice(i, i + 3));
     }
@@ -57024,60 +56566,44 @@ class PolygonLayer extends layer_Layer {
 
     // One component per vertex per face (1 x 3 = 3)
     var tops = new Float32Array(polygon.facesCount * 3);
-
     var pickingIds;
     if (polygon.pickingId) {
       // One component per vertex per face (1 x 3 = 3)
       pickingIds = new Float32Array(polygon.facesCount * 3);
     }
-
     var pA = new Vector3();
     var pB = new Vector3();
     var pC = new Vector3();
-
     var cb = new Vector3();
     var ab = new Vector3();
-
     var index;
-
     var _faces = polygon.faces;
     var _vertices = polygon.vertices;
     var _colour = polygon.colours;
     var _tops = polygon.tops;
-
     var _pickingId;
     if (pickingIds) {
       _pickingId = polygon.pickingId;
     }
-
     var lastIndex = 0;
-
     for (var i = 0; i < _faces.length; i++) {
       // Array of vertex indexes for the face
       index = _faces[i][0];
-
       var ax = _vertices[index][0];
       var ay = _vertices[index][1];
       var az = _vertices[index][2];
-
       var c1 = _colour[i][0];
       var t1 = _tops[i][0];
-
       index = _faces[i][1];
-
       var bx = _vertices[index][0];
       var by = _vertices[index][1];
       var bz = _vertices[index][2];
-
       var c2 = _colour[i][1];
       var t2 = _tops[i][1];
-
       index = _faces[i][2];
-
       var cx = _vertices[index][0];
       var cy = _vertices[index][1];
       var cz = _vertices[index][2];
-
       var c3 = _colour[i][2];
       var t3 = _tops[i][2];
 
@@ -57086,77 +56612,59 @@ class PolygonLayer extends layer_Layer {
       pA.set(ax, ay, az);
       pB.set(bx, by, bz);
       pC.set(cx, cy, cz);
-
       cb.subVectors(pC, pB);
       ab.subVectors(pA, pB);
       cb.cross(ab);
-
       cb.normalize();
-
       var nx = cb.x;
       var ny = cb.y;
       var nz = cb.z;
-
       positions[lastIndex * 9 + 0] = ax;
       positions[lastIndex * 9 + 1] = ay;
       positions[lastIndex * 9 + 2] = az;
-
       normals[lastIndex * 9 + 0] = nx;
       normals[lastIndex * 9 + 1] = ny;
       normals[lastIndex * 9 + 2] = nz;
-
       colours[lastIndex * 9 + 0] = c1[0];
       colours[lastIndex * 9 + 1] = c1[1];
       colours[lastIndex * 9 + 2] = c1[2];
-
       positions[lastIndex * 9 + 3] = bx;
       positions[lastIndex * 9 + 4] = by;
       positions[lastIndex * 9 + 5] = bz;
-
       normals[lastIndex * 9 + 3] = nx;
       normals[lastIndex * 9 + 4] = ny;
       normals[lastIndex * 9 + 5] = nz;
-
       colours[lastIndex * 9 + 3] = c2[0];
       colours[lastIndex * 9 + 4] = c2[1];
       colours[lastIndex * 9 + 5] = c2[2];
-
       positions[lastIndex * 9 + 6] = cx;
       positions[lastIndex * 9 + 7] = cy;
       positions[lastIndex * 9 + 8] = cz;
-
       normals[lastIndex * 9 + 6] = nx;
       normals[lastIndex * 9 + 7] = ny;
       normals[lastIndex * 9 + 8] = nz;
-
       colours[lastIndex * 9 + 6] = c3[0];
       colours[lastIndex * 9 + 7] = c3[1];
       colours[lastIndex * 9 + 8] = c3[2];
-
       tops[lastIndex * 3 + 0] = t1;
       tops[lastIndex * 3 + 1] = t2;
       tops[lastIndex * 3 + 2] = t3;
-
       if (pickingIds) {
         pickingIds[lastIndex * 3 + 0] = _pickingId;
         pickingIds[lastIndex * 3 + 1] = _pickingId;
         pickingIds[lastIndex * 3 + 2] = _pickingId;
       }
-
       lastIndex++;
     }
-
     var attributes = {
       positions: positions,
       normals: normals,
       colors: colours,
       tops: tops
     };
-
     if (pickingIds) {
       attributes.pickingIds = pickingIds;
     }
-
     return attributes;
   }
 
@@ -57178,7 +56686,6 @@ class PolygonLayer extends layer_Layer {
       // TODO: Properly dispose of picking mesh
       this._pickingMesh = null;
     }
-
     this.clearCoordinates();
     this.clearBufferAttributes();
 
@@ -57186,14 +56693,10 @@ class PolygonLayer extends layer_Layer {
     super.destroy();
   }
 }
-
 /* harmony default export */ const geometry_PolygonLayer = (PolygonLayer);
-
-var PolygonLayer_noNew = function(coordinates, options) {
+var PolygonLayer_noNew = function (coordinates, options) {
   return new PolygonLayer(coordinates, options);
 };
-
-
 
 ;// CONCATENATED MODULE: ./src/layer/geometry/PolylineLayer.js
 // TODO: Move duplicated logic between geometry layrs into GeometryLayer
@@ -57213,7 +56716,6 @@ var PolygonLayer_noNew = function(coordinates, options) {
 
 // TODO: Allow _setBufferAttributes to use a custom function passed in to
 // generate a custom mesh
-
 
 
 
@@ -57243,24 +56745,20 @@ class PolylineLayer extends layer_Layer {
         lineBlending: NormalBlending
       }
     };
-
     var _options = lodash_assign_default()({}, defaults, options);
-
     super(_options);
 
     // Return coordinates as array of lines so it's easy to support
     // MultiLineString features (a single line would be a MultiLineString with a
     // single line in the array)
-    this._coordinates = (PolylineLayer.isSingle(coordinates)) ? [coordinates] : coordinates;
+    this._coordinates = PolylineLayer.isSingle(coordinates) ? [coordinates] : coordinates;
 
     // Polyline features are always flat (for now at least)
     this._flat = true;
   }
-
   _onAdd(world) {
     return new Promise((resolve, reject) => {
       this._setCoordinates();
-
       if (this._options.interactive) {
         // Only add to picking mesh if this layer is controlling output
         //
@@ -57270,42 +56768,35 @@ class PolylineLayer extends layer_Layer {
           this._pickingMesh = new Object3D();
           this.addToPicking(this._pickingMesh);
         }
-
         this._setPickingId();
         this._addPickingEvents();
       }
 
       // Store geometry representation as instances of THREE.BufferAttribute
-      PolylineLayer.SetBufferAttributes(this._projectedCoordinates, this._options).then((result) => {
+      PolylineLayer.SetBufferAttributes(this._projectedCoordinates, this._options).then(result => {
         this._bufferAttributes = util_Buffer.mergeAttributes(result.attributes);
         this._flat = result.flat;
-
         var attributeLengths = {
           positions: 3,
           colors: 3
         };
-
         if (this._options.interactive) {
           attributeLengths.pickingIds = 1;
         }
-
         if (this.isOutput()) {
           var style = this._options.style;
 
           // Set mesh if not merging elsewhere
-          PolylineLayer.SetMesh(this._bufferAttributes, attributeLengths, this._flat, style, this._options).then((result) => {
+          PolylineLayer.SetMesh(this._bufferAttributes, attributeLengths, this._flat, style, this._options).then(result => {
             // Output mesh
             this.add(result.mesh);
-
             if (result.pickingMesh) {
               this._pickingMesh.add(result.pickingMesh);
             }
           });
         }
-
         result.attributes = null;
         result = null;
-
         resolve(this);
       });
     });
@@ -57338,25 +56829,21 @@ class PolylineLayer extends layer_Layer {
       // Re-emit click event from the layer
       this.emit('click', this, point2d, point3d, intersects);
     });
-
     this._world.on('pick-hover-' + this._pickingId, (point2d, point3d, intersects) => {
       // Re-emit click event from the layer
       this.emit('hover', this, point2d, point3d, intersects);
     });
   }
-
   static SetBufferAttributes(coordinates, options) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       var height = 0;
 
       // Convert height into world units
       if (options.style.lineHeight) {
         height = geo_Geo.metresToWorld(options.style.lineHeight, options.pointScale);
       }
-
       var colour = new Color();
       colour.set(options.style.lineColor);
-
       var flat = true;
 
       // For each line
@@ -57372,19 +56859,15 @@ class PolylineLayer extends layer_Layer {
         _projectedCoordinates.forEach((coordinate, index) => {
           _colours.push([colour.r, colour.g, colour.b]);
           _vertices.push([coordinate.x, height, coordinate.y]);
-
-          nextCoord = (_projectedCoordinates[index + 1]) ? _projectedCoordinates[index + 1] : coordinate;
-
+          nextCoord = _projectedCoordinates[index + 1] ? _projectedCoordinates[index + 1] : coordinate;
           _colours.push([colour.r, colour.g, colour.b]);
           _vertices.push([nextCoord.x, height, nextCoord.y]);
         });
-
         var line = {
           vertices: _vertices,
           colours: _colours,
           verticesCount: _vertices.length
         };
-
         if (options.interactive && options.pickingId) {
           // Inject picking ID
           line.pickingId = options.pickingId;
@@ -57393,14 +56876,12 @@ class PolylineLayer extends layer_Layer {
         // Convert line representation to proper attribute arrays
         return PolylineLayer.ToAttributes(line);
       });
-
       resolve({
         attributes: attributes,
         flat: flat
       });
     });
   }
-
   getBufferAttributes() {
     return this._bufferAttributes;
   }
@@ -57423,16 +56904,12 @@ class PolylineLayer extends layer_Layer {
     this._coordinates = null;
     this._projectedCoordinates = null;
   }
-
   static SetMesh(attributes, attributeLengths, flat, style, options) {
     var geometry = new BufferGeometry();
-
     for (var key in attributes) {
       geometry.addAttribute(key.slice(0, -1), new BufferAttribute(attributes[key], attributeLengths[key]));
     }
-
     geometry.computeBoundingBox();
-
     var material;
     if (options.polylineMaterial && options.polylineMaterial instanceof Material) {
       material = options.polylineMaterial;
@@ -57445,7 +56922,6 @@ class PolylineLayer extends layer_Layer {
         blending: style.lineBlending
       });
     }
-
     var mesh;
 
     // Pass mesh through callback, if defined
@@ -57453,12 +56929,10 @@ class PolylineLayer extends layer_Layer {
       mesh = options.onPolylineMesh(geometry, material);
     } else {
       mesh = new LineSegments(geometry, material);
-
       if (style.lineRenderOrder !== undefined) {
         material.depthWrite = false;
         mesh.renderOrder = style.lineRenderOrder;
       }
-
       mesh.castShadow = true;
       // mesh.receiveShadow = true;
     }
@@ -57469,10 +56943,8 @@ class PolylineLayer extends layer_Layer {
 
       // Make the line wider / easier to pick
       material.linewidth = style.lineWidth + material.linePadding;
-
       var pickingMesh = new LineSegments(geometry, material);
     }
-
     return Promise.resolve({
       mesh: mesh,
       pickingMesh: pickingMesh
@@ -57485,10 +56957,8 @@ class PolylineLayer extends layer_Layer {
   _setCoordinates() {
     this._bounds = [];
     this._coordinates = this._convertCoordinates(this._coordinates);
-
     this._projectedBounds = [];
     this._projectedCoordinates = this._projectCoordinates();
-
     this._center = this._coordinates[0][0];
   }
 
@@ -57521,67 +56991,51 @@ class PolylineLayer extends layer_Layer {
           this._offset = Point_point(0, 0);
           this._offset.x = -1 * point.x;
           this._offset.y = -1 * point.y;
-
           this._options.pointScale = this._world.pointScale(latlon);
         }
-
         return point;
       });
     });
   }
-
   static ToAttributes(line) {
     // Three components per vertex
     var vertices = new Float32Array(line.verticesCount * 3);
     var colours = new Float32Array(line.verticesCount * 3);
-
     var pickingIds;
     if (line.pickingId) {
       // One component per vertex
       pickingIds = new Float32Array(line.verticesCount);
     }
-
     var _vertices = line.vertices;
     var _colour = line.colours;
-
     var _pickingId;
     if (pickingIds) {
       _pickingId = line.pickingId;
     }
-
     var lastIndex = 0;
-
     for (var i = 0; i < _vertices.length; i++) {
       var ax = _vertices[i][0];
       var ay = _vertices[i][1];
       var az = _vertices[i][2];
-
       var c1 = _colour[i];
-
       vertices[lastIndex * 3 + 0] = ax;
       vertices[lastIndex * 3 + 1] = ay;
       vertices[lastIndex * 3 + 2] = az;
-
       colours[lastIndex * 3 + 0] = c1[0];
       colours[lastIndex * 3 + 1] = c1[1];
       colours[lastIndex * 3 + 2] = c1[2];
-
       if (pickingIds) {
         pickingIds[lastIndex] = _pickingId;
       }
-
       lastIndex++;
     }
-
     var attributes = {
       positions: vertices,
       colors: colours
     };
-
     if (pickingIds) {
       attributes.pickingIds = pickingIds;
     }
-
     return attributes;
   }
 
@@ -57596,13 +57050,11 @@ class PolylineLayer extends layer_Layer {
   static isSingle(coordinates) {
     return !Array.isArray(coordinates[0][0]);
   }
-
   destroy() {
     if (this._pickingMesh) {
       // TODO: Properly dispose of picking mesh
       this._pickingMesh = null;
     }
-
     this.clearCoordinates();
     this.clearBufferAttributes();
 
@@ -57610,14 +57062,10 @@ class PolylineLayer extends layer_Layer {
     super.destroy();
   }
 }
-
 /* harmony default export */ const geometry_PolylineLayer = (PolylineLayer);
-
-var PolylineLayer_noNew = function(coordinates, options) {
+var PolylineLayer_noNew = function (coordinates, options) {
   return new PolylineLayer(coordinates, options);
 };
-
-
 
 ;// CONCATENATED MODULE: ./src/layer/geometry/PointLayer.js
 // TODO: Move duplicated logic between geometry layrs into GeometryLayer
@@ -57653,7 +57101,6 @@ var PolylineLayer_noNew = function(coordinates, options) {
 
 
 
-
 class PointLayer extends layer_Layer {
   constructor(coordinates, options) {
     var defaults = {
@@ -57671,23 +57118,18 @@ class PointLayer extends layer_Layer {
         pointColor: '#ff0000'
       }
     };
-
     var _options = lodash_assign_default()({}, defaults, options);
-
     super(_options);
 
     // Return coordinates as array of points so it's easy to support
     // MultiPoint features (a single point would be a MultiPoint with a
     // single point in the array)
-    this._coordinates = (PointLayer.isSingle(coordinates)) ? [coordinates] : coordinates;
-
+    this._coordinates = PointLayer.isSingle(coordinates) ? [coordinates] : coordinates;
     this._flat = false;
   }
-
   _onAdd(world) {
     return new Promise((resolve, reject) => {
       this._setCoordinates();
-
       if (this._options.interactive) {
         // Only add to picking mesh if this layer is controlling output
         //
@@ -57697,44 +57139,37 @@ class PointLayer extends layer_Layer {
           this._pickingMesh = new Object3D();
           this.addToPicking(this._pickingMesh);
         }
-
         this._setPickingId();
         this._addPickingEvents();
       }
 
       // Store geometry representation as instances of THREE.BufferAttribute
-      PointLayer.SetBufferAttributes(this._projectedCoordinates, this._options).then((result) => {
+      PointLayer.SetBufferAttributes(this._projectedCoordinates, this._options).then(result => {
         this._bufferAttributes = util_Buffer.mergeAttributes(result.attributes);
         this._flat = result.flat;
-
         var attributeLengths = {
           positions: 3,
           normals: 3,
           colors: 3
         };
-
         if (this._options.interactive) {
           attributeLengths.pickingIds = 1;
         }
-
         if (this.isOutput()) {
           var style = this._options.style;
 
           // Set mesh if not merging elsewhere
           // TODO: Dedupe with PolygonLayer as they are identical
-          PointLayer.SetMesh(this._bufferAttributes, attributeLengths, this._flat, style, this._options, this._world._environment._skybox).then((result) => {
+          PointLayer.SetMesh(this._bufferAttributes, attributeLengths, this._flat, style, this._options, this._world._environment._skybox).then(result => {
             // Output mesh
             this.add(result.mesh);
-
             if (result.pickingMesh) {
               this._pickingMesh.add(result.pickingMesh);
             }
           });
         }
-
         result.attributes = null;
         result = null;
-
         resolve(this);
       }).catch(reject);
     });
@@ -57766,28 +57201,25 @@ class PointLayer extends layer_Layer {
       // Re-emit click event from the layer
       this.emit('click', this, point2d, point3d, intersects);
     });
-
     this._world.on('pick-hover-' + this._pickingId, (point2d, point3d, intersects) => {
       // Re-emit click event from the layer
       this.emit('hover', this, point2d, point3d, intersects);
     });
   }
-
   static SetBufferAttributes(coordinates, options) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       var height = 0;
 
       // Convert height into world units
       if (options.style.pointHeight) {
         height = geo_Geo.metresToWorld(options.style.pointHeight, options.pointScale);
       }
-
       var colour = new Color();
       colour.set(options.style.pointColor);
 
       // Use default geometry if none has been provided or the provided geometry
       // isn't valid
-      if (!options.pointGeometry || (!options.pointGeometry instanceof Geometry || !options.pointGeometry instanceof BufferGeometry)) {
+      if (!options.pointGeometry || !options.pointGeometry instanceof Geometry || !options.pointGeometry instanceof BufferGeometry) {
         // Debug geometry for points is a thin bar
         //
         // TODO: Allow point geometry to be customised / overridden
@@ -57807,46 +57239,37 @@ class PointLayer extends layer_Layer {
           geometry = new BufferGeometry().fromGeometry(options.pointGeometry);
         }
       }
-
-      var attributes = coordinates.map((coordinate) => {
+      var attributes = coordinates.map(coordinate => {
         var _vertices = [];
         var _normals = [];
         var _colours = [];
-
         var _geometry = geometry.clone();
         _geometry.translate(coordinate.x, height, coordinate.y);
-
         var _vertices = _geometry.attributes.position.clone().array;
         var _normals = _geometry.attributes.normal.clone().array;
         var _colours = _geometry.attributes.color.clone().array;
-
         for (var i = 0; i < _colours.length; i += 3) {
           _colours[i] = colour.r;
           _colours[i + 1] = colour.g;
           _colours[i + 2] = colour.b;
         }
-
         var _point = {
           positions: _vertices,
           normals: _normals,
           colors: _colours
         };
-
         if (options.interactive && options.pickingId) {
           // Inject picking ID
           _point.pickingId = options.pickingId;
         }
-
         return _point;
       });
-
       resolve({
         attributes: attributes,
         flat: false
       });
     });
   }
-
   getBufferAttributes() {
     return this._bufferAttributes;
   }
@@ -57869,16 +57292,12 @@ class PointLayer extends layer_Layer {
     this._coordinates = null;
     this._projectedCoordinates = null;
   }
-
   static SetMesh(attributes, attributeLengths, flat, style, options, skybox) {
     var geometry = new BufferGeometry();
-
     for (var key in attributes) {
       geometry.addAttribute(key.slice(0, -1), new BufferAttribute(attributes[key], attributeLengths[key]));
     }
-
     geometry.computeBoundingBox();
-
     var material;
     if (options.pointMaterial && options.pointMaterial instanceof Material) {
       material = options.pointMaterial;
@@ -57903,7 +57322,6 @@ class PointLayer extends layer_Layer {
       material.envMapIntensity = 3;
       material.envMap = skybox.getRenderTarget();
     }
-
     var mesh;
 
     // Pass mesh through callback, if defined
@@ -57911,23 +57329,18 @@ class PointLayer extends layer_Layer {
       mesh = options.onPolygonMesh(geometry, material);
     } else {
       mesh = new Mesh(geometry, material);
-
       mesh.castShadow = true;
       mesh.receiveShadow = true;
     }
-
     if (flat) {
       material.depthWrite = false;
       mesh.renderOrder = 4;
     }
-
     if (options.interactive) {
       material = new engine_PickingMaterial();
       material.side = BackSide;
-
       var pickingMesh = new Mesh(geometry, material);
     }
-
     return Promise.resolve({
       mesh: mesh,
       pickingMesh: pickingMesh
@@ -57940,10 +57353,8 @@ class PointLayer extends layer_Layer {
   _setCoordinates() {
     this._bounds = [];
     this._coordinates = this._convertCoordinates(this._coordinates);
-
     this._projectedBounds = [];
     this._projectedCoordinates = this._projectCoordinates();
-
     this._center = this._coordinates;
   }
 
@@ -57973,10 +57384,8 @@ class PointLayer extends layer_Layer {
         this._offset = Point_point(0, 0);
         this._offset.x = -1 * _point.x;
         this._offset.y = -1 * _point.y;
-
         this._options.pointScale = this._world.pointScale(latlon);
       }
-
       return _point;
     });
   }
@@ -57992,13 +57401,11 @@ class PointLayer extends layer_Layer {
   static isSingle(coordinates) {
     return !Array.isArray(coordinates[0]);
   }
-
   destroy() {
     if (this._pickingMesh) {
       // TODO: Properly dispose of picking mesh
       this._pickingMesh = null;
     }
-
     this.clearCoordinates();
     this.clearBufferAttributes();
 
@@ -58006,14 +57413,10 @@ class PointLayer extends layer_Layer {
     super.destroy();
   }
 }
-
 /* harmony default export */ const geometry_PointLayer = (PointLayer);
-
-var PointLayer_noNew = function(coordinates, options) {
+var PointLayer_noNew = function (coordinates, options) {
   return new PointLayer(coordinates, options);
 };
-
-
 
 ;// CONCATENATED MODULE: ./src/layer/GeoJSONWorkerLayer.js
 
@@ -58047,19 +57450,14 @@ class GeoJSONWorkerLayer extends layer_Layer {
       onClick: null,
       headers: {}
     };
-
     var _options = lodash_assign_default()({}, defaults, options);
-
     if (typeof options.style === 'object') {
       _options.style = lodash_assign_default()({}, defaults.style, options.style);
     }
-
     super(_options);
-
     this._aborted = false;
     this._geojson = geojson;
   }
-
   _onAdd(world) {
     if (this._options.interactive) {
       // Worker layer always controls output to add a picking mesh
@@ -58067,7 +57465,7 @@ class GeoJSONWorkerLayer extends layer_Layer {
     }
 
     // Process GeoJSON
-    return this._process(this._geojson).catch((err) => {
+    return this._process(this._geojson).catch(err => {
       console.error(err);
     });
   }
@@ -58082,19 +57480,15 @@ class GeoJSONWorkerLayer extends layer_Layer {
       if (typeof this._options.style === 'function') {
         style = Stringify/* default */.Z.functionToString(this._options.style);
       }
-
       var pointGeometry = this._options.pointGeometry;
 
       // TODO: Convert to buffer and use transferrable objects
       if (typeof this._options.pointGeometry === 'function') {
         pointGeometry = Stringify/* default */.Z.functionToString(this._options.pointGeometry);
       }
-
       var geojson = _geojson;
       var transferrables = [];
-
       var layers = [];
-
       if (this._options.layers) {
         layers = this._options.layers;
       }
@@ -58109,22 +57503,21 @@ class GeoJSONWorkerLayer extends layer_Layer {
         if (this._options.filter) {
           fc.features = features.filter(this._options.filter);
         }
-
         if (this._options.onEachFeature) {
           var feature;
           for (var i = 0; i < features.length; i++) {
             feature = features[i];
             this._options.onEachFeature(feature);
-          };
+          }
+          ;
         }
-
         this._geojson = geojson = util_Buffer.stringToUint8Array(JSON.stringify(fc));
         transferrables.push(geojson.buffer);
         this._execWorker(geojson, this._options.topojson, this._options.headers, this._world._originPoint, style, this._options.interactive, pointGeometry, transferrables).then(() => {
           resolve();
         }).catch(reject);
       } else if (typeof this._options.filter === 'function' || typeof this._options.onEachFeature === 'function') {
-        GeoJSONWorkerLayer.RequestGeoJSON(geojson).then((res) => {
+        GeoJSONWorkerLayer.RequestGeoJSON(geojson).then(res => {
           // if (this._aborted) {
           //   resolve();
           //   return;
@@ -58137,18 +57530,16 @@ class GeoJSONWorkerLayer extends layer_Layer {
           if (this._options.filter) {
             fc.features = features.filter(this._options.filter);
           }
-
           if (this._options.onEachFeature) {
             var feature;
             for (var i = 0; i < features.length; i++) {
               feature = features[i];
               this._options.onEachFeature(feature);
-            };
+            }
+            ;
           }
-
           this._geojson = geojson = util_Buffer.stringToUint8Array(JSON.stringify(fc));
           transferrables.push(geojson.buffer);
-
           this._execWorker(geojson, false, this._options.headers, this._world._originPoint, style, this._options.interactive, pointGeometry, transferrables).then(() => {
             resolve();
           }).catch(reject);
@@ -58160,12 +57551,11 @@ class GeoJSONWorkerLayer extends layer_Layer {
       }
     });
   }
-
   _execWorker(geojson, topojson, headers, originPoint, style, interactive, pointGeometry, transferrables) {
     return new Promise((resolve, reject) => {
       // console.time('Worker round trip');
 
-      util_Worker.exec('GeoJSONWorkerLayer.Process', [geojson, topojson, headers, originPoint, style, interactive, pointGeometry], transferrables).then((results) => {
+      util_Worker.exec('GeoJSONWorkerLayer.Process', [geojson, topojson, headers, originPoint, style, interactive, pointGeometry], transferrables).then(results => {
         // console.timeEnd('Worker round trip');
 
         // if (this._aborted) {
@@ -58174,19 +57564,15 @@ class GeoJSONWorkerLayer extends layer_Layer {
         // }
 
         var processPromises = [];
-
         if (results.polygons) {
           processPromises.push(this._processPolygonResults(results.polygons));
         }
-
         if (results.polylines) {
           processPromises.push(this._processPolylineResults(results.polylines));
         }
-
         if (results.points) {
           processPromises.push(this._processPointResults(results.points));
         }
-
         if (processPromises.length > 0) {
           Promise.all(processPromises).then(() => {
             resolve();
@@ -58205,42 +57591,33 @@ class GeoJSONWorkerLayer extends layer_Layer {
       var splitNormals = util_Buffer.splitFloat32Array(results.attributes.normals);
       var splitColors = util_Buffer.splitFloat32Array(results.attributes.colors);
       var splitTops = util_Buffer.splitFloat32Array(results.attributes.tops);
-
       var splitOutlinePositions;
       var splitOutlineColors;
-
       if (results.outlineAttributes) {
         splitOutlinePositions = util_Buffer.splitFloat32Array(results.outlineAttributes.positions);
         splitOutlineColors = util_Buffer.splitFloat32Array(results.outlineAttributes.colors);
       }
-
       var splitProperties;
       if (results.properties) {
         splitProperties = util_Buffer.splitUint8Array(results.properties);
       }
-
       var flats = results.flats;
-
       var objects = [];
       var outlineObjects = [];
-
       var obj;
       var pickingId;
       var pickingIds;
       var properties;
-
       var polygonAttributeLengths = {
         positions: 3,
         normals: 3,
         colors: 3,
         tops: 1
       };
-
       var polygonOutlineAttributeLengths = {
         positions: 3,
         colors: 3
       };
-
       for (var i = 0; i < splitPositions.length; i++) {
         if (splitProperties && splitProperties[i]) {
           properties = JSON.parse(util_Buffer.uint8ArrayToString(splitProperties[i]));
@@ -58265,14 +57642,10 @@ class GeoJSONWorkerLayer extends layer_Layer {
         // the buffer attributes and set up event listeners
         if (this._options.interactive) {
           pickingId = this.getPickingId();
-
           pickingIds = new Float32Array(splitPositions[i].length / 3);
           util_Buffer.fillTypedArray(pickingIds, pickingId);
-
           obj.attributes[0].pickingIds = pickingIds;
-
           polygonAttributeLengths.pickingIds = 1;
-
           this._addPicking(pickingId, properties);
         }
 
@@ -58286,10 +57659,8 @@ class GeoJSONWorkerLayer extends layer_Layer {
             polygonAttributeLengths[key] = customAttribute.length;
           }
         }
-
         objects.push(obj);
       }
-
       for (var i = 0; i < splitOutlinePositions.length; i++) {
         obj = {
           attributes: [{
@@ -58298,15 +57669,11 @@ class GeoJSONWorkerLayer extends layer_Layer {
           }],
           flat: true
         };
-
         outlineObjects.push(obj);
       }
-
       var polygonAttributes = [];
       var polygonOutlineAttributes = [];
-
       var polygonFlat = true;
-
       for (var i = 0; i < objects.length; i++) {
         obj = objects[i];
 
@@ -58315,67 +57682,52 @@ class GeoJSONWorkerLayer extends layer_Layer {
         if (polygonFlat && obj.flat === false) {
           polygonFlat = false;
         }
-
         var bufferAttributes = util_Buffer.mergeAttributes(obj.attributes);
         polygonAttributes.push(bufferAttributes);
-      };
-
+      }
+      ;
       for (var i = 0; i < outlineObjects.length; i++) {
         obj = outlineObjects[i];
-
         var bufferAttributes = util_Buffer.mergeAttributes(obj.attributes);
         polygonOutlineAttributes.push(bufferAttributes);
-      };
-
+      }
+      ;
       var outputPromises = [];
-
       var style;
-
       if (polygonAttributes.length > 0) {
         var mergedPolygonAttributes = util_Buffer.mergeAttributes(polygonAttributes);
 
         // TODO: Make this work when style is a function per feature
-        style = (typeof this._options.style === 'function') ? this._options.style(objects[0]) : this._options.style;
+        style = typeof this._options.style === 'function' ? this._options.style(objects[0]) : this._options.style;
         style = lodash_assign_default()({}, util_GeoJSON.defaultStyle, style);
-
         outputPromises.push(this._setPolygonMesh(mergedPolygonAttributes, polygonAttributeLengths, style, polygonFlat));
       }
-
       if (polygonOutlineAttributes.length > 0) {
         var mergedPolygonOutlineAttributes = util_Buffer.mergeAttributes(polygonOutlineAttributes);
-
-        style = (typeof this._options.style === 'function') ? this._options.style(objects[0]) : this._options.style;
+        style = typeof this._options.style === 'function' ? this._options.style(objects[0]) : this._options.style;
         style = lodash_assign_default()({}, util_GeoJSON.defaultStyle, style);
-
         if (style.outlineRenderOrder !== undefined) {
           style.lineRenderOrder = style.outlineRenderOrder;
         } else {
-          style.lineRenderOrder = (style.renderOrder) ? style.renderOrder + 1 : 4;
+          style.lineRenderOrder = style.renderOrder ? style.renderOrder + 1 : 4;
         }
-
         if (style.outlineWidth) {
           style.lineWidth = style.outlineWidth;
         }
-
         outputPromises.push(this._setPolylineMesh(mergedPolygonOutlineAttributes, polygonOutlineAttributeLengths, style, true));
       }
-
-      Promise.all(outputPromises).then((results) => {
+      Promise.all(outputPromises).then(results => {
         var [polygonResult, outlineResult] = results;
-
         if (polygonResult) {
           this._polygonMesh = polygonResult.mesh;
           this.add(this._polygonMesh);
-
           if (polygonResult.pickingMesh) {
             this._pickingMesh.add(polygonResult.pickingMesh);
           }
         }
-
         if (outlineResult) {
           this.add(outlineResult.mesh);
         }
-
         resolve();
       }).catch(reject);
     });
@@ -58386,25 +57738,20 @@ class GeoJSONWorkerLayer extends layer_Layer {
     return new Promise((resolve, reject) => {
       var splitPositions = util_Buffer.splitFloat32Array(results.attributes.positions);
       var splitColors = util_Buffer.splitFloat32Array(results.attributes.colors);
-
       var splitProperties;
       if (results.properties) {
         splitProperties = util_Buffer.splitUint8Array(results.properties);
       }
-
       var flats = results.flats;
-
       var objects = [];
       var obj;
       var pickingId;
       var pickingIds;
       var properties;
-
       var polylineAttributeLengths = {
         positions: 3,
         colors: 3
       };
-
       for (var i = 0; i < splitPositions.length; i++) {
         if (splitProperties && splitProperties[i]) {
           properties = JSON.parse(util_Buffer.uint8ArrayToString(splitProperties[i]));
@@ -58427,14 +57774,10 @@ class GeoJSONWorkerLayer extends layer_Layer {
         // the buffer attributes and set up event listeners
         if (this._options.interactive) {
           pickingId = this.getPickingId();
-
           pickingIds = new Float32Array(splitPositions[i].length / 3);
           util_Buffer.fillTypedArray(pickingIds, pickingId);
-
           obj.attributes[0].pickingIds = pickingIds;
-
           polylineAttributeLengths.pickingIds = 1;
-
           this._addPicking(pickingId, properties);
         }
 
@@ -58448,40 +57791,31 @@ class GeoJSONWorkerLayer extends layer_Layer {
             polylineAttributeLengths[key] = customAttribute.length;
           }
         }
-
         objects.push(obj);
       }
-
       var polylineAttributes = [];
-
       var polylineFlat = true;
-
       for (var i = 0; i < objects.length; i++) {
         obj = objects[i];
-
         if (polylineFlat && !obj.flat) {
           polylineFlat = false;
         }
-
         var bufferAttributes = util_Buffer.mergeAttributes(obj.attributes);
         polylineAttributes.push(bufferAttributes);
-      };
-
+      }
+      ;
       if (polylineAttributes.length > 0) {
         var mergedPolylineAttributes = util_Buffer.mergeAttributes(polylineAttributes);
 
         // TODO: Make this work when style is a function per feature
-        var style = (typeof this._options.style === 'function') ? this._options.style(objects[0]) : this._options.style;
+        var style = typeof this._options.style === 'function' ? this._options.style(objects[0]) : this._options.style;
         style = lodash_assign_default()({}, util_GeoJSON.defaultStyle, style);
-
-        this._setPolylineMesh(mergedPolylineAttributes, polylineAttributeLengths, style, polylineFlat).then((result) => {
+        this._setPolylineMesh(mergedPolylineAttributes, polylineAttributeLengths, style, polylineFlat).then(result => {
           this._polylineMesh = result.mesh;
           this.add(this._polylineMesh);
-
           if (result.pickingMesh) {
             this._pickingMesh.add(result.pickingMesh);
           }
-
           resolve();
         }).catch(reject);
       } else {
@@ -58489,32 +57823,26 @@ class GeoJSONWorkerLayer extends layer_Layer {
       }
     });
   }
-
   _processPointResults(results) {
     return new Promise((resolve, reject) => {
       var splitPositions = util_Buffer.splitFloat32Array(results.attributes.positions);
       var splitNormals = util_Buffer.splitFloat32Array(results.attributes.normals);
       var splitColors = util_Buffer.splitFloat32Array(results.attributes.colors);
-
       var splitProperties;
       if (results.properties) {
         splitProperties = util_Buffer.splitUint8Array(results.properties);
       }
-
       var flats = results.flats;
-
       var objects = [];
       var obj;
       var pickingId;
       var pickingIds;
       var properties;
-
       var pointAttributeLengths = {
         positions: 3,
         normals: 3,
         colors: 3
       };
-
       for (var i = 0; i < splitPositions.length; i++) {
         if (splitProperties && splitProperties[i]) {
           properties = JSON.parse(util_Buffer.uint8ArrayToString(splitProperties[i]));
@@ -58538,14 +57866,10 @@ class GeoJSONWorkerLayer extends layer_Layer {
         // the buffer attributes and set up event listeners
         if (this._options.interactive) {
           pickingId = this.getPickingId();
-
           pickingIds = new Float32Array(splitPositions[i].length / 3);
           util_Buffer.fillTypedArray(pickingIds, pickingId);
-
           obj.attributes[0].pickingIds = pickingIds;
-
           pointAttributeLengths.pickingIds = 1;
-
           this._addPicking(pickingId, properties);
         }
 
@@ -58559,40 +57883,31 @@ class GeoJSONWorkerLayer extends layer_Layer {
             pointAttributeLengths[key] = customAttribute.length;
           }
         }
-
         objects.push(obj);
       }
-
       var pointAttributes = [];
-
       var pointFlat = true;
-
       for (var i = 0; i < objects.length; i++) {
         obj = objects[i];
-
         if (pointFlat && !obj.flat) {
           pointFlat = false;
         }
-
         var bufferAttributes = util_Buffer.mergeAttributes(obj.attributes);
         pointAttributes.push(bufferAttributes);
-      };
-
+      }
+      ;
       if (pointAttributes.length > 0) {
         var mergedPointAttributes = util_Buffer.mergeAttributes(pointAttributes);
 
         // TODO: Make this work when style is a function per feature
-        var style = (typeof this._options.style === 'function') ? this._options.style(objects[0]) : this._options.style;
+        var style = typeof this._options.style === 'function' ? this._options.style(objects[0]) : this._options.style;
         style = lodash_assign_default()({}, util_GeoJSON.defaultStyle, style);
-
-        this._setPointMesh(mergedPointAttributes, pointAttributeLengths, style, pointFlat).then((result) => {
+        this._setPointMesh(mergedPointAttributes, pointAttributeLengths, style, pointFlat).then(result => {
           this._pointMesh = result.mesh;
           this.add(this._pointMesh);
-
           if (result.pickingMesh) {
             this._pickingMesh.add(result.pickingMesh);
           }
-
           resolve();
         }).catch(reject);
       } else {
@@ -58612,9 +57927,8 @@ class GeoJSONWorkerLayer extends layer_Layer {
   // TODO: Support passing custom geometry for point layers
   static Process(geojson, topojson, headers, originPoint, _style, _properties, _pointGeometry) {
     return new Promise((resolve, reject) => {
-      GeoJSONWorkerLayer.ProcessGeoJSON(geojson, headers).then((res) => {
+      GeoJSONWorkerLayer.ProcessGeoJSON(geojson, headers).then(res => {
         var geojson = res;
-
         if (!geojson.features) {
           // Collects features into a single FeatureCollection
           //
@@ -58640,20 +57954,16 @@ class GeoJSONWorkerLayer extends layer_Layer {
 
         // Assume that a style won't be set per feature
         var style = _style;
-
         var pointGeometry;
         // Deserialise pointGeometry function if provided
         if (typeof _pointGeometry === 'string') {
           pointGeometry = Stringify/* default */.Z.stringToFunction(_pointGeometry);
         }
-
         var feature;
         for (var i = 0; i < features.length; i++) {
           feature = features[i];
-
           var geometry = feature.geometry;
-          var coordinates = (geometry.coordinates) ? geometry.coordinates : null;
-
+          var coordinates = geometry.coordinates ? geometry.coordinates : null;
           if (!coordinates || !geometry) {
             return;
           }
@@ -58665,8 +57975,7 @@ class GeoJSONWorkerLayer extends layer_Layer {
           }
 
           if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
-            coordinates = (geometry_PolygonLayer.isSingle(coordinates)) ? [coordinates] : coordinates;
-
+            coordinates = geometry_PolygonLayer.isSingle(coordinates) ? [coordinates] : coordinates;
             var converted = coordinates.map(_coordinates => {
               return _coordinates.map(ring => {
                 return ring.map(coordinate => {
@@ -58674,22 +57983,18 @@ class GeoJSONWorkerLayer extends layer_Layer {
                 });
               });
             });
-
             var point;
-            var projected = converted.map((_coordinates) => {
-              return _coordinates.map((ring) => {
-                return ring.map((latlon) => {
+            var projected = converted.map(_coordinates => {
+              return _coordinates.map(ring => {
+                return ring.map(latlon => {
                   point = geo_Geo.latLonToPoint(latlon)._subtract(originPoint);
-
                   if (!pointScale) {
                     pointScale = geo_Geo.pointScale(latlon);
                   }
-
                   return point;
                 });
               });
             });
-
             var polygon = {
               projected: projected,
               options: {
@@ -58697,36 +58002,28 @@ class GeoJSONWorkerLayer extends layer_Layer {
                 style: style
               }
             };
-
             if (_properties) {
               polygon.properties = feature.properties;
             }
-
             polygons.push(polygon);
           }
-
           if (geometry.type === 'LineString' || geometry.type === 'MultiLineString') {
-            coordinates = (geometry_PolylineLayer.isSingle(coordinates)) ? [coordinates] : coordinates;
-
+            coordinates = geometry_PolylineLayer.isSingle(coordinates) ? [coordinates] : coordinates;
             var converted = coordinates.map(_coordinates => {
               return _coordinates.map(coordinate => {
                 return noNew(coordinate[1], coordinate[0]);
               });
             });
-
             var point;
-            var projected = converted.map((_coordinates) => {
-              return _coordinates.map((latlon) => {
+            var projected = converted.map(_coordinates => {
+              return _coordinates.map(latlon => {
                 point = geo_Geo.latLonToPoint(latlon)._subtract(originPoint);
-
                 if (!pointScale) {
                   pointScale = geo_Geo.pointScale(latlon);
                 }
-
                 return point;
               });
             });
-
             var polyline = {
               projected: projected,
               options: {
@@ -58734,37 +58031,28 @@ class GeoJSONWorkerLayer extends layer_Layer {
                 style: style
               }
             };
-
             if (_properties) {
               polyline.properties = feature.properties;
             }
-
             polylines.push(polyline);
           }
-
           if (geometry.type === 'Point' || geometry.type === 'MultiPoint') {
             if (!pointGeometry) {
               console.warn('Skipping point geometry as no function provided');
               continue;
             }
-
-            coordinates = (geometry_PointLayer.isSingle(coordinates)) ? [coordinates] : coordinates;
-
+            coordinates = geometry_PointLayer.isSingle(coordinates) ? [coordinates] : coordinates;
             var converted = coordinates.map(coordinate => {
               return noNew(coordinate[1], coordinate[0]);
             });
-
             var point;
-            var projected = converted.map((latlon) => {
+            var projected = converted.map(latlon => {
               point = geo_Geo.latLonToPoint(latlon)._subtract(originPoint);
-
               if (!pointScale) {
                 pointScale = geo_Geo.pointScale(latlon);
               }
-
               return point;
             });
-
             var point = {
               projected: projected,
               options: {
@@ -58773,54 +58061,48 @@ class GeoJSONWorkerLayer extends layer_Layer {
                 style: style
               }
             };
-
             if (_properties) {
               point.properties = feature.properties;
             }
-
             points.push(point);
           }
-        };
-
+        }
+        ;
         var polygonBufferPromises = [];
         var polylineBufferPromises = [];
         var pointBufferPromises = [];
-
         var polygon;
         for (var i = 0; i < polygons.length; i++) {
           polygon = polygons[i];
           polygonBufferPromises.push(geometry_PolygonLayer.SetBufferAttributes(polygon.projected, polygon.options));
-        };
-
+        }
+        ;
         var polyline;
         for (var i = 0; i < polylines.length; i++) {
           polyline = polylines[i];
           polylineBufferPromises.push(geometry_PolylineLayer.SetBufferAttributes(polyline.projected, polyline.options));
-        };
-
+        }
+        ;
         var point;
         for (var i = 0; i < points.length; i++) {
           point = points[i];
           pointBufferPromises.push(geometry_PointLayer.SetBufferAttributes(point.projected, point.options));
-        };
-
+        }
+        ;
         var data = {};
         var transferrables = [];
 
         // TODO: Make this work with polylines too
         // TODO: Make this so it's not a nest of promises
-        GeoJSONWorkerLayer.ProcessPolygons(polygonBufferPromises, polygons, _properties).then((result) => {
+        GeoJSONWorkerLayer.ProcessPolygons(polygonBufferPromises, polygons, _properties).then(result => {
           data.polygons = result.data;
           transferrables = transferrables.concat(result.transferrables);
-
-          GeoJSONWorkerLayer.ProcessPolylines(polylineBufferPromises, polylines, _properties).then((result) => {
+          GeoJSONWorkerLayer.ProcessPolylines(polylineBufferPromises, polylines, _properties).then(result => {
             data.polylines = result.data;
             transferrables = transferrables.concat(result.transferrables);
-
-            GeoJSONWorkerLayer.ProcessPoints(pointBufferPromises, points, _properties).then((result) => {
+            GeoJSONWorkerLayer.ProcessPoints(pointBufferPromises, points, _properties).then(result => {
               data.points = result.data;
               transferrables = transferrables.concat(result.transferrables);
-
               resolve({
                 data: data,
                 transferrables: transferrables
@@ -58831,29 +58113,22 @@ class GeoJSONWorkerLayer extends layer_Layer {
       }).catch(reject);
     });
   }
-
   static ProcessPolygons(polygonPromises, polygons, _properties) {
     return new Promise((resolve, reject) => {
-      Promise.all(polygonPromises).then((results) => {
+      Promise.all(polygonPromises).then(results => {
         var transferrables = [];
-
         var positions = [];
         var normals = [];
         var colors = [];
         var tops = [];
-
         var outlinePositions = [];
         var outlineColors = [];
-
         var properties = [];
-
         var flats = [];
         var polygon;
-
         var result;
         for (var i = 0; i < results.length; i++) {
           result = results[i];
-
           polygon = polygons[i];
 
           // WORKERS: Making this a typed array will speed up transfer time
@@ -58866,70 +58141,57 @@ class GeoJSONWorkerLayer extends layer_Layer {
           var attributes;
           for (var j = 0; j < result.attributes.length; j++) {
             attributes = result.attributes[j];
-
             positions.push(attributes.positions);
             normals.push(attributes.normals);
             colors.push(attributes.colors);
             tops.push(attributes.tops);
-
             if (_properties) {
               properties.push(util_Buffer.stringToUint8Array(JSON.stringify(polygon.properties)));
             }
-          };
-
+          }
+          ;
           var outlineAttributes;
           for (var j = 0; j < result.outlineAttributes.length; j++) {
             outlineAttributes = result.outlineAttributes[j];
-
             outlinePositions.push(outlineAttributes.positions);
             outlineColors.push(outlineAttributes.colors);
-          };
-        };
-
+          }
+          ;
+        }
+        ;
         var mergedAttributes = {
           positions: util_Buffer.mergeFloat32Arrays(positions),
           normals: util_Buffer.mergeFloat32Arrays(normals),
           colors: util_Buffer.mergeFloat32Arrays(colors),
           tops: util_Buffer.mergeFloat32Arrays(tops)
         };
-
         var mergedOutlineAttributes = {
           positions: util_Buffer.mergeFloat32Arrays(outlinePositions),
           colors: util_Buffer.mergeFloat32Arrays(outlineColors)
         };
-
         transferrables.push(mergedAttributes.positions[0].buffer);
         transferrables.push(mergedAttributes.positions[1].buffer);
-
         transferrables.push(mergedAttributes.normals[0].buffer);
         transferrables.push(mergedAttributes.normals[1].buffer);
-
         transferrables.push(mergedAttributes.colors[0].buffer);
         transferrables.push(mergedAttributes.colors[1].buffer);
-
         transferrables.push(mergedAttributes.tops[0].buffer);
         transferrables.push(mergedAttributes.tops[1].buffer);
-
         transferrables.push(mergedOutlineAttributes.positions[0].buffer);
         transferrables.push(mergedOutlineAttributes.positions[1].buffer);
-
         transferrables.push(mergedOutlineAttributes.colors[0].buffer);
         transferrables.push(mergedOutlineAttributes.colors[1].buffer);
-
         var mergedProperties;
         if (_properties) {
           mergedProperties = util_Buffer.mergeUint8Arrays(properties);
-
           transferrables.push(mergedProperties[0].buffer);
           transferrables.push(mergedProperties[1].buffer);
         }
-
         var output = {
           attributes: mergedAttributes,
           outlineAttributes: mergedOutlineAttributes,
           flats: flats
         };
-
         if (_properties) {
           output.properties = mergedProperties;
         }
@@ -58945,24 +58207,18 @@ class GeoJSONWorkerLayer extends layer_Layer {
       }).catch(reject);
     });
   }
-
   static ProcessPolylines(polylinePromises, polylines, _properties) {
     return new Promise((resolve, reject) => {
-      Promise.all(polylinePromises).then((results) => {
+      Promise.all(polylinePromises).then(results => {
         var transferrables = [];
-
         var positions = [];
         var colors = [];
-
         var properties = [];
-
         var flats = [];
         var polyline;
-
         var result;
         for (var i = 0; i < results.length; i++) {
           result = results[i];
-
           polyline = polylines[i];
 
           // WORKERS: Making this a typed array will speed up transfer time
@@ -58975,40 +58231,33 @@ class GeoJSONWorkerLayer extends layer_Layer {
           var attributes;
           for (var j = 0; j < result.attributes.length; j++) {
             attributes = result.attributes[j];
-
             positions.push(attributes.positions);
             colors.push(attributes.colors);
-
             if (_properties) {
               properties.push(util_Buffer.stringToUint8Array(JSON.stringify(polyline.properties)));
             }
-          };
-        };
-
+          }
+          ;
+        }
+        ;
         var mergedAttributes = {
           positions: util_Buffer.mergeFloat32Arrays(positions),
           colors: util_Buffer.mergeFloat32Arrays(colors)
         };
-
         transferrables.push(mergedAttributes.positions[0].buffer);
         transferrables.push(mergedAttributes.positions[1].buffer);
-
         transferrables.push(mergedAttributes.colors[0].buffer);
         transferrables.push(mergedAttributes.colors[1].buffer);
-
         var mergedProperties;
         if (_properties) {
           mergedProperties = util_Buffer.mergeUint8Arrays(properties);
-
           transferrables.push(mergedProperties[0].buffer);
           transferrables.push(mergedProperties[1].buffer);
         }
-
         var output = {
           attributes: mergedAttributes,
           flats: flats
         };
-
         if (_properties) {
           output.properties = mergedProperties;
         }
@@ -59028,22 +58277,17 @@ class GeoJSONWorkerLayer extends layer_Layer {
   // TODO: Dedupe with ProcessPolygons as they are identical
   static ProcessPoints(pointPromises, points, _properties) {
     return new Promise((resolve, reject) => {
-      Promise.all(pointPromises).then((results) => {
+      Promise.all(pointPromises).then(results => {
         var transferrables = [];
-
         var positions = [];
         var normals = [];
         var colors = [];
-
         var properties = [];
-
         var flats = [];
         var point;
-
         var result;
         for (var i = 0; i < results.length; i++) {
           result = results[i];
-
           point = points[i];
 
           // WORKERS: Making this a typed array will speed up transfer time
@@ -59056,45 +58300,37 @@ class GeoJSONWorkerLayer extends layer_Layer {
           var attributes;
           for (var j = 0; j < result.attributes.length; j++) {
             attributes = result.attributes[j];
-
             positions.push(attributes.positions);
             normals.push(attributes.normals);
             colors.push(attributes.colors);
-
             if (_properties) {
               properties.push(util_Buffer.stringToUint8Array(JSON.stringify(polygon.properties)));
             }
-          };
-        };
-
+          }
+          ;
+        }
+        ;
         var mergedAttributes = {
           positions: util_Buffer.mergeFloat32Arrays(positions),
           normals: util_Buffer.mergeFloat32Arrays(normals),
           colors: util_Buffer.mergeFloat32Arrays(colors)
         };
-
         transferrables.push(mergedAttributes.positions[0].buffer);
         transferrables.push(mergedAttributes.positions[1].buffer);
-
         transferrables.push(mergedAttributes.normals[0].buffer);
         transferrables.push(mergedAttributes.normals[1].buffer);
-
         transferrables.push(mergedAttributes.colors[0].buffer);
         transferrables.push(mergedAttributes.colors[1].buffer);
-
         var mergedProperties;
         if (_properties) {
           mergedProperties = util_Buffer.mergeUint8Arrays(properties);
-
           transferrables.push(mergedProperties[0].buffer);
           transferrables.push(mergedProperties[1].buffer);
         }
-
         var output = {
           attributes: mergedAttributes,
           flats: flats
         };
-
         if (_properties) {
           output.properties = mergedProperties;
         }
@@ -59110,7 +58346,6 @@ class GeoJSONWorkerLayer extends layer_Layer {
       }).catch(reject);
     });
   }
-
   static ProcessGeoJSON(geojson, headers) {
     if (typeof geojson === 'string') {
       return GeoJSONWorkerLayer.RequestGeoJSON(geojson, headers);
@@ -59118,7 +58353,6 @@ class GeoJSONWorkerLayer extends layer_Layer {
       return Promise.resolve(JSON.parse(util_Buffer.uint8ArrayToString(geojson)));
     }
   }
-
   static RequestGeoJSON(path, headers) {
     return reqwest_default()({
       url: path,
@@ -59135,23 +58369,18 @@ class GeoJSONWorkerLayer extends layer_Layer {
     if (!this._world) {
       return Promise.reject();
     }
-
     return geometry_PolygonLayer.SetMesh(attributes, attributeLengths, flat, style, this._options, this._world._environment._skybox);
   }
-
   _setPolylineMesh(attributes, attributeLengths, style, flat) {
     if (!this._world) {
       return Promise.reject();
     }
-
     return geometry_PolylineLayer.SetMesh(attributes, attributeLengths, flat, style, this._options);
   }
-
   _setPointMesh(attributes, attributeLengths, style, flat) {
     if (!this._world) {
       return Promise.reject();
     }
-
     return geometry_PointLayer.SetMesh(attributes, attributeLengths, flat, style, this._options, this._world._environment._skybox);
   }
 
@@ -59160,7 +58389,6 @@ class GeoJSONWorkerLayer extends layer_Layer {
     this._world.on('pick-click-' + pickingId, (pickingId, point2d, point3d, intersects) => {
       this._world.emit('click', this, properties, point2d, point3d);
     });
-
     this._world.on('pick-hover-' + pickingId, (pickingId, point2d, point3d, intersects) => {
       this._world.emit('hover', this, properties, point2d, point3d);
     });
@@ -59172,14 +58400,10 @@ class GeoJSONWorkerLayer extends layer_Layer {
     super.destroy();
   }
 }
-
 /* harmony default export */ const layer_GeoJSONWorkerLayer = (GeoJSONWorkerLayer);
-
-var GeoJSONWorkerLayer_noNew = function(geojson, options) {
+var GeoJSONWorkerLayer_noNew = function (geojson, options) {
   return new GeoJSONWorkerLayer(geojson, options);
 };
-
-
 
 ;// CONCATENATED MODULE: ./src/util/wrapNum.js
 /*
@@ -59189,15 +58413,13 @@ var GeoJSONWorkerLayer_noNew = function(geojson, options) {
  * https://github.com/Leaflet/Leaflet/blob/master/src/core/Util.js
  */
 
-var wrapNum = function(x, range, includeMax) {
+var wrapNum = function (x, range, includeMax) {
   var max = range[1];
   var min = range[0];
   var d = max - min;
   return x === max && includeMax ? x : ((x - min) % d + d) % d + min;
 };
-
 /* harmony default export */ const util_wrapNum = (wrapNum);
-
 ;// CONCATENATED MODULE: ./src/util/index.js
 // TODO: A lot of these utils don't need to be in separate, tiny files
 
@@ -59207,22 +58429,15 @@ var wrapNum = function(x, range, includeMax) {
 
 
 
-
 const Util = {};
-
 Util.wrapNum = util_wrapNum;
 Util.extrudePolygon = util_extrudePolygon;
 Util.GeoJSON = util_GeoJSON;
 Util.Buffer = util_Buffer;
 Util.Worker = util_Worker;
 Util.Stringify = Stringify/* default */.Z;
-
 /* harmony default export */ const util = (Util);
-
 ;// CONCATENATED MODULE: ./src/vizicities-worker.js
-
-
-
 
 
 
@@ -59232,7 +58447,6 @@ Util.Stringify = Stringify/* default */.Z;
 
 const VIZI = {
   version: '0.3',
-
   Geo: geo_Geo,
   Layer: layer_Layer,
   layer: Layer_noNew,
@@ -59246,10 +58460,9 @@ const VIZI = {
   latLon: noNew,
   Util: util
 };
-
 /* harmony default export */ const vizicities_worker = ((/* unused pure expression or super */ null && (VIZI)));
-
 })();
 
 /******/ })()
 ;
+//# sourceMappingURL=vizicities-worker.js.map
