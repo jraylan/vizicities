@@ -3,7 +3,8 @@ const path = require('path');
 module.exports = {
   entry: {
     'vizicities': './src/vizicities.js',
-    'vizicities-worker': './src/vizicities-worker.js'
+    'vizicities-worker': './src/vizicities-worker.js',
+    'vizicities.css': './src/vizicities.css'
 
   },
   output: {
@@ -22,5 +23,8 @@ module.exports = {
         loader: "css-loader"
       },
     ],
+  },
+  optimization: {
+    minimize: false
   },
 };
