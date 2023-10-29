@@ -2,8 +2,9 @@
 /* eslint-disable */
 
 import * as THREE from 'three';
+import { OrbitControls as _OrbitControls } from "three/examples/js/controls/OrbitControls";
 import Hammer from 'hammerjs';
-
+1
 /**
  * @author qiao / https://github.com/qiao
  * @author mrdoob / http://mrdoob.com
@@ -1159,7 +1160,7 @@ var OrbitControls = function ( object, domElement ) {
 };
 
 OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-OrbitControls.prototype.constructor = THREE.OrbitControls;
+OrbitControls.prototype.constructor = _OrbitControls;
 
 Object.defineProperties( OrbitControls.prototype, {
 

@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import * as THREE from 'three';
 import OrbitControls from '../vendor/OrbitControls';
-import TweenLite from 'TweenLite';
+import TweenLite from 'gsap/gsap-core';
 
 class Orbit extends EventEmitter {
   constructor() {
